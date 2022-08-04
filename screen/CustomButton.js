@@ -18,7 +18,25 @@ export default class CustomButton extends Component{
 
     
   render(){
-    if(this.props.title == "NaverIcon")
+    if(this.props.title == "로그인"){
+      return (
+        <TouchableOpacity style={styles.textButton}
+          onPress={this.props.onPress}>
+          <Text style={styles.buttonTitle}>
+              {this.props.title}
+              </Text>
+        </TouchableOpacity>
+      )
+    } else if(this.props.title == "회원가입"){
+      return (
+        <TouchableOpacity style={styles.textButton}
+          onPress={this.props.onPress}>
+          <Text style={styles.buttonTitle}>
+              {this.props.title}
+              </Text>
+        </TouchableOpacity>
+      )
+      }else if(this.props.title == "NaverIcon")
     {
         return(
         <TouchableOpacity>
@@ -46,25 +64,6 @@ export default class CustomButton extends Component{
           style={styles.socialIconButton}
           source={require('../resources/icons/AppleIcon.png')}
         />
-        </TouchableOpacity>
-      )
-    } else if(this.props.title == "로그인"){
-      return (
-        <TouchableOpacity style={styles.textButton}
-          onPress={this.props.onPress}>
-          <Text style={styles.buttonTitle}>
-              {this.props.title}
-              </Text>
-        </TouchableOpacity>
-      )
-    } else if(this.props.title == "회원가입"){
-      console.log('회원가입');
-      return (
-        <TouchableOpacity style={styles.textButton}
-          onPress={this.props.onPress}>
-          <Text style={styles.buttonTitle}>
-              {this.props.title}
-              </Text>
         </TouchableOpacity>
       )
     }
