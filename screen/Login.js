@@ -18,27 +18,25 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-function Login()
-{
-    return (
-        <SafeAreaView>
-        <StatusBar />
-        <ScrollView
-            contentInsetAdjustmentBehavior="automatic">
-            <View style={styles.container}>
-              <Text>로그인 페이지</Text>
-            </View>
-        </ScrollView>
-        </SafeAreaView>
-    );
+function Login() {
+  return (
+    <SafeAreaView>
+      <StatusBar />
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.container}>
+          <Text>로그인 페이지</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container:{
-     flex: 1,
-     justifyContent: "center",
-     alignItems: "center",
-    },
-  });
-  
-export default Login
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+export default Login;
