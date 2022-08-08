@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import {
   Button,
@@ -18,14 +19,31 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-function Signin() {
+import CustomButton from '../components/CustomButton';
+
+function InitialPage({navigation}: any) {
   return (
     <SafeAreaView>
       <StatusBar />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
-          <Text>회원가입 페이지</Text>
+          <Text style={styles.text}>어플을 처음 이용하시나요?</Text>
+          <CustomButton
+            title={'회원가입'}
+            onPress={() => navigation.navigate('SignUp')}
+          />
+          <Text style={styles.text}>계정을 이미 등록하셨나요?</Text>
+          <CustomButton
+            title={'로그인'}
+            onPress={() => navigation.navigate('SignIn')}
+          />
+          {/* <Text style={styles.socialLoginTitle}>소셜 로그인</Text> */}
         </View>
+        {/* <View style={styles.socialLoginIcons}>s
+          <CustomButton title={'NaverIcon'} />
+          <CustomButton title={'KakaoIcon'} />
+          <CustomButton title={'AppleIcon'} />
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -57,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Signin;
+export default InitialPage;
