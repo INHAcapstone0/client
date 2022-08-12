@@ -18,7 +18,9 @@ import SignInPage from './screen/SignInPage';
 import SignUpPage from './screen/SignUpPage';
 import HomePage from './screen/HomePage';
 import SettingPage from './screen/SettingPage';
-import store from './store';
+import CalculatePage from './screen/CalculatePage';
+import AlarmPage from './screen/AlarmPage';
+import store from './store/Index';
 const Stack = createStackNavigator();
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
           <Stack.Screen name="SignInPage" component={SignInPage} />
           <Stack.Screen name="SignUpPage" component={SignUpPage} />
           <Stack.Screen name="HomePage" component={HomePage} />
+          <Stack.Screen name="CalculatePage" component={CalculatePage} />
+          <Stack.Screen name="AlarmPage" component={AlarmPage} />
           <Stack.Screen name="SettingPage" component={SettingPage} />
         </Stack.Navigator>
       </NavigationContainer>

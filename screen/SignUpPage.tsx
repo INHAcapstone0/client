@@ -11,11 +11,15 @@ import {
   View,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import axios, {AxiosError, AxiosResponse} from 'axios';
+import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
 
 function SignUpPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [emailChecked, setEmailChecked] = useState(false);
   const [name, setName] = useState('');
+  const [nameChecked, setNameChecked] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const emailRef = useRef<TextInput | null>(null);
@@ -23,24 +27,33 @@ function SignUpPage({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
   const passwordConfirmRef = useRef<TextInput | null>(null);
 
-  const emailDuplicateCheck = useCallback(() => {
-    console.log(1);
-    if (
-      !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
-        email,
-      )
-    ) {
-      return Alert.alert('알림', '올바른 이메일 주소가 아닙니다.');
-    }
+  const emailDuplicateCheck = useCallback(async () => {
+    emailCheck(email, (response: AxiosResponse) => {
+      if (response.data.duplicated === false) {
+        setEmailChecked(true);
+        Alert.alert('알림', '사용 가능한 이메일 입니다');
+      } else {
+        Alert.alert('알림', '이미 존재하는 이메일 입니다');
+      }
+    });
   }, [email]);
-  const nameDuplicateCheck = useCallback(() => {
-    console.log(1);
-  }, []);
+  const nameDuplicateCheck = useCallback(async () => {
+    nickNameCheck(name, (response: AxiosResponse) => {
+      if (response.data.duplicated === false) {
+        setEmailChecked(true);
+        Alert.alert('알림', '사용 가능한 닉네임 입니다');
+      } else {
+        Alert.alert('알림', '이미 존재하는 닉네임 입니다');
+      }
+    });
+  }, [name]);
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
+    setEmailChecked(false);
   }, []);
   const onChangeName = useCallback((text: string) => {
     setName(text.trim());
+    setNameChecked(false);
   }, []);
   const onChangePassword = useCallback((text: string) => {
     setPassword(text.trim());
@@ -48,56 +61,35 @@ function SignUpPage({navigation}: any) {
   const onChangePasswordConfirm = useCallback((text: string) => {
     setPasswordConfirm(text.trim());
   }, []);
-  const onSubmit = useCallback(async () => {
-    // loading중인데 한번 더누를경우
-    // if (loading) {
-    //   return;
-    // }
-    // if (!email || !email.trim()) {
-    //   return Alert.alert('알림', '이메일을 입력해주세요.');
-    // }
-    // if (!name || !name.trim()) {
-    //   return Alert.alert('알림', '이름을 입력해주세요.');
-    // }
-    // if (!password || !password.trim()) {
-    //   return Alert.alert('알림', '비밀번호를 입력해주세요.');
-    // }
-    // if (
-    //   !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
-    //     email,
-    //   )
-    // ) {
-    //   return Alert.alert('알림', '올바른 이메일 주소가 아닙니다.');
-    // }
-    // if (!/^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@^!%*#?&]).{8,50}$/.test(password)) {
-    //   return Alert.alert(
-    //     '알림',
-    //     '비밀번호는 영문,숫자,특수문자($@^!%*#?&)를 모두 포함하여 8자 이상 입력해야합니다.',
-    //   );
-    // }
-    // console.log(email, name, password);
-    // try {
-    //   setLoading(true);
-    //   console.log(Config.API_URL);
-    //   console.log(123);
-    //   const response = await axios.post(`${Config.API_URL}/user`, {
-    //     email,
-    //     name,
-    //     password,
-    //   });
-    //   console.log(response.data);
-    //   Alert.alert('알림', '회원가입 되었습니다.');
-    //   navigation.navigate('SignIn');
-    // } catch (error) {
-    //   const errorResponse = (error as AxiosError).response;
-    //   if (errorResponse) {
-    //     // Alert.alert('알림', errorResponse.data.message);
-    //   }
-    // } finally {
-    //   setLoading(false);
-    // }
-    // Alert.alert('알림', '회원가입 되었습니다.');
-  }, []);
+  const onSubmit = async () => {
+    console.log('회원가입');
+    if (loading) {
+      return;
+    }
+    if (!emailChecked) {
+      return Alert.alert('알림', '이메일을 입력해주세요.');
+    }
+    if (!nameChecked) {
+      return Alert.alert('알림', '닉네임을 입력해주세요.');
+    }
+    if (!password || !password.trim()) {
+      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+    }
+    if (password !== passwordConfirm) {
+      return Alert.alert('알림', '비밀번호가 일치하지 않습니다');
+    }
+    if (!/^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@^!%*#?&]).{8,50}$/.test(password)) {
+      return Alert.alert(
+        '알림',
+        '비밀번호는 영문,숫자,특수문자($@^!%*#?&)를 모두 포함하여 8자 이상 입력해야합니다.',
+      );
+    }
+    setLoading(true);
+    signUp(email, name, password, (response: AxiosResponse) => {
+      Alert.alert('알림', '회원가입 되었습니다.');
+    });
+    navigation.navigate('SignInPage');
+  };
 
   const canGoNext = email && name && password;
 
@@ -121,20 +113,18 @@ function SignUpPage({navigation}: any) {
           />
           <Pressable
             style={
-              canGoNext
+              !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+                email,
+              ) === false
                 ? StyleSheet.compose(
                     styles.duplicateButton,
                     styles.duplicateButtonActive,
                   )
                 : styles.duplicateButton
             }
-            disabled={!canGoNext || loading}
+            disabled={email.length === 0 || loading}
             onPress={emailDuplicateCheck}>
-            {loading ? (
-              <ActivityIndicator color="white" /> //로딩창
-            ) : (
-              <Text style={styles.duplicateButtonText}>중복확인</Text>
-            )}
+            <Text style={styles.duplicateButtonText}>중복확인</Text>
           </Pressable>
         </View>
       </View>
@@ -156,20 +146,16 @@ function SignUpPage({navigation}: any) {
           />
           <Pressable
             style={
-              canGoNext
+              name.length > 0
                 ? StyleSheet.compose(
                     styles.duplicateButton,
                     styles.duplicateButtonActive,
                   )
                 : styles.duplicateButton
             }
-            disabled={!canGoNext || loading}
+            disabled={name.length === 0 || loading}
             onPress={nameDuplicateCheck}>
-            {loading ? (
-              <ActivityIndicator color="white" /> //로딩창
-            ) : (
-              <Text style={styles.duplicateButtonText}>중복확인</Text>
-            )}
+            <Text style={styles.duplicateButtonText}>중복확인</Text>
           </Pressable>
         </View>
       </View>
