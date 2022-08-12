@@ -10,11 +10,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import MainPage from './MainPage';
-import SettingPage from './SettingPage';
-
-const Tab = createBottomTabNavigator();
 
 function HomePage({navigation}: any) {
   return (
