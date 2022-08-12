@@ -11,7 +11,8 @@ import {
   View,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import axios, {AxiosError} from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
+import {emailCheck, nickNameCheck} from '../api/Auth';
 
 function SignUpPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -27,39 +28,24 @@ function SignUpPage({navigation}: any) {
   const passwordConfirmRef = useRef<TextInput | null>(null);
 
   const emailDuplicateCheck = useCallback(async () => {
-    try {
-      console.log('이메일');
-      const response = await axios.get(
-        `http://10.0.2.2:8002/auth/check/email`,
-        {
-          params: {email: email},
-        },
-      );
+    emailCheck(email, (response: AxiosResponse) => {
       if (response.data.duplicated === false) {
         setEmailChecked(true);
         Alert.alert('알림', '사용 가능한 이메일 입니다');
       } else {
         Alert.alert('알림', '이미 존재하는 이메일 입니다');
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   }, [email]);
   const nameDuplicateCheck = useCallback(async () => {
-    try {
-      console.log('닉네임');
-      const response = await axios.get(`http://10.0.2.2:8002/auth/check/name`, {
-        params: {name: name},
-      });
+    nickNameCheck(name, (response: AxiosResponse) => {
       if (response.data.duplicated === false) {
-        setNameChecked(true);
+        setEmailChecked(true);
         Alert.alert('알림', '사용 가능한 닉네임 입니다');
       } else {
         Alert.alert('알림', '이미 존재하는 닉네임 입니다');
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   }, [name]);
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
@@ -108,10 +94,6 @@ function SignUpPage({navigation}: any) {
       navigation.navigate('SignInPage');
     } catch (error) {
       Alert.alert('알림', '회원가입 실패했습니다.');
-      // const errorResponse = (error as AxiosError).response;
-      // if (errorResponse) {
-      //   Alert.alert('알림', errorResponse);
-      // }
     } finally {
       setLoading(false);
     }

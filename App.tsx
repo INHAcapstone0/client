@@ -20,7 +20,7 @@ import HomePage from './screen/HomePage';
 import SettingPage from './screen/SettingPage';
 import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
-import store from './store';
+import store from './store/Index';
 const Stack = createStackNavigator();
 
 function App() {

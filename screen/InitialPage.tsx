@@ -13,7 +13,7 @@ import {
 import {useSelector} from 'react-redux';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {RootState} from '../store/reducer';
+import {RootState} from '../store/Reducer';
 import CustomButton from '../components/CustomButton';
 import HomePage from './HomePage';
 import CalculatePage from './CalculatePage';
