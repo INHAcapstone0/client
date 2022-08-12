@@ -28,4 +28,20 @@ async function nickNameCheck(
   }
 }
 
-export {emailCheck, nickNameCheck};
+async function signUp(
+  email: string,
+  name: string,
+  password: number,
+  success: (data: AxiosResponse) => void,
+) {
+  try {
+    const response = await axios.post(`http://10.0.2.2:8002/auth/check/name`, {
+      params: {email: email, name: name, password: password},
+    });
+    success(response);
+  } catch (err) {
+    console.log(1);
+  }
+}
+
+export {emailCheck, nickNameCheck, signUp};

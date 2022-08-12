@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import {emailCheck, nickNameCheck} from '../api/Auth';
+import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
 
 function SignUpPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -84,19 +84,11 @@ function SignUpPage({navigation}: any) {
         '비밀번호는 영문,숫자,특수문자($@^!%*#?&)를 모두 포함하여 8자 이상 입력해야합니다.',
       );
     }
-    try {
-      setLoading(true);
-      const response = await axios.post(`http://10.0.2.2:8002/auth/register`, {
-        params: {email: email, name: name, password: password},
-      });
-      console.log(response.data);
+    setLoading(true);
+    signUp(email, name, password, (response: AxiosResponse) => {
       Alert.alert('알림', '회원가입 되었습니다.');
-      navigation.navigate('SignInPage');
-    } catch (error) {
-      Alert.alert('알림', '회원가입 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
+    });
+    navigation.navigate('SignInPage');
   };
 
   const canGoNext = email && name && password;
