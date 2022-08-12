@@ -10,11 +10,21 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
+import {useSelector} from 'react-redux';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {RootState} from '../store/reducer';
 import CustomButton from '../components/CustomButton';
+import HomePage from './HomePage';
+import SettingPage from './SettingPage';
+
+const Stack = createNativeStackNavigator();
+
+// import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+// const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {
-  return (
+  const isLoggedIn = useSelector((state: RootState) => !!state.user.email);
+  return isLoggedIn ? (
     <SafeAreaView>
       <StatusBar />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -29,15 +39,22 @@ function InitialPage({navigation}: any) {
             title={'로그인'}
             onPress={() => navigation.navigate('SignInPage')}
           />
-          {/* <Text style={styles.socialLoginTitle}>소셜 로그인</Text> */}
         </View>
-        {/* <View style={styles.socialLoginIcons}>s
-          <CustomButton title={'NaverIcon'} />
-          <CustomButton title={'KakaoIcon'} />
-          <CustomButton title={'AppleIcon'} />
-        </View> */}
       </ScrollView>
     </SafeAreaView>
+  ) : (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="HomePage"
+        component={HomePage}
+        options={{title: '홈화면'}}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SettingPage}
+        options={{title: '회원가입'}}
+      />
+    </Stack.Navigator>
   );
 }
 
