@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-function SignUp({navigation}: any) {
+function SignUpPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -23,6 +23,19 @@ function SignUp({navigation}: any) {
   const passwordRef = useRef<TextInput | null>(null);
   const passwordConfirmRef = useRef<TextInput | null>(null);
 
+  const emailDuplicateCheck = useCallback(() => {
+    console.log(1);
+    if (
+      !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+        email,
+      )
+    ) {
+      return Alert.alert('알림', '올바른 이메일 주소가 아닙니다.');
+    }
+  }, [email]);
+  const nameDuplicateCheck = useCallback(() => {
+    console.log(1);
+  }, []);
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
   }, []);
@@ -36,7 +49,7 @@ function SignUp({navigation}: any) {
     setPasswordConfirm(text.trim());
   }, []);
   const onSubmit = useCallback(async () => {
-    //loading중인데 한번 더누를경우
+    // loading중인데 한번 더누를경우
     // if (loading) {
     //   return;
     // }
@@ -92,40 +105,78 @@ function SignUp({navigation}: any) {
     <KeyboardAwareScrollView>
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>이메일</Text>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={onChangeEmail}
-          placeholder="이메일"
-          placeholderTextColor="#666"
-          textContentType="emailAddress"
-          value={email}
-          returnKeyType="next"
-          clearButtonMode="while-editing"
-          ref={emailRef}
-          onSubmitEditing={() => nameRef.current?.focus()}
-          blurOnSubmit={false}
-        />
+        <View style={styles.emailWrapper}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="이메일"
+            placeholderTextColor="#666"
+            onChangeText={onChangeEmail}
+            value={email}
+            textContentType="name"
+            returnKeyType="next"
+            clearButtonMode="while-editing"
+            ref={nameRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+          />
+          <Pressable
+            style={
+              canGoNext
+                ? StyleSheet.compose(
+                    styles.duplicateButton,
+                    styles.duplicateButtonActive,
+                  )
+                : styles.duplicateButton
+            }
+            disabled={!canGoNext || loading}
+            onPress={emailDuplicateCheck}>
+            {loading ? (
+              <ActivityIndicator color="white" /> //로딩창
+            ) : (
+              <Text style={styles.duplicateButtonText}>중복확인</Text>
+            )}
+          </Pressable>
+        </View>
       </View>
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="닉네임"
-          placeholderTextColor="#666"
-          onChangeText={onChangeName}
-          value={name}
-          textContentType="name"
-          returnKeyType="next"
-          clearButtonMode="while-editing"
-          ref={nameRef}
-          onSubmitEditing={() => passwordRef.current?.focus()}
-          blurOnSubmit={false}
-        />
+        <Text style={styles.label}>닉네임</Text>
+        <View style={styles.emailWrapper}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="닉네임"
+            placeholderTextColor="#666"
+            onChangeText={onChangeName}
+            value={name}
+            textContentType="name"
+            returnKeyType="next"
+            clearButtonMode="while-editing"
+            ref={nameRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+          />
+          <Pressable
+            style={
+              canGoNext
+                ? StyleSheet.compose(
+                    styles.duplicateButton,
+                    styles.duplicateButtonActive,
+                  )
+                : styles.duplicateButton
+            }
+            disabled={!canGoNext || loading}
+            onPress={nameDuplicateCheck}>
+            {loading ? (
+              <ActivityIndicator color="white" /> //로딩창
+            ) : (
+              <Text style={styles.duplicateButtonText}>중복확인</Text>
+            )}
+          </Pressable>
+        </View>
       </View>
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
-          style={styles.textInput}
+          style={styles.passwordTextInput}
           placeholder="비밀번호(영문,숫자,특수문자 포함하여 8자 이상)"
           placeholderTextColor="#666"
           onChangeText={onChangePassword}
@@ -142,7 +193,7 @@ function SignUp({navigation}: any) {
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>비밀번호 확인</Text>
         <TextInput
-          style={styles.textInput}
+          style={styles.passwordTextInput}
           placeholder="비밀번호 확인(영문,숫자,특수문자 포함하여 8자 이상)"
           placeholderTextColor="#666"
           onChangeText={onChangePasswordConfirm}
@@ -160,15 +211,18 @@ function SignUp({navigation}: any) {
         <Pressable
           style={
             canGoNext
-              ? StyleSheet.compose(styles.loginButton, styles.loginButtonActive)
-              : styles.loginButton
+              ? StyleSheet.compose(
+                  styles.registerButton,
+                  styles.registerButtonActive,
+                )
+              : styles.registerButton
           }
           disabled={!canGoNext || loading}
           onPress={onSubmit}>
           {loading ? (
             <ActivityIndicator color="white" /> //로딩창
           ) : (
-            <Text style={styles.loginButtonText}>회원가입</Text>
+            <Text style={styles.registerButtonText}>회원가입</Text>
           )}
         </Pressable>
       </View>
@@ -178,11 +232,24 @@ function SignUp({navigation}: any) {
 
 const styles = StyleSheet.create({
   textInput: {
+    width: '80%',
     padding: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderWidth: 0.7,
+    marginRight: 7,
+    borderColor: '#4D483D',
+  },
+  passwordTextInput: {
+    width: '100%',
+    padding: 5,
+    borderWidth: 0.7,
+    borderColor: '#4D483D',
   },
   inputWrapper: {
     padding: 20,
+  },
+  emailWrapper: {
+    flex: 1,
+    flexDirection: 'row',
   },
   label: {
     fontWeight: 'bold',
@@ -192,20 +259,32 @@ const styles = StyleSheet.create({
   buttonZone: {
     alignItems: 'center',
   },
-  loginButton: {
+  duplicateButton: {
+    backgroundColor: 'gray',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  duplicateButtonActive: {
+    backgroundColor: '#4D483D',
+  },
+  duplicateButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  registerButton: {
     backgroundColor: 'gray',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    marginBottom: 10,
   },
-  loginButtonActive: {
-    backgroundColor: 'blue',
+  registerButtonActive: {
+    backgroundColor: '#4D483D',
   },
-  loginButtonText: {
+  registerButtonText: {
     color: 'white',
     fontSize: 16,
   },
 });
 
-export default SignUp;
+export default SignUpPage;

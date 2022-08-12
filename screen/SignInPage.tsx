@@ -17,7 +17,7 @@ import Config from 'react-native-config';
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
-function SignIn({navigation}: any) {
+function SignInPage({navigation}: any) {
   // const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -73,8 +73,12 @@ function SignIn({navigation}: any) {
     // }
   }, []);
 
-  const toSignUp = useCallback(() => {
-    navigation.navigate('SignUp');
+  const toSignUpPage = useCallback(() => {
+    navigation.navigate('SignUpPage');
+  }, [navigation]);
+
+  const toHomePage = useCallback(() => {
+    navigation.navigate('HomePage');
   }, [navigation]);
 
   const canGoNext = email && password;
@@ -131,8 +135,11 @@ function SignIn({navigation}: any) {
             <Text style={styles.loginButtonText}>로그인</Text>
           )}
         </Pressable>
-        <Pressable onPress={toSignUp}>
+        <Pressable onPress={toSignUpPage}>
           <Text>회원가입하기</Text>
+        </Pressable>
+        <Pressable onPress={toHomePage}>
+          <Text>홈으로</Text>
         </Pressable>
       </View>
     </ScrollView>
@@ -142,7 +149,9 @@ function SignIn({navigation}: any) {
 const styles = StyleSheet.create({
   textInput: {
     padding: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderWidth: 0.7,
+    marginRight: 7,
+    borderColor: '#4D483D',
   },
   inputWrapper: {
     padding: 20,
@@ -163,7 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   loginButtonActive: {
-    backgroundColor: 'blue',
+    backgroundColor: '#4D483D',
   },
   loginButtonText: {
     color: 'white',
@@ -171,4 +180,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignIn;
+export default SignInPage;

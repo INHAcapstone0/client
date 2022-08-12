@@ -11,14 +11,6 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
 import CustomButton from '../components/CustomButton';
 
 function InitialPage({navigation}: any) {
@@ -30,12 +22,12 @@ function InitialPage({navigation}: any) {
           <Text style={styles.text}>어플을 처음 이용하시나요?</Text>
           <CustomButton
             title={'회원가입'}
-            onPress={() => navigation.navigate('SignUp')}
+            onPress={() => navigation.navigate('SignUpPage')}
           />
           <Text style={styles.text}>계정을 이미 등록하셨나요?</Text>
           <CustomButton
             title={'로그인'}
-            onPress={() => navigation.navigate('SignIn')}
+            onPress={() => navigation.navigate('SignInPage')}
           />
           {/* <Text style={styles.socialLoginTitle}>소셜 로그인</Text> */}
         </View>
