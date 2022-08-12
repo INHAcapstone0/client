@@ -40,7 +40,7 @@ function SignUpPage({navigation}: any) {
   const nameDuplicateCheck = useCallback(async () => {
     nickNameCheck(name, (response: AxiosResponse) => {
       if (response.data.duplicated === false) {
-        setEmailChecked(true);
+        setNameChecked(true);
         Alert.alert('알림', '사용 가능한 닉네임 입니다');
       } else {
         Alert.alert('알림', '이미 존재하는 닉네임 입니다');

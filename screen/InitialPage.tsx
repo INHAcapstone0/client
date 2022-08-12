@@ -29,9 +29,9 @@ const Tab = createBottomTabNavigator();
 // const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {
-  const isLoggedIn = useSelector((state: RootState) => !!state.user.email);
+  const isLoggedIn = useSelector((state: RootState) => state.user.name);
   console.log(isLoggedIn);
-  return isLoggedIn === false ? (
+  return isLoggedIn === '' ? (
     <SafeAreaView>
       <StatusBar />
       <ScrollView contentInsetAdjustmentBehavior="automatic">

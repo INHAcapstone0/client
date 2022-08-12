@@ -10,11 +10,23 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import userSlice from '../slices/User';
+import {useAppDispatch} from '../store/Index';
 
 function SettingPage({navigation}: any) {
+  const dispatch = useAppDispatch();
+
+  const signOut = () => {
+    EncryptedStorage.removeItem('refreshToken');
+    dispatch(userSlice.actions.signout());
+  };
+
   return (
     <View style={styles.inputWrapper}>
-      <Text style={styles.label}>세팅</Text>
+      <Pressable onPress={signOut}>
+        <Text>로그아웃</Text>
+      </Pressable>
     </View>
   );
 }

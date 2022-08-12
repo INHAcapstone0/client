@@ -1,7 +1,6 @@
 import {combineReducers} from 'redux';
-
-import userSlice from '../slices/user';
-import orderSlice from '../slices/order';
+import userSlice from '../slices/User';
+import orderSlice from '../slices/Order';
 
 //action: state를 바꾸는 행위
 //dispatch: 그 액션을 실행하는 함수
