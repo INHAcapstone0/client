@@ -30,7 +30,8 @@ const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {
   const isLoggedIn = useSelector((state: RootState) => !!state.user.email);
-  return isLoggedIn ? (
+  console.log(isLoggedIn);
+  return isLoggedIn === false ? (
     <SafeAreaView>
       <StatusBar />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -57,7 +58,7 @@ function InitialPage({navigation}: any) {
         name="HomePage"
         component={HomePage}
         options={{
-          tabBarLabel: '홈',
+          tabBarLabel: '홈1',
           tabBarIcon: ({color}) => (
             <AntDesign name="home" color={color} size={26} />
           ),
