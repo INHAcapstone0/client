@@ -10,17 +10,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SettingPage from './SettingPage';
-import CalculatePage from './CalculatePage';
-import AlarmPage from './AlarmPage';
 
-const Stack = createNativeStackNavigator();
-function HomePage({navigation}: any) {
+function CalculatePage({navigation}: any) {
   return (
     <View style={styles.inputWrapper}>
-      <Text style={styles.label}>홈</Text>
-      {/* <BottomNavigation /> */}
+      <Text style={styles.label}>정산</Text>
     </View>
   );
 }
@@ -55,4 +49,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-export default HomePage;
+export default CalculatePage;

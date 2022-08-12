@@ -12,12 +12,18 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {RootState} from '../store/reducer';
 import CustomButton from '../components/CustomButton';
 import HomePage from './HomePage';
+import CalculatePage from './CalculatePage';
+import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 // import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 // const Tab = createBottomTabNavigator();
@@ -43,18 +49,51 @@ function InitialPage({navigation}: any) {
       </ScrollView>
     </SafeAreaView>
   ) : (
-    <Stack.Navigator>
-      <Stack.Screen
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: 'black',
+      }}>
+      <Tab.Screen
         name="HomePage"
         component={HomePage}
-        options={{title: '홈화면'}}
+        options={{
+          tabBarLabel: '홈',
+          tabBarIcon: ({color}) => (
+            <AntDesign name="home" color={color} size={26} />
+          ),
+        }}
       />
-      <Stack.Screen
-        name="SignUp"
+      <Tab.Screen
+        name="CalculatePage"
+        component={CalculatePage}
+        options={{
+          tabBarLabel: '정산',
+          tabBarIcon: ({color}) => (
+            <AntDesign name="calculator" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="AlarmPage"
+        component={AlarmPage}
+        options={{
+          tabBarLabel: '알림',
+          tabBarIcon: ({color}) => (
+            <MaterialCommunityIcons name="bell" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="SettingPage"
         component={SettingPage}
-        options={{title: '회원가입'}}
+        options={{
+          tabBarLabel: '세팅',
+          tabBarIcon: ({color}) => (
+            <AntDesign name="setting" color={color} size={26} />
+          ),
+        }}
       />
-    </Stack.Navigator>
+    </Tab.Navigator>
   );
 }
 
