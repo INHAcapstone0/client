@@ -12,18 +12,21 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import axios, {AxiosError} from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import Config from 'react-native-config';
+import {signIn} from '../api/Auth';
+import {useAppDispatch} from '../store/Index';
+import userSlice from '../slices/User';
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignInPage({navigation}: any) {
-  // const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
+  const dispatch = useAppDispatch();
 
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
@@ -31,54 +34,45 @@ function SignInPage({navigation}: any) {
   const onChangePassword = useCallback((text: string) => {
     setPassword(text.trim());
   }, []);
-  const onSubmit = useCallback(async () => {
-    // if (loading) {
-    //   return;
-    // }
-    // if (!email || !email.trim()) {
-    //   return Alert.alert('알림', '이메일을 입력해주세요.');
-    // }
-    // if (!password || !password.trim()) {
-    //   return Alert.alert('알림', '비밀번호를 입력해주세요.');
-    // }
-    // try {
-    //   setLoading(true);
-    //   const response = await axios.post(`${Config.API_URL}/login`, {
-    //     email,
-    //     password,
-    //   });
-    //   console.log(response.data);
-    //   Alert.alert('알림', '로그인 되었습니다.');
-    //   dispatch(
-    //     userSlice.actions.setUser({
-    //       name: response.data.data.name,
-    //       email: response.data.data.email,
-    //       accessToken: response.data.data.accessToken, //서버에서 accessToken을 유효시간을 분석
-    //     }),
-    //   );
-    //   //accessToken,refreshToken 분리저장하는이유: 동시에 털릴까바
-    //   //refreshToken이 털리면 서버에서 refreshToken을 강제로 없애는 로직을 추가해야함
-    //   //prmise라서 await붙여야
-    //   await EncryptedStorage.setItem(
-    //     'refreshToken',
-    //     response.data.data.refreshToken,
-    //   );
-    // } catch (error) {
-    //   const errorResponse = (error as AxiosError).response;
-    //   if (errorResponse) {
-    //     // Alert.alert('알림', errorResponse.data.message);
-    //   }
-    // } finally {
-    //   setLoading(false);
-    // }
-  }, []);
+  const onSubmit = async () => {
+    console.log('로그인');
+    if (loading) {
+      return;
+    }
+    if (!email || !email.trim()) {
+      return Alert.alert('알림', '이메일을 입력해주세요.');
+    }
+    if (!password || !password.trim()) {
+      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+    }
+    try {
+      setLoading(true);
+      signIn(email, password, (response: AxiosResponse) => {
+        console.log(response.data);
+        dispatch(
+          userSlice.actions.setUser({
+            name: response.data.user,
+            accessToken: response.data.data.accessToken,
+          }),
+        );
+        EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.data.refreshToken,
+        );
+        navigation.navigate('InitialPage');
+      });
+    } catch (error) {
+      const errorResponse = (error as AxiosError).response;
+      if (errorResponse) {
+        // Alert.alert('알림', errorResponse.data.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toSignUpPage = useCallback(() => {
     navigation.navigate('SignUpPage');
-  }, [navigation]);
-
-  const toHomePage = useCallback(() => {
-    navigation.navigate('HomePage');
   }, [navigation]);
 
   const canGoNext = email && password;
@@ -137,9 +131,6 @@ function SignInPage({navigation}: any) {
         </Pressable>
         <Pressable onPress={toSignUpPage}>
           <Text>회원가입하기</Text>
-        </Pressable>
-        <Pressable onPress={toHomePage}>
-          <Text>홈으로</Text>
         </Pressable>
       </View>
     </ScrollView>
