@@ -86,10 +86,20 @@ function SignUpPage({navigation}: any) {
     }
     setLoading(true);
     signUp(email, name, password, (response: AxiosResponse) => {
-      Alert.alert('알림', '회원가입 되었습니다.');
+      Alert.alert('알림', '회원가입 되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.navigate('InitialPage');
+          },
+        },
+      ]);
     });
-    navigation.navigate('SignInPage');
   };
+
+  const toSignInPage = useCallback(() => {
+    navigation.navigate('SignInPage');
+  }, [navigation]);
 
   const canGoNext = email && name && password;
 
@@ -211,6 +221,9 @@ function SignUpPage({navigation}: any) {
             <Text style={styles.registerButtonText}>회원가입</Text>
           )}
         </Pressable>
+        <Pressable onPress={toSignInPage}>
+          <Text>로그인하기</Text>
+        </Pressable>
       </View>
     </KeyboardAwareScrollView>
   );
@@ -263,6 +276,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
+    marginBottom: 10,
   },
   registerButtonActive: {
     backgroundColor: '#4D483D',

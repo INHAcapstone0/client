@@ -20,6 +20,7 @@ import HomePage from './screen/HomePage';
 import SettingPage from './screen/SettingPage';
 import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
+import CreateGroupPage from './screen/CreateGroupPage';
 import store from './store/Index';
 const Stack = createStackNavigator();
 
@@ -35,6 +36,7 @@ function App() {
           <Stack.Screen name="SignUpPage" component={SignUpPage} />
           <Stack.Screen name="HomePage" component={HomePage} />
           <Stack.Screen name="CalculatePage" component={CalculatePage} />
+          <Stack.Screen name="CreateGroupPage" component={CreateGroupPage} />
           <Stack.Screen name="AlarmPage" component={AlarmPage} />
           <Stack.Screen name="SettingPage" component={SettingPage} />
         </Stack.Navigator>
