@@ -47,25 +47,34 @@ function SignInPage({navigation}: any) {
     }
     try {
       setLoading(true);
-      signIn(email, password, (response: AxiosResponse) => {
-        console.log(response.data);
-        dispatch(
-          userSlice.actions.setUser({
-            name: response.data.user,
-            accessToken: response.data.data.accessToken,
-          }),
-        );
-        EncryptedStorage.setItem(
-          'refreshToken',
-          response.data.data.refreshToken,
-        );
-        navigation.navigate('InitialPage');
+      const response = await axios.post(`http://10.0.2.2:8002/auth/login`, {
+        email: email,
+        password: password,
       });
-    } catch (error) {
-      const errorResponse = (error as AxiosError).response;
-      if (errorResponse) {
-        // Alert.alert('알림', errorResponse.data.message);
-      }
+      dispatch(
+        userSlice.actions.setUser({
+          name: response.data.user,
+          accessToken: response.data.data.accessToken,
+        }),
+      );
+      EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      navigation.navigate('InitialPage');
+      // signIn(email, password, (response: AxiosResponse) => {
+      //   console.log(response.data);
+      //   dispatch(
+      //     userSlice.actions.setUser({
+      //       name: response.data.user,
+      //       accessToken: response.data.data.accessToken,
+      //     }),
+      //   );
+      //   EncryptedStorage.setItem(
+      //     'refreshToken',
+      //     response.data.data.refreshToken,
+      //   );
+      //   navigation.navigate('InitialPage');
+      // });
+    } catch (error: any) {
+      Alert.alert(error.response.data.msg);
     } finally {
       setLoading(false);
     }

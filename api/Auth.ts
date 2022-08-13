@@ -10,7 +10,7 @@ async function emailCheck(
     });
     success(response);
   } catch (err) {
-    console.log(1);
+    console.log(err);
   }
 }
 
@@ -24,7 +24,7 @@ async function nickNameCheck(
     });
     success(response);
   } catch (err) {
-    console.log(1);
+    console.log(err);
   }
 }
 
@@ -57,8 +57,7 @@ async function signIn(
       password: password,
     });
     success(response);
-    console.log(response.data);
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
   }
 }
