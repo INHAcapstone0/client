@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   Alert,
   Pressable,
@@ -27,6 +27,10 @@ function SignInPage({navigation}: any) {
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
