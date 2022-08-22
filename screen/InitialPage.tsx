@@ -38,32 +38,32 @@ function InitialPage({navigation}: any) {
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const getTokenAndRefresh = async () => {
-      try {
-        const refreshToken = await EncryptedStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          return;
-        }
-        const response = await axios.post(`http://10.0.2.2:8002/auth/refersh`, {
-          headers: {
-            Authorization: `[${accessToken}]`,
-            Refresh: `[${refreshToken}]`,
-          },
-        });
-        dispatch(
-          userSlice.actions.setUser({
-            name: response.data.data.name,
-            email: response.data.data.email,
-            accessToken: response.data.data.accessToken,
-          }),
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getTokenAndRefresh();
-  }, [accessToken, dispatch]);
+  // useEffect(() => {
+  //   const getTokenAndRefresh = async () => {
+  //     try {
+  //       const refreshToken = await EncryptedStorage.getItem('refreshToken');
+  //       if (!refreshToken) {
+  //         return;
+  //       }
+  //       const response = await axios.post(`http://10.0.2.2:8002/auth/refersh`, {
+  //         headers: {
+  //           Authorization: `[${accessToken}]`,
+  //           Refresh: `[${refreshToken}]`,
+  //         },
+  //       });
+  //       dispatch(
+  //         userSlice.actions.setUser({
+  //           name: response.data.data.name,
+  //           email: response.data.data.email,
+  //           accessToken: response.data.data.accessToken,
+  //         }),
+  //       );
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   getTokenAndRefresh();
+  // }, [accessToken, dispatch]);
 
   return isLoggedIn === '' ? (
     <SafeAreaView>
