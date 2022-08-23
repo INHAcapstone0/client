@@ -24,6 +24,7 @@ import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
 import store from './store/Store';
+
 const Stack = createStackNavigator();
 const persistor = persistStore(store);
 

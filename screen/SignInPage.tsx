@@ -63,20 +63,6 @@ function SignInPage({navigation}: any) {
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
-      // signIn(email, password, (response: AxiosResponse) => {
-      //   console.log(response.data);
-      //   dispatch(
-      //     userSlice.actions.setUser({
-      //       name: response.data.user,
-      //       accessToken: response.data.data.accessToken,
-      //     }),
-      //   );
-      //   EncryptedStorage.setItem(
-      //     'refreshToken',
-      //     response.data.data.refreshToken,
-      //   );
-      //   navigation.navigate('InitialPage');
-      // });
     } catch (error: any) {
       Alert.alert(error.response.data.msg);
     } finally {
