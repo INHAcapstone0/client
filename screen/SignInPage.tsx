@@ -17,6 +17,7 @@ import Config from 'react-native-config';
 import {signIn} from '../api/Auth';
 import {useAppDispatch} from '../store/Index';
 import userSlice from '../slices/User';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -54,10 +55,14 @@ function SignInPage({navigation}: any) {
       dispatch(
         userSlice.actions.setUser({
           name: response.data.user,
+          id: response.data.user_id,
           accessToken: response.data.data.accessToken,
         }),
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      const jsonValue = JSON.stringify(response.data.user_id)
+      AsyncStorage.setItem('user_id',  response.data.user_id);
+      AsyncStorage.setItem('accessToken',  response.data.data.accessToken);
       navigation.navigate('InitialPage');
       // signIn(email, password, (response: AxiosResponse) => {
       //   console.log(response.data);
@@ -74,6 +79,7 @@ function SignInPage({navigation}: any) {
       //   navigation.navigate('InitialPage');
       // });
     } catch (error: any) {
+      console.log('asfsdf');
       Alert.alert(error.response.data.msg);
     } finally {
       setLoading(false);
