@@ -18,7 +18,6 @@ import SettingPage from './SettingPage';
 import CalculatePage from './CalculatePage';
 import AlarmPage from './AlarmPage';
 import {useAppDispatch} from '../store/Store';
-import scheduleSlice from '../slices/Schedule';
 import ScheduleArea from "../components/ScheduleArea";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';

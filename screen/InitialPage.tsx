@@ -44,13 +44,12 @@ function InitialPage({navigation}: any) {
         if (!refreshToken) {
           return;
         }
-        const response = await axios.get(`http://10.0.2.2:8002/auth/refresh`, {
+        const response = await axios.post(`http://10.0.2.2:8002/auth/refersh`, {
           headers: {
             Authorization: `[${accessToken}]`,
             Refresh: `[${refreshToken}]`,
           },
         });
-
         dispatch(
           userSlice.actions.setUser({
             name: response.data.data.name,
@@ -59,12 +58,10 @@ function InitialPage({navigation}: any) {
           }),
         );
       } catch (error) {
-        console.log('here');
-        console.log(error);
         console.error(error);
       }
     };
-    //getTokenAndRefresh();
+    getTokenAndRefresh();
   }, [accessToken, dispatch]);
 
   return isLoggedIn === '' ? (
