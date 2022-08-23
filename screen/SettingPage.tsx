@@ -11,15 +11,15 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import userSlice from '../slices/User';
-import {useAppDispatch} from '../store/Index';
+import {userActions} from '../slices/User';
+import {useAppDispatch} from '../store/Store';
 
 function SettingPage({navigation}: any) {
   const dispatch = useAppDispatch();
 
   const signOut = () => {
     EncryptedStorage.removeItem('refreshToken');
-    dispatch(userSlice.actions.signout());
+    dispatch(userActions.signout());
   };
 
   return (

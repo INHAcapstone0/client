@@ -58,4 +58,5 @@ const orderSlice = createSlice({
   extraReducers: builder => {},
 });
 
+export const orderActions = orderSlice.actions;
 export default orderSlice;

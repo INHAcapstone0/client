@@ -92,7 +92,6 @@ function CreateGroupPage({navigation}: any) {
             returnKeyType="next"
             clearButtonMode="while-editing"
             ref={groupNameRef}
-            onSubmitEditing={() => calendarRef.current?.focus()}
             blurOnSubmit={false}
           />
         </View>
@@ -101,7 +100,6 @@ function CreateGroupPage({navigation}: any) {
           <Calendar
             style={styles.calendar}
             markedDates={selectedDate}
-            ref={calendarRef}
             theme={{
               selectedDayBackgroundColor: '#4D483D',
               arrowColor: '#4D483D',
