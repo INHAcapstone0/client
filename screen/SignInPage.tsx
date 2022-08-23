@@ -15,8 +15,8 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import Config from 'react-native-config';
 import {signIn} from '../api/Auth';
-import {useAppDispatch} from '../store/Index';
-import userSlice from '../slices/User';
+import {useAppDispatch} from '../store/Store';
+import {userActions} from '../slices/User';
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -56,27 +56,13 @@ function SignInPage({navigation}: any) {
         password: password,
       });
       dispatch(
-        userSlice.actions.setUser({
+        userActions.setUser({
           name: response.data.user,
           accessToken: response.data.data.accessToken,
         }),
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
-      // signIn(email, password, (response: AxiosResponse) => {
-      //   console.log(response.data);
-      //   dispatch(
-      //     userSlice.actions.setUser({
-      //       name: response.data.user,
-      //       accessToken: response.data.data.accessToken,
-      //     }),
-      //   );
-      //   EncryptedStorage.setItem(
-      //     'refreshToken',
-      //     response.data.data.refreshToken,
-      //   );
-      //   navigation.navigate('InitialPage');
-      // });
     } catch (error: any) {
       Alert.alert(error.response.data.msg);
     } finally {
