@@ -20,6 +20,6 @@ const errorSlice = createSlice({
     },
   },
 });
+
+export const errorActions = errorSlice.actions;
 export default errorSlice;
-// export const errorActions = errorSlice.actions;
-// export default errorSlice.reducer;

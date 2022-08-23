@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   Alert,
   Pressable,
@@ -15,9 +15,14 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import Config from 'react-native-config';
 import {signIn} from '../api/Auth';
+<<<<<<< HEAD
 import {useAppDispatch} from '../store/Index';
 import userSlice from '../slices/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+=======
+import {useAppDispatch} from '../store/Store';
+import {userActions} from '../slices/User';
+>>>>>>> 1f6bbe9fa8016081468ddeb64539d9c918ff3fe6
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -28,6 +33,10 @@ function SignInPage({navigation}: any) {
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const onChangeEmail = useCallback((text: string) => {
     setEmail(text.trim());
@@ -53,7 +62,7 @@ function SignInPage({navigation}: any) {
         password: password,
       });
       dispatch(
-        userSlice.actions.setUser({
+        userActions.setUser({
           name: response.data.user,
           id: response.data.user_id,
           accessToken: response.data.data.accessToken,
@@ -64,20 +73,6 @@ function SignInPage({navigation}: any) {
       AsyncStorage.setItem('user_id',  response.data.user_id);
       AsyncStorage.setItem('accessToken',  response.data.data.accessToken);
       navigation.navigate('InitialPage');
-      // signIn(email, password, (response: AxiosResponse) => {
-      //   console.log(response.data);
-      //   dispatch(
-      //     userSlice.actions.setUser({
-      //       name: response.data.user,
-      //       accessToken: response.data.data.accessToken,
-      //     }),
-      //   );
-      //   EncryptedStorage.setItem(
-      //     'refreshToken',
-      //     response.data.data.refreshToken,
-      //   );
-      //   navigation.navigate('InitialPage');
-      // });
     } catch (error: any) {
       console.log('asfsdf');
       Alert.alert(error.response.data.msg);

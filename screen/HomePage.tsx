@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import SettingPage from './SettingPage';
 import CalculatePage from './CalculatePage';
 import AlarmPage from './AlarmPage';
-import {useAppDispatch} from '../store/Index';
+import {useAppDispatch} from '../store/Store';
 import scheduleSlice from '../slices/Schedule';
 import ScheduleArea from "../components/ScheduleArea";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +27,6 @@ const Stack = createNativeStackNavigator();
 
 function HomePage({navigation}: any) {
   const [info, setInfo] = useState([]);
-  const [info2, setInfo2] = useState([]);
   const [selected, setselected] = useState('');
   const [modalOn, setModalOn] = useState(false);
   const [name, setName] = useState('');
@@ -44,7 +43,6 @@ function HomePage({navigation}: any) {
       //엑세스토큰 먼저 확인하고 id 가져오기 - 추후수정
       //엑세스 토큰 만료되면 refresh로 액세스토큰 만들어주기
       AsyncStorage.getItem('accessToken', (err, result2) => {
-        console.log('accessToken 2 : ',result2);
         const headers ={
         Authorization : `Bearer ${result2}`
       }
