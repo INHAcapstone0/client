@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -26,6 +26,10 @@ function SignUpPage({navigation}: any) {
   const nameRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const passwordConfirmRef = useRef<TextInput | null>(null);
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const emailDuplicateCheck = useCallback(async () => {
     emailCheck(email, (response: AxiosResponse) => {

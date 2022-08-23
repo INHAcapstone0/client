@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   name: '',
@@ -23,4 +23,5 @@ const userSlice = createSlice({
   extraReducers: builder => {}, //비동기액션
 });
 
+export const userActions = userSlice.actions;
 export default userSlice;
