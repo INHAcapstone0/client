@@ -21,7 +21,7 @@
     "date-fns": "^2.29.2",
     "react": "18.0.0",
     "react-native": "0.69.2",
-    "react-native-calendars": "^1.1288.0",
+    "react-native-calendars": "^1.1275.0",
     "react-native-config": "^1.4.6",
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-gesture-handler": "^2.5.0",

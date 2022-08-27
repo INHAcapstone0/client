@@ -15,8 +15,14 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import Config from 'react-native-config';
 import {signIn} from '../api/Auth';
+<<<<<<< HEAD
+import {useAppDispatch} from '../store/Index';
+import userSlice from '../slices/User';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+=======
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
+>>>>>>> 1f6bbe9fa8016081468ddeb64539d9c918ff3fe6
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -58,12 +64,17 @@ function SignInPage({navigation}: any) {
       dispatch(
         userActions.setUser({
           name: response.data.user,
+          id: response.data.user_id,
           accessToken: response.data.data.accessToken,
         }),
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      const jsonValue = JSON.stringify(response.data.user_id)
+      AsyncStorage.setItem('user_id',  response.data.user_id);
+      AsyncStorage.setItem('accessToken',  response.data.data.accessToken);
       navigation.navigate('InitialPage');
     } catch (error: any) {
+      console.log('asfsdf');
       Alert.alert(error.response.data.msg);
     } finally {
       setLoading(false);
