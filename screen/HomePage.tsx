@@ -35,6 +35,8 @@ function HomePage({navigation}: any) {
 
   useEffect(()=>{
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
+
+      result1 = '4008b5cb-c626-4a3a-9490-08572249ccf4'; //test0 계정
       const params ={
         participant_id: result1
       };
@@ -42,6 +44,7 @@ function HomePage({navigation}: any) {
       //엑세스토큰 먼저 확인하고 id 가져오기 - 추후수정
       //엑세스 토큰 만료되면 refresh로 액세스토큰 만들어주기
       AsyncStorage.getItem('accessToken', (err, result2) => {
+        result2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwMDhiNWNiLWM2MjYtNGEzYS05NDkwLTA4NTcyMjQ5Y2NmNCIsIm5hbWUiOiLthYzsiqTtirjsnKDsoIAwIiwiaWF0IjoxNjYxNjgyMDI2LCJleHAiOjE2NjI4OTE2MjZ9.TDPdOxtragzEvXDdpnZ-2s90KS5ocuIN-IrC8ln4Qz4';
         const headers ={
         Authorization : `Bearer ${result2}`
       }
