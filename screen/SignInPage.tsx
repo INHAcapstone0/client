@@ -15,14 +15,12 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import Config from 'react-native-config';
 import {signIn} from '../api/Auth';
-<<<<<<< HEAD
-import {useAppDispatch} from '../store/Index';
+//import {useAppDispatch} from '../store/Reducer';
 import userSlice from '../slices/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-=======
+
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
->>>>>>> 1f6bbe9fa8016081468ddeb64539d9c918ff3fe6
 
 // type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
