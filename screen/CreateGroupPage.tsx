@@ -12,6 +12,9 @@ import {
   TextInput,
   View,
   SafeAreaView,
+  Image,
+  TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import {format} from 'date-fns';
@@ -20,10 +23,22 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {useAppDispatch} from '../store/Store';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/User';
+import userSlice, {userActions} from '../slices/User';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
+}
+
+interface userType {
+  createdAt: string;
+  deletedAt: null;
+  email: string;
+  id: string;
+  img_url: null;
+  is_locked: false;
+  login_failed_cnt: number;
+  name: string;
+  updatedAt: string;
 }
 
 function CreateGroupPage({navigation}: any) {
@@ -33,67 +48,31 @@ function CreateGroupPage({navigation}: any) {
   const calendarRef = useRef<TextInput | null>(null);
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
   const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
+  const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
+  const [allUsers, setAllUsers] = useState<Array<userType>>([]);
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
   const name = useSelector((state: RootState) => state.persist.user.name);
 
   useEffect(() => {
+    console.log(accessToken);
     groupNameRef.current?.focus();
     getAllUsers();
+    'asdasdasd'.includes('asd');
   }, []);
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    axios.interceptors.response.use(
-      //성공한경우
-      response => {
-        return response;
-      },
-      //실패한경우
-      async error => {
-        const {
-          config, //error.config -> 원래요청
-          response: {status}, //error.response.status
-        } = error;
-        //토큰 만료 에러코드
-        if (status === 401) {
-          console.log(status);
-          console.log(config);
-          const originalRequest = config;
-          const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          // token refresh 요청
-          const {data} = await axios.post(
-            `http://10.0.2.2:8002/users/auth/refersh`, // token refresh api
-            {},
-            {
-              headers: {
-                Authorization: `[${accessToken}]`,
-                Refresh: `[${refreshToken}]`,
-              },
-            },
-          );
-          // 새로운 토큰 저장
-          dispatch(userActions.setAccessToken(data.data.accessToken));
-          EncryptedStorage.setItem('refreshToken', data.data.refreshToken);
-          originalRequest.headers.Authorization = `[${data.data.accessToken}]`;
-          // 419로 요청 실패했던 요청 새로운 토큰으로 재요청
-          return axios(originalRequest);
-        }
-        return Promise.reject(error);
-      },
-    );
-  }, [accessToken, dispatch]);
 
   const getAllUsers = async () => {
     try {
-      const response = await axios.get(`http://10.0.2.2:8002/users`, {
-        headers: {
-          Authorization_Access: `[${accessToken}]`,
+      const response = await axios.get(
+        `http://10.0.2.2:8002/users?exceptMe=true`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      });
-      console.log(response);
+      );
+      setAllUsers(response.data);
     } catch (err: any) {
       console.log(err.response);
     }
@@ -148,6 +127,20 @@ function CreateGroupPage({navigation}: any) {
     }
   };
 
+  const addToGroupMember = (user: userType) => (event: any) => {
+    if (selectedUsers.includes(user)) {
+      return;
+    }
+    setSelectedUseres([...selectedUsers, user]);
+  };
+
+  const removeToGroupMember = (user: userType) => (event: any) => {
+    const newSelectedUsers = selectedUsers.filter(
+      selectedUser => selectedUser.id !== user.id,
+    );
+    setSelectedUseres(newSelectedUsers);
+  };
+
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
@@ -186,6 +179,23 @@ function CreateGroupPage({navigation}: any) {
         </View>
         <View style={styles.elementWrapper}>
           <Text style={styles.elementLabel}>그룹원 선택</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+            <View style={styles.selectedUserContainer}>
+              {selectedUsers.map(user => (
+                <TouchableOpacity
+                  style={styles.selectedUserWrapper}
+                  onPress={removeToGroupMember(user)}>
+                  <Image
+                    style={styles.selectedUserImage}
+                    source={{
+                      uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                    }}
+                  />
+                  <Text style={styles.selectedUserName}>{user.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
           <View style={styles.memberInvitation}>
             <TextInput
               style={styles.serchTextInput}
@@ -196,10 +206,31 @@ function CreateGroupPage({navigation}: any) {
               value={searchName}
               autoComplete="name"
               textContentType="name"
-              secureTextEntry
               returnKeyType="send"
               clearButtonMode="while-editing"
             />
+            <>
+              {allUsers.map(user => {
+                if (user.name.includes(searchName)) {
+                  return (
+                    <TouchableHighlight
+                      key={user.id}
+                      underlayColor="#d9d4d4"
+                      onPress={addToGroupMember(user)}>
+                      <View style={styles.userWrapper}>
+                        <Image
+                          style={styles.userImage}
+                          source={{
+                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                          }}
+                        />
+                        <Text style={styles.userName}>{user.name}</Text>
+                      </View>
+                    </TouchableHighlight>
+                  );
+                }
+              })}
+            </>
           </View>
         </View>
       </ScrollView>
@@ -244,6 +275,44 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#4D483D',
+  },
+  userWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 10,
+    paddingLeft: 20,
+  },
+  userImage: {
+    width: 54,
+    height: 54,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  userName: {
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#000000',
+  },
+  selectedUserWrapper: {
+    paddingRight: 10,
+    paddingBottom: 10,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  selectedUserContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  selectedUserName: {
+    fontSize: 10,
+    fontWeight: '400',
+    color: '#000000',
+  },
+  selectedUserImage: {
+    width: 54,
+    height: 54,
+    borderRadius: 30,
   },
 });
 export default CreateGroupPage;
