@@ -21,44 +21,65 @@ import {useAppDispatch} from '../store/Store';
 import ScheduleArea from "../components/ScheduleArea";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/Store';
+import {userActions} from '../slices/User';
 
 const Stack = createNativeStackNavigator();
 
 function HomePage({navigation}: any) {
   const [info, setInfo] = useState([]);
-  const [selected, setselected] = useState('');
-  const [modalOn, setModalOn] = useState(false);
-  const [name, setName] = useState('');
-  const [startAt, setStartAt] = useState('');
-  const [id, setId] = useState('');
-  const dispatch = useAppDispatch();
 
-  useEffect(()=>{
+  const accessToken = useSelector(
+    (state: RootState) => state.persist.user.accessToken,
+  );
+
+  useEffect(() => {
+    
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
 
+      
       result1 = '4008b5cb-c626-4a3a-9490-08572249ccf4'; //test0 계정
       const params ={
-        participant_id: result1
+        status: "승인"
       };
-      
+    
       //엑세스토큰 먼저 확인하고 id 가져오기 - 추후수정
       //엑세스 토큰 만료되면 refresh로 액세스토큰 만들어주기
       AsyncStorage.getItem('accessToken', (err, result2) => {
-        result2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwMDhiNWNiLWM2MjYtNGEzYS05NDkwLTA4NTcyMjQ5Y2NmNCIsIm5hbWUiOiLthYzsiqTtirjsnKDsoIAwIiwiaWF0IjoxNjYxNjgyMDI2LCJleHAiOjE2NjI4OTE2MjZ9.TDPdOxtragzEvXDdpnZ-2s90KS5ocuIN-IrC8ln4Qz4';
+        result2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwMDhiNWNiLWM2MjYtNGEzYS05NDkwLTA4NTcyMjQ5Y2NmNCIsIm5hbWUiOiLthYzsiqTtirjsnKDsoIAwIiwiaWF0IjoxNjYyMjEyNDI3LCJleHAiOjE2NjM0MjIwMjd9.WOdLOl4a2WRCzqobCuuCLj5HE9fCtcGb2c2NUFZxHLA';
         const headers ={
         Authorization : `Bearer ${result2}`
       }
       
-      
-      axios.get("http://10.0.2.2:8002/schedules", {params,headers})
+      axios.get("http://10.0.2.2:8002/schedules/status", {params,headers})
       .then(res=>setInfo(res.data))
       .catch(err=>console.log('3 : ',err));
     });
+
+    
+    /*
+    //엑세스토큰 먼저 확인하고 id 가져오기 - 추후수정
+    //엑세스 토큰 만료되면 refresh로 액세스토큰 만들어주기
+    AsyncStorage.getItem('accessToken', (err, result2) => {
+      //result2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwMDhiNWNiLWM2MjYtNGEzYS05NDkwLTA4NTcyMjQ5Y2NmNCIsIm5hbWUiOiLthYzsiqTtirjsnKDsoIAwIiwiaWF0IjoxNjYxODQ3MTcwLCJleHAiOjE2NjMwNTY3NzB9.DO02grsZ2zwzIPj0-2s2AJAtzgoAcmJv_vQDL2Biqg4';
+      const headers ={
+      Authorization : `Bearer ${result2}`
+    }
+
+    
+    const params ={
+      owner_id: result1
+    };
+    
+    axios.get("http://10.0.2.2:8002/schedules", {params,headers})
+    .then(res=>setInfo(res.data))
+    .catch(err=>console.log('3 : ',err));
+    
+  });*/
     
       });
-
-  }, [])
-
+    },[]);
   return (
     <ScrollView style={styles.inputWrapper}>
       {/* <BottomNavigation /> */}
@@ -98,3 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 export default HomePage;
+

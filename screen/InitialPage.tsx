@@ -44,12 +44,14 @@ function InitialPage({navigation}: any) {
         if (!refreshToken) {
           return;
         }
-        const response = await axios.post(`http://10.0.2.2:8002/auth/refersh`, {
+        const response = await axios.get(`http://10.0.2.2:8002/auth/refresh`, {
           headers: {
-            Authorization: `[${accessToken}]`,
-            Refresh: `[${refreshToken}]`,
+            Authorization: `Bearer ${accessToken}`,
+            Refresh: `${refreshToken}`,
           },
         });
+
+        
         dispatch(
           userSlice.actions.setUser({
             name: response.data.data.name,

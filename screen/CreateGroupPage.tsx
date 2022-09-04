@@ -14,7 +14,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-//import {format} from 'date-fns';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -65,19 +64,19 @@ function CreateGroupPage({navigation}: any) {
           const refreshToken = await EncryptedStorage.getItem('refreshToken');
           // token refresh 요청
           const {data} = await axios.post(
-            `http://10.0.2.2:8002/users/auth/refersh`, // token refresh api
+            `http://10.0.2.2:8002/users/auth/refresh`, // token refresh api
             {},
             {
               headers: {
-                Authorization: `[${accessToken}]`,
-                Refresh: `[${refreshToken}]`,
+                Authorization: `Bearer ${accessToken}`,
+                Refresh: `${refreshToken}`,
               },
             },
           );
           // 새로운 토큰 저장
           dispatch(userActions.setAccessToken(data.data.accessToken));
           EncryptedStorage.setItem('refreshToken', data.data.refreshToken);
-          originalRequest.headers.Authorization = `[${data.data.accessToken}]`;
+          originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
           // 419로 요청 실패했던 요청 새로운 토큰으로 재요청
           return axios(originalRequest);
         }
