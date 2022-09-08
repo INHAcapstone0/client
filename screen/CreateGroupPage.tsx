@@ -17,7 +17,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-//import {format} from 'date-fns';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -45,7 +44,6 @@ function CreateGroupPage({navigation}: any) {
   const [groupName, setGroupName] = useState('');
   const [searchName, setSearchName] = useState('');
   const groupNameRef = useRef<TextInput | null>(null);
-  const calendarRef = useRef<TextInput | null>(null);
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
   const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
@@ -53,19 +51,17 @@ function CreateGroupPage({navigation}: any) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
-  const name = useSelector((state: RootState) => state.persist.user.name);
+  const ownerId = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
-    console.log(accessToken);
     groupNameRef.current?.focus();
     getAllUsers();
-    'asdasdasd'.includes('asd');
   }, []);
 
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
-        `http://10.0.2.2:8002/users?exceptMe=true`,
+        'http://10.0.2.2:8002/users?exceptMe=true',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -141,10 +137,61 @@ function CreateGroupPage({navigation}: any) {
     setSelectedUseres(newSelectedUsers);
   };
 
+  const createGroup = async () => {
+    if (Object.keys(selectedDate).length < 2) {
+      Alert.alert('시작일과 종료일을 선택해주세요');
+    }
+    try {
+      const orderedDate = Object.keys(selectedDate).sort(
+        (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
+      );
+      const selectedUsersId: string[] = [];
+
+      selectedUsers.filter(user => selectedUsersId.push(user.id));
+      console.log(
+        groupName,
+        ownerId,
+        orderedDate[0],
+        orderedDate[orderedDate.length - 1],
+        selectedUsersId,
+      );
+      await axios.post(
+        `http://10.0.2.2:8002/schedules`,
+        {
+          name: groupName,
+          owner_id: ownerId,
+          startAt: orderedDate[0].replace(/\!/g, ''),
+          endAt: orderedDate[orderedDate.length - 1].replace(/\!/g, ''),
+          participants: selectedUsersId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      Alert.alert('알림', '그룹생성이 완료되었습니다', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.reset({
+              routes: [
+                {
+                  name: 'HomePage',
+                },
+              ],
+            });
+          },
+        },
+      ]);
+    } catch (err: any) {
+      Alert.alert(err.response.data.msg);
+    }
+  };
+
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
-        <Text style={styles.headerLabel}>새그룹 생성하기</Text>
         <View style={styles.elementWrapper}>
           <Text style={styles.elementLabel}>그룹 이름</Text>
           <TextInput
@@ -184,14 +231,18 @@ function CreateGroupPage({navigation}: any) {
               {selectedUsers.map(user => (
                 <TouchableOpacity
                   style={styles.selectedUserWrapper}
-                  onPress={removeToGroupMember(user)}>
+                  onPress={removeToGroupMember(user)}
+                  key={user.id}>
                   <Image
+                    key={user.id}
                     style={styles.selectedUserImage}
                     source={{
                       uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
                     }}
                   />
-                  <Text style={styles.selectedUserName}>{user.name}</Text>
+                  <Text style={styles.selectedUserName} key={user.id}>
+                    {user.name}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -233,6 +284,9 @@ function CreateGroupPage({navigation}: any) {
             </>
           </View>
         </View>
+        <Pressable onPress={createGroup} style={styles.groupCreateButton}>
+          <Text style={styles.groupCreateButtonText}>그룹 생성하기</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -248,12 +302,6 @@ const styles = StyleSheet.create({
   },
   elementWrapper: {
     paddingBottom: 25,
-  },
-  headerLabel: {
-    fontWeight: 'bold',
-    fontSize: 25,
-    marginTop: 10,
-    marginBottom: 20,
   },
   elementLabel: {
     fontWeight: 'bold',
@@ -313,6 +361,19 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 30,
+  },
+  groupCreateButton: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 50,
+    textAlign: 'center',
+    backgroundColor: 'gray',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  groupCreateButtonText: {
+    color: 'white',
   },
 });
 export default CreateGroupPage;
