@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {RootState} from '../store/Store';
 import CustomButton from '../components/CustomButton';
@@ -22,12 +21,7 @@ import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useAppDispatch} from '../store/Store';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import axios, {AxiosError, AxiosResponse} from 'axios';
-import userSlice from '../slices/User';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {

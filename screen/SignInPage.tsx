@@ -10,19 +10,11 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import Config from 'react-native-config';
-import {signIn} from '../api/Auth';
-//import {useAppDispatch} from '../store/Reducer';
-import userSlice from '../slices/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
-
-// type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignInPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -55,7 +47,7 @@ function SignInPage({navigation}: any) {
     }
     try {
       setLoading(true);
-      const response = await axios.post(`http://10.0.2.2:8002/auth/login`, {
+      const response = await axios.post('http://10.0.2.2:8002/auth/login', {
         email: email,
         password: password,
       });
@@ -71,8 +63,7 @@ function SignInPage({navigation}: any) {
       AsyncStorage.setItem('user_id', response.data.user_id);
       AsyncStorage.setItem('accessToken', response.data.data.accessToken);
       navigation.navigate('InitialPage');
-    } catch (error: any) {
-      console.log('asfsdf');
+    } catch (error: AxiosError | any) {
       Alert.alert(error.response.data.msg);
     } finally {
       setLoading(false);
