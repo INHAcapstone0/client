@@ -67,9 +67,9 @@ function SignInPage({navigation}: any) {
         }),
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
-      const jsonValue = JSON.stringify(response.data.user_id)
-      AsyncStorage.setItem('user_id',  response.data.user_id);
-      AsyncStorage.setItem('accessToken',  response.data.data.accessToken);
+      const jsonValue = JSON.stringify(response.data.user_id);
+      AsyncStorage.setItem('user_id', response.data.user_id);
+      AsyncStorage.setItem('accessToken', response.data.data.accessToken);
       navigation.navigate('InitialPage');
     } catch (error: any) {
       console.log('asfsdf');
