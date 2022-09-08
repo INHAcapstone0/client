@@ -8,7 +8,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import axios, {AxiosError, AxiosResponse} from 'axios';

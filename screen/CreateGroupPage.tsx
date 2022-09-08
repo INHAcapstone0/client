@@ -20,9 +20,6 @@ import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
-import {useAppDispatch} from '../store/Store';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import userSlice, {userActions} from '../slices/User';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
