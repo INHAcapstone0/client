@@ -22,7 +22,7 @@ const userSlice = createSlice({
       return initialState;
     },
   },
-  extraReducers: builder => {}, //비동기액션
+  // extraReducers: builder => {}, //비동기액션
 });
 
 export const userActions = userSlice.actions;
