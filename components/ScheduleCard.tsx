@@ -3,20 +3,20 @@ import React, {Component, useRef, useState} from 'react';
 import {TouchableOpacity,View, Text, StyleSheet, Image,Dimensions, Alert, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCrown } from '@fortawesome/free-solid-svg-icons'
-import {Card, Button as PaperButton, Menu as PaperMenu, Provider as PaperProvider} from 'react-native-paper';
+import { faCrown, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons'
-import RBSheet from "react-native-raw-bottom-sheet";
-
+import {Card, Button as PaperButton, Menu as PaperMenu, Provider as PaperProvider} from 'react-native-paper';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
-
 import BottomSheet from 'reanimated-bottom-sheet';
 
 interface ScheduleCardProps{
-  item: any
+  item: any;
+  getSelectedScheduleId: any;
+  getBottomModalType: any;
+  onPress: any;
+
 }
-function ScheduleCard({item}:ScheduleCardProps) {
+function ScheduleCard({item, getSelectedScheduleId, getBottomModalType, onPress}:ScheduleCardProps) {
 
   var startDate = item.startAt.substring(0,10);
   var endDate = item.endAt.substring(0,10);
@@ -34,6 +34,13 @@ function ScheduleCard({item}:ScheduleCardProps) {
 
   const showMenu = () => setVisible(true);
   
+  const onMenuClick = () => {
+    getSelectedScheduleId(item.id);
+  }
+
+  const setModalType = (modalType: string) =>{
+    getBottomModalType(modalType);
+  }
   
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -45,20 +52,19 @@ function ScheduleCard({item}:ScheduleCardProps) {
 
   if(ownerFlag == 1){ //내가 호스트인 스케줄 카드
     return (
-      <Card onPress={hideMenu} >
-      <View style={styles.a}>
-      <View style={styles.b}>
+      <View style={styles.card}>
+      <View style={styles.cardHeader}>
         <View>
-        <Text style={styles.title}>{item.name}  <FontAwesomeIcon icon={faCrown} style={styles.hostIcon} /></Text>
+        <Text style={styles.cardTitle}>{item.name}  <FontAwesomeIcon icon={faCrown} style={styles.cardHostIcon} /></Text>
         </View>
         <Menu
         visible={visible}
-        anchor={<Text onPress={showMenu}>Menu</Text>}
+        anchor={<Text onPress={showMenu}  style={styles.cardMenuIcon}> <FontAwesomeIcon icon={faEllipsisV} /></Text>}
         onRequestClose={hideMenu}
       >
-        <MenuItem onPress={() => {closeMenu();}}>지출 요약 확인하기</MenuItem>
-        <MenuItem onPress={() => {closeMenu(); Alert.alert(`2`)}}>멤버 추가하기</MenuItem>
-        <MenuItem onPress={() => {closeMenu(); Alert.alert(`추후 업데이트 예정입니다`)}}>정산하기</MenuItem>
+        <MenuItem onPress={() => {closeMenu(); getSelectedScheduleId(item.id); getBottomModalType('지출요약'); onPress();}}>지출 요약 확인하기</MenuItem>
+        <MenuItem onPress={() => {closeMenu(); getSelectedScheduleId(item.id); getBottomModalType('멤버목록_호스트'); onPress();}}>멤버 추가하기</MenuItem>
+        <MenuItem onPress={() => {closeMenu(); getSelectedScheduleId(item.id); getBottomModalType('정산'); Alert.alert(`추후 업데이트 예정입니다`)}}>정산하기</MenuItem>
         <MenuItem onPress={() => {closeMenu();
         Alert.alert('알림',
         '당신이 만든 그룹을 떠나면 그룹이 영원히 삭제됩니다 정말 떠나시겠습니까?',
@@ -97,26 +103,22 @@ function ScheduleCard({item}:ScheduleCardProps) {
           },)}}>그룹 떠나기</MenuItem>
       </Menu>
       </View>
-        <Text style={styles.date}>{startDate} ~ {endDate}</Text>
-        <Text style={styles.totalPrice}>{totalPrice} 원</Text>
+        <Text style={styles.cardDate}>{startDate} ~ {endDate}</Text>
+        <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
       </View>
-      </Card>
     );
   } else{ //내가 참가자인 스케줄 카드
     return (
-      <Card onPress={closeMenu} >
-      <View style={styles.a}>
-      <View style={styles.b}>
-        <Text style={styles.title}>{item.name}</Text>
-        
-        
+      <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>{item.name}</Text>
         <Menu
         visible={visible}
-        anchor={<Text onPress={showMenu}>Menu</Text>}
+        anchor={<Text onPress={showMenu} style={styles.cardMenuIcon}><FontAwesomeIcon icon={faEllipsisV} /></Text>}
         onRequestClose={hideMenu}
       >
-<MenuItem onPress={() => {closeMenu(); Alert.alert(`1`)}}>지출 요약 확인하기</MenuItem>
-        <MenuItem onPress={() => {closeMenu(); Alert.alert(`2`)}}>멤버 확인하기</MenuItem>
+<MenuItem onPress={() => {closeMenu(); getSelectedScheduleId(item.id); getBottomModalType('지출요약'); onPress()}}>지출 요약 확인하기</MenuItem>
+        <MenuItem onPress={() => {closeMenu(); getSelectedScheduleId(item.id); getBottomModalType('멤버목록_멤버'); onPress()}}>멤버 확인하기</MenuItem>
         <MenuItem onPress={() => {closeMenu(); Alert.alert('알림',
             '정말 그룹을 떠나시겠습니까?',
             [
@@ -153,17 +155,16 @@ function ScheduleCard({item}:ScheduleCardProps) {
       </Menu>
       
       </View>
-        <Text style={styles.date}>{startDate} ~ {endDate}</Text>
-        <Text style={styles.totalPrice}>{totalPrice} 원</Text>
+        <Text style={styles.cardDate}>{startDate} ~ {endDate}</Text>
+        <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
       </View>
-      </Card>
     );
   }
   
 }
 
 const styles = StyleSheet.create({
-  a: {
+  card: {
         borderWidth : 2,
         borderRadius: 20,
         borderColor: '#4D483D',
@@ -172,38 +173,43 @@ const styles = StyleSheet.create({
         height: 200,
         marginBottom: 20
       },
-  b:{
+  cardHeader:{
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  title:{
+  cardTitle:{
         fontSize: 16,
         fontFamily: 'Jalnan',
         color: '#4D483D',
         marginLeft: 7,
         marginTop: 10
       },
-  date:{
+  cardDate:{
     fontSize: 13,
     fontFamily: 'Jalnan',
     marginLeft: 7,
     color: '#4D483D'
     },
-    menu:{
+    cardMenu:{
       width: 12,
       fontFamily: 'Jalnan',
     },
-    menuItem:{
+    cardMenuItem:{
       fontFamily: 'Jalnan',
     },
-    hostIcon:{
+    cardHostIcon:{
     color: '#FFB900',
     marginTop: 12
     },
-    totalPrice:{
+    cardTotalPrice:{
       color: '#4D483D',
       marginLeft: 7,
       fontFamily: 'Jalnan'
+    },
+    cardMenuIcon:{
+      color: '#4D483D',
+      marginTop: 12,
+      marginRight: 8
     }
 });
 

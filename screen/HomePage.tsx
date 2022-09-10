@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,31 +10,67 @@ import {
   TextInput,
   View,
   Button,
-  ScrollView
+  ScrollView,
+  Dimensions
 } from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import SettingPage from './SettingPage';
-import CalculatePage from './CalculatePage';
-import AlarmPage from './AlarmPage';
-import {useAppDispatch} from '../store/Store';
-import ScheduleArea from "../components/ScheduleArea";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/Store';
-import {userActions} from '../slices/User';
+import BottomSheet, {BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import ScheduleCard from "../components/ScheduleCard"
+import BottomComponent from "../components/BottomComponent"
 
-const Stack = createNativeStackNavigator();
 
 function HomePage({navigation}: any) {
   const [info, setInfo] = useState([]);
 
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [data, setData] = useState([]);
+
+  const sheetRef = useRef<BottomSheet>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedScheduleId, setSelectedScheduleId ] = useState('');
+
+  const [bottomModalType, setBottomModalType ] = useState('');
+
+  const testPress = () => {-
+      setIsModalOpen(true);
+  };
+
+  const testPress2 = () => {
+      setIsModalOpen(false);
+  };
+
+  const getSelectedScheduleId = (id : string) => {
+    setSelectedScheduleId(id);
+  }
+
+  const getBottomModalType = (modalType : string) => {
+    setBottomModalType(modalType);
+  }
+
+
+    // ref
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+   /* 
+  const openBottomModal = () => {
+    bottomSheetModalRef.current?.present();
+  }
+  */
+
+  const openBottomModal = () => {
+    bottomSheetModalRef.current?.present();
+  };
+
+    const snapPoints = useMemo(() => ['80%'], []);
+    const handlePresentModalPress = useCallback(() => {
+      bottomSheetModalRef.current?.present();
+    }, []);
+
 
   useEffect(() => {
+
     
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
 
@@ -55,6 +91,11 @@ function HomePage({navigation}: any) {
       axios.get("http://10.0.2.2:8002/schedules/status", {params,headers})
       .then(res=>setInfo(res.data))
       .catch(err=>console.log('3 : ',err));
+
+
+      const getData = async () => {
+      const response = await axios.get("http://10.0.2.2:8002/schedules/status", {params,headers});
+      };
     });
 
     
@@ -76,47 +117,80 @@ function HomePage({navigation}: any) {
     .then(res=>setInfo(res.data))
     .catch(err=>console.log('3 : ',err));
     
+
   });*/
-    
+    //<ScrollView style={styles.inputWrapper}>
       });
     },[]);
   return (
+    <BottomSheetModalProvider>
     <ScrollView style={styles.inputWrapper}>
-      {/* <BottomNavigation /> */}
-      <ScheduleArea info={info}/>
-    </ScrollView>
+       {
+            info.map((item: any) =>{
+              
+              if(item != null)
+                return(
+                    <ScheduleCard key={item.id} item={item} getSelectedScheduleId={getSelectedScheduleId} getBottomModalType={getBottomModalType} onPress={openBottomModal}/>
+                )
+            })
+            
+        }
+      <View>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          snapPoints={snapPoints}
+          style={styles.bottomModal}
+        >
+          <View>
+          <BottomComponent selectedScheduleId={selectedScheduleId} bottomModalType={bottomModalType}/>
+          </View>
+        </BottomSheetModal>
+        
+      </View>
+      
+
+</ScrollView>
+    </BottomSheetModalProvider>
+      
   );
 }
+
+  /*
+  
+ 
+  
+  */
 const styles = StyleSheet.create({
-  textInput: {
-    padding: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
   inputWrapper: {
-    padding: 20,
+    padding: 20
   },
   label: {
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 20,
   },
-  buttonZone: {
+  container: {
+    flex: 1,
+    padding: 24,
+    height: 500
+  },
+  contentContainer: {
+    flex: 1,
     alignItems: 'center',
   },
-  loginButton: {
-    backgroundColor: 'gray',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  loginButtonActive: {
-    backgroundColor: 'blue',
-  },
-  loginButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
+bottomModal:{
+  backgroundColor: 'white',  // <==== HERE
+borderRadius: 24,
+shadowColor: 'black',
+shadowOffset: {
+  width: 0,
+  height: -15,
+},
+shadowOpacity: 1,
+shadowRadius: 24,
+elevation: 24,
+}
 });
 export default HomePage;
 
