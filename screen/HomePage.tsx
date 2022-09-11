@@ -55,15 +55,19 @@ function HomePage({navigation}: any) {
       const headers ={
         Authorization : `Bearer ${accessToken}`
       }
-
-      axios.get("http://10.0.2.2:8002/schedules/status", {params,headers})
-      .then(res=>setInfo(res.data))
-      .catch(err=>console.log('3 : ',err));
+      console.log(accessToken)
+      const response = await axios.get("http://10.0.2.2:8002/schedules/status", {params,headers});
+      setInfo(response.data);
     } catch (err){
       console.log(err);
     }
   };
 
+  const doRefresh = () => {
+    useEffect(() => {
+      getAllSchedules();
+    },[])
+  }
 
   useEffect(() => {
 
@@ -99,7 +103,9 @@ function HomePage({navigation}: any) {
               
               if(item != null)
                 return(
-                    <ScheduleCard key={item.id} item={item} getSelectedScheduleId={getSelectedScheduleId} getBottomModalType={getBottomModalType} onPress={openBottomModal}/>
+                    <ScheduleCard key={item.id} item={item} 
+                    setSelectedScheduleId={setSelectedScheduleId} setBottomModalType={setBottomModalType} 
+                    openBottomModal={openBottomModal} doRefresh={doRefresh}/>
                 )
             })
             
@@ -112,7 +118,7 @@ function HomePage({navigation}: any) {
           style={styles.bottomModal}
         >
           <View>
-          <BottomComponent selectedScheduleId={selectedScheduleId} bottomModalType={bottomModalType}/>
+          <BottomComponent key={selectedScheduleId} selectedScheduleId={selectedScheduleId} bottomModalType={bottomModalType}/>
           </View>
         </BottomSheetModal>
         

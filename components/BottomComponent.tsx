@@ -4,11 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, {Component, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {TouchableOpacity, View,Text, StyleSheet, Image, Alert,  TextInput, Button} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import {Card, Menu, Provider as PaperProvider} from 'react-native-paper';
+import { cos } from 'react-native-reanimated';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/Store';
+import ParticipantCard from './ParticipantCard';
+import ReceiptCard from './ReceiptCard';
 
 interface BottomComponentProps{
   selectedScheduleId: any;
@@ -18,61 +22,81 @@ function BottomComponent({selectedScheduleId, bottomModalType}:BottomComponentPr
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
-  const [approvedMemberInfo, setApprovedMemberInfo] = useState([]);
+  const [approvedAllMembersInfo, setApprovedAllMembersInfo] = useState([]);
+  const [allReceiptsInfo, setAllReceiptsInfo] = useState([]);
 
-  const getApprovedMember = async () => {
+  const getAllApprovedMembers = async () => {
     try{
       const params ={
-        schedule_id: selectedScheduleId
+        schedule_id: selectedScheduleId,
+        status:"승인"
       };
     
       const headers ={
         Authorization : `Bearer ${accessToken}`
       }
       
+      const response = await axios.get("http://10.0.2.2:8002/participants", {params,headers});
 
-      axios.get("http://10.0.2.2:8002/participants", {params,headers})
-      .then(res=>setApprovedMemberInfo(res.data))
-      .catch(err=>console.log(err));
+      setApprovedAllMembersInfo(response.data);
     } catch (err){
       console.log(err);
     }
   }
-  
+
+  const getAllReceipts = async () => {
+    try{
+      const params ={
+        schedule_id: selectedScheduleId,
+      };
+    
+      const headers ={
+        Authorization : `Bearer ${accessToken}`
+      }
+      
+      const response = await axios.get("http://10.0.2.2:8002/receipts", {params,headers});
+
+      setAllReceiptsInfo(response.data);
+    } catch (err){
+      console.log(err);
+    }
+  }
+
   if(bottomModalType === '지출요약'){
-  return (
-    <View>
-       {
-            approvedMemberInfo.map((item: any) =>{
+    useEffect(() => {
+      getAllReceipts();
+      
+    },[]);
+    return (
+      <View>
+        <Text style={styles.modalTitle}>지출 요약 확인하기</Text>
+         {
+              allReceiptsInfo.map((item: any) =>{
+                
+                if(item != null)
+                  return(
+                    <ReceiptCard key={item.id} item = {item}/>
+                  )
+              })
               
-              if(item != null)
-                return(
-                  <View>
-                    <Text>{item.participant_id}</Text>
-                    <Text>--------------------------</Text>
-                  </View>
-                )
-            })
-            
-        }
-    </View>
-  );
+          }
+      </View>
+    );
+
   }else if(bottomModalType==='멤버목록_멤버'){
     useEffect(() => {
-      getApprovedMember();
-    });
+      getAllApprovedMembers();
+    },[]);
 
   return (
     <View>
+      <Text style={styles.modalTitle}>멤버 확인하기</Text>
        {
-            approvedMemberInfo.map((item: any) =>{
+            approvedAllMembersInfo.map((item: any) =>{
               
               if(item != null)
                 return(
-                  <View>
-                    <Text>{item.participant_id}</Text>
-                    <Text>--------------------------</Text>
-                  </View>
+                  <ParticipantCard key={item.participant_id} item={item}/>
                 )
             })
             
@@ -81,10 +105,7 @@ function BottomComponent({selectedScheduleId, bottomModalType}:BottomComponentPr
   );
   } else{
     return (
-      <View>
-      <Text>{selectedScheduleId}, {bottomModalType}</Text>
-
-    </View>
+      <View></View>
     );
   }
 }
@@ -100,6 +121,13 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
     },
+    modalTitle:{
+      fontFamily: 'Jalnan',
+      fontSize: 24,
+      marginLeft: 20,
+      marginBottom:10,
+      color: '#4D483D'
+    }
   });
 
 export default BottomComponent;
