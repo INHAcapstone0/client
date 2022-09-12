@@ -44,6 +44,24 @@ function BottomComponent({
   const [approvedAllMembersInfo, setApprovedAllMembersInfo] = useState([]);
   const [allReceiptsInfo, setAllReceiptsInfo] = useState([]);
 
+  const getAllReceipts = async () => {
+    try {
+      const params = {
+        schedule_id: selectedScheduleId,
+      };
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.get('http://10.0.2.2:8002/receipts', {
+        params,
+        headers,
+      });
+      setAllReceiptsInfo(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const getAllApprovedMembers = async () => {
     try {
       const params = {
@@ -66,57 +84,40 @@ function BottomComponent({
     }
   };
 
-  const getAllReceipts = async () => {
-    try {
-      const params = {
-        schedule_id: selectedScheduleId,
-      };
-
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      const response = await axios.get('http://10.0.2.2:8002/receipts', {
-        params,
-        headers,
-      });
-
-      setAllReceiptsInfo(response.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   if (bottomModalType === '지출요약') {
-    getAllReceipts();
-    // useEffect(() => {
-    //   getAllReceipts();
-    // }, []);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      getAllReceipts();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     return (
       <View>
         <Text style={styles.modalTitle}>지출 요약 확인하기</Text>
         {allReceiptsInfo.map((item: any) => {
-          if (item != null) return <ReceiptCard key={item.id} item={item} />;
+          if (item != null) {
+            return <ReceiptCard key={item.id} item={item} />;
+          }
         })}
       </View>
     );
   } else if (bottomModalType === '멤버목록_멤버') {
-    getAllApprovedMembers();
-    // useEffect(() => {
-    //   getAllApprovedMembers();
-    // }, []);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      getAllApprovedMembers();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
       <View>
         <Text style={styles.modalTitle}>멤버 확인하기</Text>
         {approvedAllMembersInfo.map((item: any) => {
-          if (item != null)
+          if (item != null) {
             return <ParticipantCard key={item.participant_id} item={item} />;
+          }
         })}
       </View>
     );
   } else {
-    return <View></View>;
+    return <View />;
   }
 }
 
