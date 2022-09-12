@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {
@@ -11,16 +12,18 @@ import {
   View,
   Button,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import BottomSheet, {BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import ScheduleCard from "../components/ScheduleCard"
-import BottomComponent from "../components/BottomComponent"
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/Store';
-
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import ScheduleCard from '../components/ScheduleCard';
+import BottomComponent from '../components/BottomComponent';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/Store';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
@@ -28,17 +31,17 @@ function HomePage({navigation}: any) {
   );
   const [info, setInfo] = useState([]);
 
-  const [selectedScheduleId, setSelectedScheduleId ] = useState('');
+  const [selectedScheduleId, setSelectedScheduleId] = useState('');
 
-  const [bottomModalType, setBottomModalType ] = useState('');
+  const [bottomModalType, setBottomModalType] = useState('');
 
-  const getSelectedScheduleId = (id : string) => {
+  const getSelectedScheduleId = (id: string) => {
     setSelectedScheduleId(id);
-  }
+  };
 
-  const getBottomModalType = (modalType : string) => {
+  const getBottomModalType = (modalType: string) => {
     setBottomModalType(modalType);
-  }
+  };
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -46,27 +49,25 @@ function HomePage({navigation}: any) {
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
-    try{
-
-      const params ={
-        status: "승인"
+    try {
+      const params = {
+        status: '승인',
       };
-    
-      const headers ={
-        Authorization : `Bearer ${accessToken}`
-      }
 
-      axios.get("http://10.0.2.2:8002/schedules/status", {params,headers})
-      .then(res=>setInfo(res.data))
-      .catch(err=>console.log('3 : ',err));
-    } catch (err){
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      axios
+        .get('http://10.0.2.2:8002/schedules/status', {params, headers})
+        .then(res => setInfo(res.data))
+        .catch(err => console.log('3 : ', err));
+    } catch (err) {
       console.log(err);
     }
   };
 
-
   useEffect(() => {
-
     getAllSchedules();
     /*
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
@@ -90,49 +91,49 @@ function HomePage({navigation}: any) {
 
 
       });*/
-    },[]);
+  }, []);
   return (
     <BottomSheetModalProvider>
-    <ScrollView style={styles.inputWrapper}>
-       {
-            info.map((item: any) =>{
-              
-              if(item != null)
-                return(
-                    <ScheduleCard key={item.id} item={item} getSelectedScheduleId={getSelectedScheduleId} getBottomModalType={getBottomModalType} onPress={openBottomModal}/>
-                )
-            })
-            
-        }
-      <View>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          snapPoints={snapPoints}
-          style={styles.bottomModal}
-        >
-          <View>
-          <BottomComponent selectedScheduleId={selectedScheduleId} bottomModalType={bottomModalType}/>
-          </View>
-        </BottomSheetModal>
-        
-      </View>
-      
-
-</ScrollView>
+      <ScrollView style={styles.inputWrapper}>
+        {info.map((item: any) => {
+          if (item != null)
+            return (
+              <ScheduleCard
+                key={item.id}
+                item={item}
+                getSelectedScheduleId={getSelectedScheduleId}
+                getBottomModalType={getBottomModalType}
+                onPress={openBottomModal}
+              />
+            );
+        })}
+        <View>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            style={styles.bottomModal}>
+            <View>
+              <BottomComponent
+                selectedScheduleId={selectedScheduleId}
+                bottomModalType={bottomModalType}
+              />
+            </View>
+          </BottomSheetModal>
+        </View>
+      </ScrollView>
     </BottomSheetModalProvider>
-      
   );
 }
 
-  /*
+/*
   
  
   
   */
 const styles = StyleSheet.create({
   inputWrapper: {
-    padding: 20
+    padding: 20,
   },
   label: {
     fontWeight: 'bold',
@@ -142,24 +143,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    height: 500
+    height: 500,
   },
   contentContainer: {
     flex: 1,
     alignItems: 'center',
   },
-bottomModal:{
-  backgroundColor: 'white',  // <==== HERE
-borderRadius: 24,
-shadowColor: 'black',
-shadowOffset: {
-  width: 0,
-  height: -15,
-},
-shadowOpacity: 1,
-shadowRadius: 24,
-elevation: 24,
-}
+  bottomModal: {
+    backgroundColor: 'white', // <==== HERE
+    borderRadius: 24,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: -15,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    elevation: 24,
+  },
 });
 export default HomePage;
-
