@@ -30,7 +30,7 @@ interface userType {
   deletedAt: null;
   email: string;
   id: string;
-  img_url: null;
+  img_url: string;
   is_locked: false;
   login_failed_cnt: number;
   name: string;
@@ -235,7 +235,7 @@ function CreateGroupPage({navigation}: any) {
                     key={user.id}
                     style={styles.selectedUserImage}
                     source={{
-                      uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                      uri: user.img_url,
                     }}
                   />
                   <Text style={styles.selectedUserName} key={user.id}>
@@ -269,11 +269,14 @@ function CreateGroupPage({navigation}: any) {
                       <View style={styles.userWrapper}>
                         <Image
                           style={styles.userImage}
+                          key={user.id}
                           source={{
-                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                            uri: user.img_url,
                           }}
                         />
-                        <Text style={styles.userName}>{user.name}</Text>
+                        <Text key={user.id} style={styles.userName}>
+                          {user.name}
+                        </Text>
                       </View>
                     </TouchableHighlight>
                   );
