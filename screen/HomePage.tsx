@@ -100,7 +100,7 @@ function HomePage({navigation}: any) {
     <BottomSheetModalProvider>
       <ScrollView style={styles.inputWrapper}>
         {info.map((item: any) => {
-          if (item != null)
+          if (item != null) {
             return (
               <ScheduleCard
                 key={item.id}
@@ -111,6 +111,7 @@ function HomePage({navigation}: any) {
                 doRefresh={doRefresh}
               />
             );
+          }
         })}
         <View>
           <BottomSheetModal
@@ -132,11 +133,6 @@ function HomePage({navigation}: any) {
   );
 }
 
-/*
-  
- 
-  
-  */
 const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,

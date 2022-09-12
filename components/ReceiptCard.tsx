@@ -46,7 +46,7 @@ function ReceiptCard({item}: ReceiptCardProps) {
       </View>
     );
   } else {
-    return <View></View>;
+    return <View />;
   }
 }
 
