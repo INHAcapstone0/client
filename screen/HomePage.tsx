@@ -47,6 +47,9 @@ function HomePage({navigation}: any) {
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
   };
+  const closeBottomModal = () => {
+    bottomSheetModalRef.current?.close();
+  };
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
@@ -127,6 +130,7 @@ function HomePage({navigation}: any) {
                 key={selectedScheduleId}
                 selectedScheduleId={selectedScheduleId}
                 bottomModalType={bottomModalType}
+                closeBottomModal={closeBottomModal}
               />
             </BottomSheetScrollView>
           </BottomSheetModal>
