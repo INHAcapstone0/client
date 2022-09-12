@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {RootState} from '../store/Store';
 import CustomButton from '../components/CustomButton';
@@ -22,49 +21,11 @@ import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useAppDispatch} from '../store/Store';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import axios, {AxiosError, AxiosResponse} from 'axios';
-import userSlice from '../slices/User';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {
   const isLoggedIn = useSelector((state: RootState) => state.persist.user.name);
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const getTokenAndRefresh = async () => {
-      try {
-        const refreshToken = await EncryptedStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          return;
-        }
-        const response = await axios.get(`http://10.0.2.2:8002/auth/refresh`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Refresh: `${refreshToken}`,
-          },
-        });
-
-        
-        dispatch(
-          userSlice.actions.setUser({
-            name: response.data.data.name,
-            email: response.data.data.email,
-            accessToken: response.data.data.accessToken,
-          }),
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getTokenAndRefresh();
-  }, [accessToken, dispatch]);
 
   return isLoggedIn === '' ? (
     <SafeAreaView>
