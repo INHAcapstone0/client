@@ -47,6 +47,9 @@ function HomePage({navigation}: any) {
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
   };
+  const closeBottomModal = () => {
+    bottomSheetModalRef.current?.close();
+  };
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
@@ -125,6 +128,42 @@ function HomePage({navigation}: any) {
       </BottomSheetModalProvider>
     );
   }
+  return (
+    <BottomSheetModalProvider>
+      <ScrollView style={styles.inputWrapper}>
+        {info.map((item: any) => {
+          if (item != null) {
+            return (
+              <ScheduleCard
+                key={item.id}
+                item={item}
+                setSelectedScheduleId={setSelectedScheduleId}
+                setBottomModalType={setBottomModalType}
+                openBottomModal={openBottomModal}
+                doRefresh={doRefresh}
+              />
+            );
+          }
+        })}
+        <View>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            style={styles.bottomModal}>
+            <BottomSheetScrollView>
+              <BottomComponent
+                key={selectedScheduleId}
+                selectedScheduleId={selectedScheduleId}
+                bottomModalType={bottomModalType}
+                closeBottomModal={closeBottomModal}
+              />
+            </BottomSheetScrollView>
+          </BottomSheetModal>
+        </View>
+      </ScrollView>
+    </BottomSheetModalProvider>
+  );
 }
 
 const styles = StyleSheet.create({
