@@ -12,6 +12,9 @@ import {
   TextInput,
   View,
   SafeAreaView,
+  Image,
+  TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import axios, {AxiosError, AxiosResponse} from 'axios';
@@ -22,12 +25,26 @@ interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
 
+interface userType {
+  createdAt: string;
+  deletedAt: null;
+  email: string;
+  id: string;
+  img_url: null;
+  is_locked: false;
+  login_failed_cnt: number;
+  name: string;
+  updatedAt: string;
+}
+
 function CreateGroupPage({navigation}: any) {
   const [groupName, setGroupName] = useState('');
   const [searchName, setSearchName] = useState('');
   const groupNameRef = useRef<TextInput | null>(null);
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
   const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
+  const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
+  const [allUsers, setAllUsers] = useState<Array<userType>>([]);
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
@@ -38,49 +55,6 @@ function CreateGroupPage({navigation}: any) {
     getAllUsers();
   }, []);
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    axios.interceptors.response.use(
-      //성공한경우
-      response => {
-        return response;
-      },
-      //실패한경우
-      async error => {
-        const {
-          config, //error.config -> 원래요청
-          response: {status}, //error.response.status
-        } = error;
-        //토큰 만료 에러코드
-        if (status === 401) {
-          console.log(status);
-          console.log(config);
-          const originalRequest = config;
-          const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          // token refresh 요청
-          const {data} = await axios.post(
-            `http://10.0.2.2:8002/users/auth/refresh`, // token refresh api
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                Refresh: `${refreshToken}`,
-              },
-            },
-          );
-          // 새로운 토큰 저장
-          dispatch(userActions.setAccessToken(data.data.accessToken));
-          EncryptedStorage.setItem('refreshToken', data.data.refreshToken);
-          originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
-          // 419로 요청 실패했던 요청 새로운 토큰으로 재요청
-          return axios(originalRequest);
-        }
-        return Promise.reject(error);
-      },
-    );
-  }, [accessToken, dispatch]);
-
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
@@ -90,8 +64,8 @@ function CreateGroupPage({navigation}: any) {
             Authorization: `Bearer ${accessToken}`,
           },
         },
-      });
-      console.log(response);
+      );
+      setAllUsers(response.data);
     } catch (err: any) {
       console.log(err.response);
     }
@@ -178,13 +152,14 @@ function CreateGroupPage({navigation}: any) {
         orderedDate[orderedDate.length - 1],
         selectedUsersId,
       );
+
       await axios.post(
         `http://10.0.2.2:8002/schedules`,
         {
           name: groupName,
           owner_id: ownerId,
-          startAt: orderedDate[0].replace(/\!/g, ''),
-          endAt: orderedDate[orderedDate.length - 1].replace(/\!/g, ''),
+          startAt: orderedDate[0].replace(/\-/g, ''),
+          endAt: orderedDate[orderedDate.length - 1].replace(/\-/g, ''),
           participants: selectedUsersId,
         },
         {
@@ -280,10 +255,31 @@ function CreateGroupPage({navigation}: any) {
               value={searchName}
               autoComplete="name"
               textContentType="name"
-              secureTextEntry
               returnKeyType="send"
               clearButtonMode="while-editing"
             />
+            <>
+              {allUsers.map(user => {
+                if (user.name.includes(searchName)) {
+                  return (
+                    <TouchableHighlight
+                      key={user.id}
+                      underlayColor="#d9d4d4"
+                      onPress={addToGroupMember(user)}>
+                      <View style={styles.userWrapper}>
+                        <Image
+                          style={styles.userImage}
+                          source={{
+                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                          }}
+                        />
+                        <Text style={styles.userName}>{user.name}</Text>
+                      </View>
+                    </TouchableHighlight>
+                  );
+                }
+              })}
+            </>
           </View>
         </View>
         <Pressable onPress={createGroup} style={styles.groupCreateButton}>

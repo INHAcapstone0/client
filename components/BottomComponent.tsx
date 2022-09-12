@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, {Component, useCallback, useEffect, useMemo, useRef, useState} from 'react';
@@ -14,11 +14,14 @@ import { RootState } from '../store/Store';
 import ParticipantCard from './ParticipantCard';
 import ReceiptCard from './ReceiptCard';
 
-interface BottomComponentProps{
+interface BottomComponentProps {
   selectedScheduleId: any;
   bottomModalType: any;
 }
-function BottomComponent({selectedScheduleId, bottomModalType}:BottomComponentProps) {
+function BottomComponent({
+  selectedScheduleId,
+  bottomModalType,
+}: BottomComponentProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );

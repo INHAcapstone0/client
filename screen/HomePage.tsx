@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {
@@ -11,34 +12,34 @@ import {
   View,
   Button,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import BottomSheet, {BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import ScheduleCard from "../components/ScheduleCard"
-import BottomComponent from "../components/BottomComponent"
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/Store';
-
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import ScheduleCard from '../components/ScheduleCard';
+import BottomComponent from '../components/BottomComponent';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/Store';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
   const [info, setInfo] = useState([]);
+  const [selectedScheduleId, setSelectedScheduleId] = useState('');
+  const [bottomModalType, setBottomModalType] = useState('');
 
-  const [selectedScheduleId, setSelectedScheduleId ] = useState('');
-
-  const [bottomModalType, setBottomModalType ] = useState('');
-
-  const getSelectedScheduleId = (id : string) => {
+  const getSelectedScheduleId = (id: string) => {
     setSelectedScheduleId(id);
-  }
+  };
 
-  const getBottomModalType = (modalType : string) => {
+  const getBottomModalType = (modalType: string) => {
     setBottomModalType(modalType);
-  }
+  };
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -46,12 +47,10 @@ function HomePage({navigation}: any) {
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
-    try{
-
-      const params ={
-        status: "승인"
+    try {
+      const params = {
+        status: '승인',
       };
-    
       const headers ={
         Authorization : `Bearer ${accessToken}`
       }
@@ -68,9 +67,7 @@ function HomePage({navigation}: any) {
       getAllSchedules();
     },[])
   }
-
   useEffect(() => {
-
     getAllSchedules();
     /*
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
@@ -94,7 +91,7 @@ function HomePage({navigation}: any) {
 
 
       });*/
-    },[]);
+  }, []);
   return (
     <BottomSheetModalProvider>
     <ScrollView style={styles.inputWrapper}>
@@ -127,18 +124,17 @@ function HomePage({navigation}: any) {
 
 </ScrollView>
     </BottomSheetModalProvider>
-      
   );
 }
 
-  /*
+/*
   
  
   
   */
 const styles = StyleSheet.create({
   inputWrapper: {
-    padding: 20
+    padding: 20,
   },
   label: {
     fontWeight: 'bold',
@@ -148,24 +144,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    height: 500
+    height: 500,
   },
   contentContainer: {
     flex: 1,
     alignItems: 'center',
   },
-bottomModal:{
-  backgroundColor: 'white',  // <==== HERE
-borderRadius: 24,
-shadowColor: 'black',
-shadowOffset: {
-  width: 0,
-  height: -15,
-},
-shadowOpacity: 1,
-shadowRadius: 24,
-elevation: 24,
-}
+  bottomModal: {
+    backgroundColor: 'white', // <==== HERE
+    borderRadius: 24,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: -15,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    elevation: 24,
+  },
 });
 export default HomePage;
-
