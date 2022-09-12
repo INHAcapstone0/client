@@ -17,9 +17,6 @@ import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
-import {useAppDispatch} from '../store/Store';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/User';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -29,13 +26,12 @@ function CreateGroupPage({navigation}: any) {
   const [groupName, setGroupName] = useState('');
   const [searchName, setSearchName] = useState('');
   const groupNameRef = useRef<TextInput | null>(null);
-  const calendarRef = useRef<TextInput | null>(null);
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
   const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
-  const name = useSelector((state: RootState) => state.persist.user.name);
+  const ownerId = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
     groupNameRef.current?.focus();
@@ -87,9 +83,12 @@ function CreateGroupPage({navigation}: any) {
 
   const getAllUsers = async () => {
     try {
-      const response = await axios.get(`http://10.0.2.2:8002/users`, {
-        headers: {
-          Authorization_Access: `[${accessToken}]`,
+      const response = await axios.get(
+        'http://10.0.2.2:8002/users?exceptMe=true',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
       });
       console.log(response);
@@ -147,10 +146,75 @@ function CreateGroupPage({navigation}: any) {
     }
   };
 
+  const addToGroupMember = (user: userType) => (event: any) => {
+    if (selectedUsers.includes(user)) {
+      return;
+    }
+    setSelectedUseres([...selectedUsers, user]);
+  };
+
+  const removeToGroupMember = (user: userType) => (event: any) => {
+    const newSelectedUsers = selectedUsers.filter(
+      selectedUser => selectedUser.id !== user.id,
+    );
+    setSelectedUseres(newSelectedUsers);
+  };
+
+  const createGroup = async () => {
+    if (Object.keys(selectedDate).length < 2) {
+      Alert.alert('시작일과 종료일을 선택해주세요');
+    }
+    try {
+      const orderedDate = Object.keys(selectedDate).sort(
+        (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
+      );
+      const selectedUsersId: string[] = [];
+
+      selectedUsers.filter(user => selectedUsersId.push(user.id));
+      console.log(
+        groupName,
+        ownerId,
+        orderedDate[0],
+        orderedDate[orderedDate.length - 1],
+        selectedUsersId,
+      );
+      await axios.post(
+        `http://10.0.2.2:8002/schedules`,
+        {
+          name: groupName,
+          owner_id: ownerId,
+          startAt: orderedDate[0].replace(/\!/g, ''),
+          endAt: orderedDate[orderedDate.length - 1].replace(/\!/g, ''),
+          participants: selectedUsersId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      Alert.alert('알림', '그룹생성이 완료되었습니다', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.reset({
+              routes: [
+                {
+                  name: 'HomePage',
+                },
+              ],
+            });
+          },
+        },
+      ]);
+    } catch (err: any) {
+      Alert.alert(err.response.data.msg);
+    }
+  };
+
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
-        <Text style={styles.headerLabel}>새그룹 생성하기</Text>
         <View style={styles.elementWrapper}>
           <Text style={styles.elementLabel}>그룹 이름</Text>
           <TextInput
@@ -185,6 +249,27 @@ function CreateGroupPage({navigation}: any) {
         </View>
         <View style={styles.elementWrapper}>
           <Text style={styles.elementLabel}>그룹원 선택</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+            <View style={styles.selectedUserContainer}>
+              {selectedUsers.map(user => (
+                <TouchableOpacity
+                  style={styles.selectedUserWrapper}
+                  onPress={removeToGroupMember(user)}
+                  key={user.id}>
+                  <Image
+                    key={user.id}
+                    style={styles.selectedUserImage}
+                    source={{
+                      uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                    }}
+                  />
+                  <Text style={styles.selectedUserName} key={user.id}>
+                    {user.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
           <View style={styles.memberInvitation}>
             <TextInput
               style={styles.serchTextInput}
@@ -201,6 +286,9 @@ function CreateGroupPage({navigation}: any) {
             />
           </View>
         </View>
+        <Pressable onPress={createGroup} style={styles.groupCreateButton}>
+          <Text style={styles.groupCreateButtonText}>그룹 생성하기</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -216,12 +304,6 @@ const styles = StyleSheet.create({
   },
   elementWrapper: {
     paddingBottom: 25,
-  },
-  headerLabel: {
-    fontWeight: 'bold',
-    fontSize: 25,
-    marginTop: 10,
-    marginBottom: 20,
   },
   elementLabel: {
     fontWeight: 'bold',
@@ -243,6 +325,57 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#4D483D',
+  },
+  userWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 10,
+    paddingLeft: 20,
+  },
+  userImage: {
+    width: 54,
+    height: 54,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  userName: {
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#000000',
+  },
+  selectedUserWrapper: {
+    paddingRight: 10,
+    paddingBottom: 10,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  selectedUserContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  selectedUserName: {
+    fontSize: 10,
+    fontWeight: '400',
+    color: '#000000',
+  },
+  selectedUserImage: {
+    width: 54,
+    height: 54,
+    borderRadius: 30,
+  },
+  groupCreateButton: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 50,
+    textAlign: 'center',
+    backgroundColor: 'gray',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  groupCreateButtonText: {
+    color: 'white',
   },
 });
 export default CreateGroupPage;
