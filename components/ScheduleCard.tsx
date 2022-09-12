@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     borderColor: '#4D483D',
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     width: Dimensions.get('window').width * 0.9,
     height: 200,
     marginBottom: 20,
