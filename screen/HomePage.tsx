@@ -51,22 +51,26 @@ function HomePage({navigation}: any) {
       const params = {
         status: '승인',
       };
-      const headers ={
-        Authorization : `Bearer ${accessToken}`
-      }
-      console.log(accessToken)
-      const response = await axios.get("http://10.0.2.2:8002/schedules/status", {params,headers});
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      console.log(accessToken);
+      const response = await axios.get(
+        'http://10.0.2.2:8002/schedules/status',
+        {params, headers},
+      );
       setInfo(response.data);
-    } catch (err){
+    } catch (err) {
       console.log(err);
     }
   };
 
   const doRefresh = () => {
-    useEffect(() => {
-      getAllSchedules();
-    },[])
-  }
+    getAllSchedules();
+    // useEffect(() => {
+    //   getAllSchedules();
+    // }, []);
+  };
   useEffect(() => {
     getAllSchedules();
     /*
@@ -94,35 +98,36 @@ function HomePage({navigation}: any) {
   }, []);
   return (
     <BottomSheetModalProvider>
-    <ScrollView style={styles.inputWrapper}>
-       {
-            info.map((item: any) =>{
-              
-              if(item != null)
-                return(
-                    <ScheduleCard key={item.id} item={item} 
-                    setSelectedScheduleId={setSelectedScheduleId} setBottomModalType={setBottomModalType} 
-                    openBottomModal={openBottomModal} doRefresh={doRefresh}/>
-                )
-            })
-            
-        }
-      <View>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          snapPoints={snapPoints}
-          style={styles.bottomModal}
-        >
-          <View>
-          <BottomComponent key={selectedScheduleId} selectedScheduleId={selectedScheduleId} bottomModalType={bottomModalType}/>
-          </View>
-        </BottomSheetModal>
-        
-      </View>
-      
-
-</ScrollView>
+      <ScrollView style={styles.inputWrapper}>
+        {info.map((item: any) => {
+          if (item != null)
+            return (
+              <ScheduleCard
+                key={item.id}
+                item={item}
+                setSelectedScheduleId={setSelectedScheduleId}
+                setBottomModalType={setBottomModalType}
+                openBottomModal={openBottomModal}
+                doRefresh={doRefresh}
+              />
+            );
+        })}
+        <View>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            style={styles.bottomModal}>
+            <View>
+              <BottomComponent
+                key={selectedScheduleId}
+                selectedScheduleId={selectedScheduleId}
+                bottomModalType={bottomModalType}
+              />
+            </View>
+          </BottomSheetModal>
+        </View>
+      </ScrollView>
     </BottomSheetModalProvider>
   );
 }
