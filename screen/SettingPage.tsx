@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,8 +11,6 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/Store';
 import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 
