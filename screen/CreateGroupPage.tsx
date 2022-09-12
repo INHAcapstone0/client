@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-import axios, {AxiosError, AxiosResponse} from 'axios';
+import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 
