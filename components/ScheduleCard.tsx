@@ -67,13 +67,9 @@ function ScheduleCard({
 
   useEffect(() => {
     AsyncStorage.getItem('user_id', (err, result1) => {
-      //user_id에 담긴 아이디 불러오기
-      console.log(result1);
-      if (result1 != undefined) {
+      if (result1 !== undefined && result1 !== null) {
         userId = result1;
-        console.log(item.owner_id);
-        if (userId == item.owner_id) {
-          console.log(true);
+        if (userId === item.owner_id) {
           setOwnerFlag(true);
         }
       }
@@ -129,7 +125,7 @@ function ScheduleCard({
                 closeMenu();
                 setSelectedScheduleId(item.id);
                 setBottomModalType('정산');
-                Alert.alert(`추후 업데이트 예정입니다`);
+                Alert.alert('추후 업데이트 예정입니다');
               }}>
               <Text style={styles.cardMenuItem}>정산하기</Text>
             </MenuItem>

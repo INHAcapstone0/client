@@ -30,7 +30,8 @@ function ParticipantCard({item}: ParticipantCardProps) {
   return (
     <View style={styles.card}>
       <Text style={styles.userName}>
-        <Image style={styles.userImage} source={{uri: item.User.img_url}} />{' '}
+        <Image style={styles.userImage} source={{uri: item.User.img_url}} />
+        {'   '}
         {item.User.name}
       </Text>
     </View>

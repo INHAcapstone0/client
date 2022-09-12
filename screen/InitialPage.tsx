@@ -56,7 +56,7 @@ function InitialPage({navigation}: any) {
         options={{
           headerShown: false,
           tabBarLabel: '홈',
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({color}: any) => (
             <AntDesign name="home" color={color} size={26} />
           ),
         }}
@@ -67,7 +67,7 @@ function InitialPage({navigation}: any) {
         options={{
           headerShown: false,
           tabBarLabel: '정산',
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({color}: any) => (
             <AntDesign name="calculator" color={color} size={26} />
           ),
         }}
@@ -78,7 +78,7 @@ function InitialPage({navigation}: any) {
         options={{
           headerShown: false,
           tabBarLabel: '새그룹 생성',
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({color}: any) => (
             <AntDesign name="pluscircleo" color={color} size={26} />
           ),
         }}
@@ -89,7 +89,7 @@ function InitialPage({navigation}: any) {
         options={{
           headerShown: false,
           tabBarLabel: '알림',
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({color}: any) => (
             <MaterialCommunityIcons name="bell" color={color} size={26} />
           ),
         }}
@@ -100,7 +100,7 @@ function InitialPage({navigation}: any) {
         options={{
           headerShown: false,
           tabBarLabel: '세팅',
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({color}: any) => (
             <AntDesign name="setting" color={color} size={26} />
           ),
         }}

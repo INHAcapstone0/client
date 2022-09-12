@@ -126,23 +126,19 @@ function BottomComponent({
     }
   };
 
-  const getAllApprovedMembers = async () => {
+  const getAllReceipts = async () => {
     try {
       const params = {
         schedule_id: selectedScheduleId,
-        status: '승인',
       };
-
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-
-      const response = await axios.get('http://10.0.2.2:8002/participants', {
+      const response = await axios.get('http://10.0.2.2:8002/receipts', {
         params,
         headers,
       });
-
-      setApprovedAllMembersInfo(response.data);
+      setAllReceiptsInfo(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -169,18 +165,19 @@ function BottomComponent({
     try {
       const params = {
         schedule_id: selectedScheduleId,
+        status: '승인',
       };
 
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const response = await axios.get('http://10.0.2.2:8002/receipts', {
+      const response = await axios.get('http://10.0.2.2:8002/participants', {
         params,
         headers,
       });
 
-      setAllReceiptsInfo(response.data);
+      setApprovedAllMembersInfo(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -191,7 +188,9 @@ function BottomComponent({
       <View>
         <Text style={styles.modalTitle}>지출 요약 확인하기</Text>
         {allReceiptsInfo.map((item: any) => {
-          if (item != null) return <ReceiptCard key={item.id} item={item} />;
+          if (item != null) {
+            return <ReceiptCard key={item.id} item={item} />;
+          }
         })}
       </View>
     );
@@ -200,8 +199,9 @@ function BottomComponent({
       <View>
         <Text style={styles.modalTitle}>멤버 확인하기</Text>
         {approvedAllMembersInfo.map((item: any) => {
-          if (item != null)
+          if (item != null) {
             return <ParticipantCard key={item.participant_id} item={item} />;
+          }
         })}
       </View>
     );
