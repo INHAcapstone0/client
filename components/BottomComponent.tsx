@@ -36,6 +36,7 @@ import ReceiptCard from './ReceiptCard';
 interface BottomComponentProps {
   selectedScheduleId: any;
   bottomModalType: any;
+  closeBottomModal: () => void;
 }
 interface userType {
   createdAt: string;
@@ -52,6 +53,7 @@ interface userType {
 function BottomComponent({
   selectedScheduleId,
   bottomModalType,
+  closeBottomModal,
 }: BottomComponentProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -114,6 +116,9 @@ function BottomComponent({
       Alert.alert('알림', '그룹원 초대를 완료되었습니다', [
         {
           text: '확인',
+          onPress: () => {
+            closeBottomModal();
+          },
         },
       ]);
     } catch (err: any) {
