@@ -152,13 +152,14 @@ function CreateGroupPage({navigation}: any) {
         orderedDate[orderedDate.length - 1],
         selectedUsersId,
       );
+
       await axios.post(
         `http://10.0.2.2:8002/schedules`,
         {
           name: groupName,
           owner_id: ownerId,
-          startAt: orderedDate[0].replace(/\!/g, ''),
-          endAt: orderedDate[orderedDate.length - 1].replace(/\!/g, ''),
+          startAt: orderedDate[0].replace(/\-/g, ''),
+          endAt: orderedDate[orderedDate.length - 1].replace(/\-/g, ''),
           participants: selectedUsersId,
         },
         {
