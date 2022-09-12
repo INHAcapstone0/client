@@ -26,10 +26,7 @@ import BottomComponent from '../components/BottomComponent';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {
-  faPlaneDeparture,
-  faTriangleExclamation,
-} from '@fortawesome/free-solid-svg-icons';
+import {faPlaneDeparture} from '@fortawesome/free-solid-svg-icons';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
@@ -65,6 +62,7 @@ function HomePage({navigation}: any) {
         {params, headers},
       );
       setInfo(response.data);
+      setErrFlag(false);
     } catch (err: AxiosError | any) {
       console.log(err);
       if (err.response.status === 404) {
@@ -79,7 +77,6 @@ function HomePage({navigation}: any) {
 
   if (errFlag) {
     //갖고있는 스케줄이 0개일 경우
-    setErrFlag(false);
     return (
       <View style={styles.errScreen}>
         <FontAwesomeIcon
@@ -120,6 +117,7 @@ function HomePage({navigation}: any) {
                   key={selectedScheduleId}
                   selectedScheduleId={selectedScheduleId}
                   bottomModalType={bottomModalType}
+                  closeBottomModal={closeBottomModal}
                 />
               </BottomSheetScrollView>
             </BottomSheetModal>
@@ -128,42 +126,6 @@ function HomePage({navigation}: any) {
       </BottomSheetModalProvider>
     );
   }
-  return (
-    <BottomSheetModalProvider>
-      <ScrollView style={styles.inputWrapper}>
-        {info.map((item: any) => {
-          if (item != null) {
-            return (
-              <ScheduleCard
-                key={item.id}
-                item={item}
-                setSelectedScheduleId={setSelectedScheduleId}
-                setBottomModalType={setBottomModalType}
-                openBottomModal={openBottomModal}
-                doRefresh={doRefresh}
-              />
-            );
-          }
-        })}
-        <View>
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            index={0}
-            snapPoints={snapPoints}
-            style={styles.bottomModal}>
-            <BottomSheetScrollView>
-              <BottomComponent
-                key={selectedScheduleId}
-                selectedScheduleId={selectedScheduleId}
-                bottomModalType={bottomModalType}
-                closeBottomModal={closeBottomModal}
-              />
-            </BottomSheetScrollView>
-          </BottomSheetModal>
-        </View>
-      </ScrollView>
-    </BottomSheetModalProvider>
-  );
 }
 
 const styles = StyleSheet.create({
@@ -185,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomModal: {
-    backgroundColor: 'white', // <==== HERE
+    backgroundColor: 'white',
     borderRadius: 24,
     shadowColor: 'black',
     shadowOffset: {

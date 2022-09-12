@@ -24,6 +24,7 @@ import {
   Dimensions,
   TouchableHighlight,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -65,8 +66,6 @@ function BottomComponent({
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
 
   useEffect(() => {
-    getAllReceipts();
-    getAllApprovedMembers();
     getAllUsers();
   }, []);
 
@@ -164,31 +163,6 @@ function BottomComponent({
     }
   };
 
-  const getAllReceipts = async () => {
-    try {
-      const params = {
-        schedule_id: selectedScheduleId,
-        status: '승인',
-      };
-
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      const response = await axios.get('http://10.0.2.2:8002/participants', {
-        params,
-        headers,
-      });
-
-      setApprovedAllMembersInfo(response.data);
-    } catch (err: AxiosError | any) {
-      console.log(err);
-      if (err.response.status === 404) {
-        setErrFlag(true);
-      }
-    }
-  };
-
   if (bottomModalType === '지출요약') {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
@@ -216,16 +190,6 @@ function BottomComponent({
         </View>
       );
     }
-    return (
-      <View>
-        <Text style={styles.modalTitle}>지출 요약 확인하기</Text>
-        {allReceiptsInfo.map((item: any) => {
-          if (item != null) {
-            return <ReceiptCard key={item.id} item={item} />;
-          }
-        })}
-      </View>
-    );
   } else if (bottomModalType === '멤버목록_멤버') {
     return (
       <View>
@@ -337,6 +301,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Jalnan',
     color: '#4D483D',
+  },
   textInput: {
     padding: 5,
     borderBottomWidth: 0.3,
