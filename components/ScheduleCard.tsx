@@ -45,13 +45,8 @@ function ScheduleCard({
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
-  /*
-  const [userId,setUserId] = useSelector(
-    (state: RootState) => state.persist.user.id,
-  );
-  */
 
-  var userId: string;
+  const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -66,15 +61,13 @@ function ScheduleCard({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('user_id', (err, result1) => {
-      if (result1 !== undefined && result1 !== null) {
-        userId = result1;
-        if (userId === item.owner_id) {
-          setOwnerFlag(true);
-        }
-      }
-    });
+    if (userId === item.owner_id) {
+      setOwnerFlag(true);
+    }
 
+    if (totalPrice == null) {
+      setTotalPrice(0);
+    }
     if (totalPrice == null) {
       setTotalPrice(0);
     }
@@ -148,7 +141,7 @@ function ScheduleCard({
                             `http://10.0.2.2:8002/schedules/${item.id}`,
                             {headers},
                           );
-                          //doRefresh();
+                          doRefresh();
                         } catch (err) {
                           console.log(err);
                         }
