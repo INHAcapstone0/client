@@ -30,9 +30,7 @@ function HomePage({navigation}: any) {
     (state: RootState) => state.persist.user.accessToken,
   );
   const [info, setInfo] = useState([]);
-
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
-
   const [bottomModalType, setBottomModalType] = useState('');
 
   const getSelectedScheduleId = (id: string) => {
