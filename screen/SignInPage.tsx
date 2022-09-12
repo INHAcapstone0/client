@@ -35,7 +35,6 @@ function SignInPage({navigation}: any) {
     setPassword(text.trim());
   }, []);
   const onSubmit = async () => {
-    console.log('로그인');
     if (loading) {
       return;
     }
@@ -59,9 +58,6 @@ function SignInPage({navigation}: any) {
         }),
       );
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
-      const jsonValue = JSON.stringify(response.data.user_id);
-      AsyncStorage.setItem('user_id', response.data.user_id);
-      AsyncStorage.setItem('accessToken', response.data.data.accessToken);
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
       Alert.alert(error.response.data.msg);
