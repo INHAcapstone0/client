@@ -19,6 +19,7 @@ import axios from 'axios';
 import BottomSheet, {
   BottomSheetModal,
   BottomSheetModalProvider,
+  BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import ScheduleCard from '../components/ScheduleCard';
 import BottomComponent from '../components/BottomComponent';
@@ -41,6 +42,8 @@ function HomePage({navigation}: any) {
     setBottomModalType(modalType);
   };
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
   };
@@ -75,12 +78,12 @@ function HomePage({navigation}: any) {
     getAllSchedules();
     /*
     AsyncStorage.getItem('user_id', (err, result1) => { //user_id에 담긴 아이디 불러오기
-      
+
       result1 = '4008b5cb-c626-4a3a-9490-08572249ccf4'; //test0 계정
       const params ={
         status: "승인"
       };
-    
+
       //엑세스토큰 먼저 확인하고 id 가져오기 - 추후수정
       //엑세스 토큰 만료되면 refresh로 액세스토큰 만들어주기
       AsyncStorage.getItem('accessToken', (err, result2) => {
@@ -88,7 +91,7 @@ function HomePage({navigation}: any) {
         const headers ={
         Authorization : `Bearer ${result2}`
       }
-      
+
       axios.get("http://10.0.2.2:8002/schedules/status", {params,headers})
       .then(res=>setInfo(res.data))
       .catch(err=>console.log('3 : ',err));
@@ -119,13 +122,13 @@ function HomePage({navigation}: any) {
             index={0}
             snapPoints={snapPoints}
             style={styles.bottomModal}>
-            <View>
+            <BottomSheetScrollView>
               <BottomComponent
                 key={selectedScheduleId}
                 selectedScheduleId={selectedScheduleId}
                 bottomModalType={bottomModalType}
               />
-            </View>
+            </BottomSheetScrollView>
           </BottomSheetModal>
         </View>
       </ScrollView>
