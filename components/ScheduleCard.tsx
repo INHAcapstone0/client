@@ -45,13 +45,8 @@ function ScheduleCard({
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
-  /*
-  const [userId,setUserId] = useSelector(
-    (state: RootState) => state.persist.user.id,
-  );
-  */
 
-  var userId: string;
+  const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -66,19 +61,13 @@ function ScheduleCard({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('user_id', (err, result1) => {
-      //user_id에 담긴 아이디 불러오기
-      console.log(result1);
-      if (result1 != undefined) {
-        userId = result1;
-        console.log(item.owner_id);
-        if (userId == item.owner_id) {
-          console.log(true);
-          setOwnerFlag(true);
-        }
-      }
-    });
+    if (userId === item.owner_id) {
+      setOwnerFlag(true);
+    }
 
+    if (totalPrice == null) {
+      setTotalPrice(0);
+    }
     if (totalPrice == null) {
       setTotalPrice(0);
     }
@@ -129,7 +118,7 @@ function ScheduleCard({
                 closeMenu();
                 setSelectedScheduleId(item.id);
                 setBottomModalType('정산');
-                Alert.alert(`추후 업데이트 예정입니다`);
+                Alert.alert('추후 업데이트 예정입니다');
               }}>
               <Text style={styles.cardMenuItem}>정산하기</Text>
             </MenuItem>
@@ -152,7 +141,7 @@ function ScheduleCard({
                             `http://10.0.2.2:8002/schedules/${item.id}`,
                             {headers},
                           );
-                          //doRefresh();
+                          doRefresh();
                         } catch (err) {
                           console.log(err);
                         }
@@ -269,7 +258,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     borderColor: '#4D483D',
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     width: Dimensions.get('window').width * 0.9,
     height: 200,
     marginBottom: 20,

@@ -10,10 +10,7 @@ import {
   Alert,
   Button,
 } from 'react-native';
-import {
-  faCircleQuestion,
-  IconDefinition,
-} from '@fortawesome/free-regular-svg-icons';
+import {faCircleQuestion} from '@fortawesome/free-regular-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
 interface ReceiptCardProps {
@@ -25,7 +22,7 @@ function ReceiptCard({item}: ReceiptCardProps) {
 
   useEffect(() => {
     setPayDate(item.payDate.substring(0, 10));
-  }, []);
+  }, [item.payDate]);
 
   if (item.category === '기타') {
     return (
@@ -46,7 +43,7 @@ function ReceiptCard({item}: ReceiptCardProps) {
       </View>
     );
   } else {
-    return <View></View>;
+    return <View />;
   }
 }
 
