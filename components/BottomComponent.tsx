@@ -101,7 +101,7 @@ function BottomComponent({
       console.log(selectedUsersId);
 
       await axios.post(
-        `http://10.0.2.2:8002/participants`,
+        'http://10.0.2.2:8002/participants',
         {
           participant_ids: selectedUsersId,
           schedule_id: selectedScheduleId,
@@ -138,6 +138,28 @@ function BottomComponent({
         headers,
       });
       setAllReceiptsInfo(response.data);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+      if (err.response.status === 404) {
+        setErrFlag(true);
+      }
+    }
+  };
+
+  const getApprovedAllMembersInfo = async () => {
+    try {
+      console.log('schedule_id', selectedScheduleId);
+      const params = {
+        schedule_id: selectedScheduleId,
+      };
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.get('http://10.0.2.2:8002/participants', {
+        params,
+        headers,
+      });
+      setApprovedAllMembersInfo(response.data);
     } catch (err: AxiosError | any) {
       console.log(err);
       if (err.response.status === 404) {
@@ -191,6 +213,11 @@ function BottomComponent({
       );
     }
   } else if (bottomModalType === '멤버목록_멤버') {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      getApprovedAllMembersInfo();
+    }, []);
+
     return (
       <View>
         <Text style={styles.modalTitle}>멤버 확인하기</Text>

@@ -50,6 +50,7 @@ function HomePage({navigation}: any) {
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
+    console.log('accessTocken : ', accessToken);
     try {
       const params = {
         status: '승인',

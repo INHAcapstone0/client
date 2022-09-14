@@ -20,9 +20,10 @@ function ReceiptCard({item}: ReceiptCardProps) {
   const [payDate, setPayDate] = useState('');
   const [iconType, setIconType] = useState();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setPayDate(item.payDate.substring(0, 10));
-  }, [item.payDate]);
+  });
 
   if (item.category === '기타') {
     return (
