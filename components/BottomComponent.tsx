@@ -148,7 +148,6 @@ function BottomComponent({
 
   const getApprovedAllMembersInfo = async () => {
     try {
-      console.log('schedule_id', selectedScheduleId);
       const params = {
         schedule_id: selectedScheduleId,
       };
@@ -189,7 +188,7 @@ function BottomComponent({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       getAllReceipts();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
     if (errFlag) {
       //등록된 영수증이 0개일 경우

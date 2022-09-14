@@ -213,23 +213,15 @@ function ScheduleCard({
                           const headers = {
                             Authorization: `Bearer ${accessToken}`,
                           };
-                          console.log('user_id : ', userId);
 
-                          AsyncStorage.getItem(
-                            'user_id',
-                            async (err, result1) => {
-                              //user_id에 담긴 아이디 불러오기
-                              const response = await axios.delete(
-                                `http://10.0.2.2:8002/participants/${result1}/${item.id}`,
-                                {headers},
-                              );
-                              doRefresh();
-                            },
+                          const response = await axios.delete(
+                            `http://10.0.2.2:8002/participants/${userId}/${item.id}`,
+                            {headers},
                           );
+                          doRefresh();
                         } catch (err) {
                           console.log(err);
                         }
-                        //refresh 필요
                       },
                       style: 'destructive',
                     },
