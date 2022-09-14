@@ -16,6 +16,9 @@ import {
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface alarmType {
   alarm_type: string;
@@ -56,23 +59,16 @@ function AlarmPage({navigation}: any) {
   };
 
   return (
-    <View style={styles.alarmPageWrapper}>
-      <Text style={styles.alarmLabel}>알람</Text>
+    <View style={styles.alarmPage}>
       <ScrollView>
-        {allAlarms.map((alarm: any) => {
+        {allAlarms.map((alarm: alarmType) => {
           if (alarm.alarm_type === 'invite') {
             return (
               <TouchableOpacity
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
-                />
+                <FontAwesome name="envelope-o" color="black" size={40} />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -84,13 +80,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
-                />
+                <Ionicons name="receipt-outline" color="black" size={40} />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -102,12 +92,10 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
+                <MaterialCommunityIcons
+                  name="calendar-arrow-right"
+                  color="black"
+                  size={40}
                 />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
@@ -120,12 +108,10 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
+                <MaterialCommunityIcons
+                  name="calendar-check"
+                  color="black"
+                  size={40}
                 />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
@@ -138,13 +124,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
-                />
+                <FontAwesome name="check" color="black" size={40} />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -156,13 +136,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Image
-                  key={alarm.id}
-                  style={styles.alarmImage}
-                  source={{
-                    uri: 'https://lh5.googleusercontent.com/p/AF1QipM_lDM0kwc5PF7mehKIdu4UyMyUTzBYlrl8IAsB=w408-h544-k-no',
-                  }}
-                />
+                <MaterialCommunityIcons name="bell" color="black" size={40} />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}.
                 </Text>
@@ -175,13 +149,8 @@ function AlarmPage({navigation}: any) {
   );
 }
 const styles = StyleSheet.create({
-  alarmPageWrapper: {
+  alarmPage: {
     margin: 20,
-  },
-  alarmLabel: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 20,
   },
   alarmWrapper: {
     paddingTop: 8,
@@ -199,7 +168,7 @@ const styles = StyleSheet.create({
   },
   alarmText: {
     width: '100%',
-    paddingLeft: 10,
+    paddingLeft: 20,
     fontSize: 13,
     fontWeight: '400',
     color: '#000000',
