@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "528429887911",
+    "project_id": "fcmtest-6001a",
+    "storage_bucket": "fcmtest-6001a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:528429887911:android:c4252ed48c4272f6308682",
+        "android_client_info": {
+          "package_name": "com.capstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "528429887911-3q5hhduuhc749fdo3h6l3sv7foonf135.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBZd6X57x6s33TCtM53pF9D1AQ1i_FwBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "528429887911-3q5hhduuhc749fdo3h6l3sv7foonf135.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
