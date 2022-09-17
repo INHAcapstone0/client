@@ -15,6 +15,10 @@ import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
+import {
+  requestUserPermission,
+  notificationListner,
+} from './utils/push_notification_helper';
 const Stack = createStackNavigator();
 
 function AppInner() {
@@ -22,6 +26,11 @@ function AppInner() {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
+
+  useEffect(() => {
+    requestUserPermission();
+    notificationListner();
+  }, []);
 
   useEffect(() => {
     axios.interceptors.response.use(
