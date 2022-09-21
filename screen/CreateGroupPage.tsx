@@ -153,7 +153,7 @@ function CreateGroupPage({navigation}: any) {
         selectedUsersId,
       );
 
-      await axios.post(
+      const response = await axios.post(
         `http://10.0.2.2:8002/schedules`,
         {
           name: groupName,
@@ -168,6 +168,7 @@ function CreateGroupPage({navigation}: any) {
           },
         },
       );
+      console.log(response.data);
       Alert.alert('알림', '그룹생성이 완료되었습니다', [
         {
           text: '확인',

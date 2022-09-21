@@ -13,6 +13,7 @@ import SettingPage from './screen/SettingPage';
 import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
+import CameraPage from './screen/CameraPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import {
@@ -28,6 +29,7 @@ function AppInner() {
   );
 
   useEffect(() => {
+    console.log(1);
     requestUserPermission();
     notificationListner();
   }, []);
@@ -86,6 +88,7 @@ function AppInner() {
         <Stack.Screen name="CreateGroupPage" component={CreateGroupPage} />
         <Stack.Screen name="AlarmPage" component={AlarmPage} />
         <Stack.Screen name="SettingPage" component={SettingPage} />
+        <Stack.Screen name="CameraPage" component={CameraPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

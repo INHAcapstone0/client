@@ -57,6 +57,7 @@ function SignInPage({navigation}: any) {
           accessToken: response.data.data.accessToken,
         }),
       );
+      console.log(response.data.data);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
