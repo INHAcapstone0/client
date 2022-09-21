@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {RNCamera} from 'react-native-camera';
@@ -28,6 +29,7 @@ function CameraPage({navigation}: any) {
       const data = await takePicture();
       const filePath = data.uri;
       console.log(filePath);
+      navigation.navigate('CapturePage', {imgUrl: filePath});
       //   const newFilePath = RNFS.ExternalDirectoryPath + '.jpg';
       //   RNFS.moveFile(filePath,newFilePath).then()
     } catch (err: any) {
@@ -57,9 +59,9 @@ function CameraPage({navigation}: any) {
         //   console.log(barcodes);
         // }}
       />
-      <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center'}}>
-        <TouchableOpacity onPress={captureImg} style={styles.capture}>
-          <Text style={{fontSize: 14}}> 촬영 </Text>
+      <View style={styles.captureContainer}>
+        <TouchableOpacity onPress={captureImg} style={styles.captureButton}>
+          <Text style={styles.captureLabel}> 촬영 </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -77,14 +79,23 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  capture: {
+  captureContainer: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  captureButton: {
     flex: 0,
     backgroundColor: '#fff',
-    borderRadius: 5,
+    borderRadius: 25,
     padding: 15,
     paddingHorizontal: 20,
     alignSelf: 'center',
-    margin: 20,
+    marginTop: 30,
+  },
+  captureLabel: {
+    fontSize: 17,
+    fontWeight: 'bold',
   },
 });
 
