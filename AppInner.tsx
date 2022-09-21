@@ -14,6 +14,7 @@ import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
 import CameraPage from './screen/CameraPage';
+import CapturePage from './screen/CapturePage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import {
@@ -89,6 +90,7 @@ function AppInner() {
         <Stack.Screen name="AlarmPage" component={AlarmPage} />
         <Stack.Screen name="SettingPage" component={SettingPage} />
         <Stack.Screen name="CameraPage" component={CameraPage} />
+        <Stack.Screen name="CapturePage" component={CapturePage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
