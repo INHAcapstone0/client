@@ -15,10 +15,11 @@ async function requestUserPermission() {
 
 async function getFCMToken() {
   const fcmToken = await AsyncStorage.getItem('fcmToken');
+  console.log('fcmToken is : ', fcmToken);
   if (!fcmToken) {
     try {
       const fcmToken = await messaging().getToken();
-      console.log(' is : ', fcmToken);
+      console.log('fcmToken is : ', fcmToken);
       if (fcmToken) {
         AsyncStorage.setItem('fcmToken', fcmToken);
       }
