@@ -30,7 +30,6 @@ function AppInner() {
   );
 
   useEffect(() => {
-    console.log(1);
     requestUserPermission();
     notificationListner();
   }, []);
