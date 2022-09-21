@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
 

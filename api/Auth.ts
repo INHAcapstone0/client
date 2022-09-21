@@ -1,10 +1,12 @@
 import axios, {AxiosResponse} from 'axios';
+import {REACT_APP_API_URL} from '@env';
 
 async function emailCheck(
   email: string,
   success: (data: AxiosResponse) => void,
 ) {
   try {
+    console.log(REACT_APP_API_URL);
     const response = await axios.get(`http://10.0.2.2:8002/auth/check/email`, {
       params: {email: email},
     });
@@ -19,6 +21,7 @@ async function nickNameCheck(
   success: (data: AxiosResponse) => void,
 ) {
   try {
+    console.log(1);
     const response = await axios.get(`http://10.0.2.2:8002/auth/check/name`, {
       params: {name: name},
     });

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios, {AxiosError, AxiosResponse} from 'axios';
+import {REACT_APP_API_URL} from '@env';
 import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
 
 function SignUpPage({navigation}: any) {
