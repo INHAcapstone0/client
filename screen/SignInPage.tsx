@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
 
@@ -57,6 +57,7 @@ function SignInPage({navigation}: any) {
           accessToken: response.data.data.accessToken,
         }),
       );
+      console.log(response.data.data);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios, {AxiosError, AxiosResponse} from 'axios';
+import {REACT_APP_API_URL} from '@env';
 import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
 
 function SignUpPage({navigation}: any) {
@@ -90,6 +91,7 @@ function SignUpPage({navigation}: any) {
     }
     setLoading(true);
     signUp(email, name, password, (response: AxiosResponse) => {
+      console.log(response.data);
       Alert.alert('알림', '회원가입 되었습니다.', [
         {
           text: '확인',
