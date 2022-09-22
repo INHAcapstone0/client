@@ -26,7 +26,7 @@ import BottomComponent from '../components/BottomComponent';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faPlaneDeparture} from '@fortawesome/free-solid-svg-icons';
+import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
@@ -50,6 +50,7 @@ function HomePage({navigation}: any) {
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
+    console.log('accessTocken : ', accessToken);
     try {
       const params = {
         status: '승인',
@@ -79,12 +80,8 @@ function HomePage({navigation}: any) {
     //갖고있는 스케줄이 0개일 경우
     return (
       <View style={styles.errScreen}>
-        <FontAwesomeIcon
-          style={styles.errIcon}
-          icon={faPlaneDeparture}
-          size={80}
-        />
-        <Text style={styles.errMsg}>보유하고 계신 일정이 없으시네요</Text>
+        <FontAwesomeIcon style={styles.errIcon} icon={faSuitcase} size={80} />
+        <Text style={styles.errMsg}>{'\n'}보유하고 계신 일정이 없으시네요</Text>
         <Text style={styles.errMsg}>여행 일정을 등록해 보세요!</Text>
       </View>
     );
