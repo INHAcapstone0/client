@@ -30,7 +30,7 @@ interface userType {
   deletedAt: null;
   email: string;
   id: string;
-  img_url: string;
+  img_url: null;
   is_locked: false;
   login_failed_cnt: number;
   name: string;
@@ -58,7 +58,7 @@ function CreateGroupPage({navigation}: any) {
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
-        'http://10.0.2.2:8002/users?exceptMe=true',
+        'http://146.56.188.32:8002/users?exceptMe=true',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -153,8 +153,8 @@ function CreateGroupPage({navigation}: any) {
         selectedUsersId,
       );
 
-      const response = await axios.post(
-        `http://10.0.2.2:8002/schedules`,
+      await axios.post(
+        'http://146.56.188.32:8002/schedules',
         {
           name: groupName,
           owner_id: ownerId,
@@ -168,7 +168,6 @@ function CreateGroupPage({navigation}: any) {
           },
         },
       );
-      console.log(response.data);
       Alert.alert('알림', '그룹생성이 완료되었습니다', [
         {
           text: '확인',
@@ -236,7 +235,7 @@ function CreateGroupPage({navigation}: any) {
                     key={user.id}
                     style={styles.selectedUserImage}
                     source={{
-                      uri: user.img_url,
+                      uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
                     }}
                   />
                   <Text style={styles.selectedUserName} key={user.id}>
@@ -270,14 +269,11 @@ function CreateGroupPage({navigation}: any) {
                       <View style={styles.userWrapper}>
                         <Image
                           style={styles.userImage}
-                          key={user.id}
                           source={{
-                            uri: user.img_url,
+                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
                           }}
                         />
-                        <Text key={user.id} style={styles.userName}>
-                          {user.name}
-                        </Text>
+                        <Text style={styles.userName}>{user.name}</Text>
                       </View>
                     </TouchableHighlight>
                   );

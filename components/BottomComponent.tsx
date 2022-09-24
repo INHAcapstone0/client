@@ -133,7 +133,7 @@ function BottomComponent({
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get('http://10.0.2.2:8002/receipts', {
+      const response = await axios.get('http://146.56.188.32:8002/receipts', {
         params,
         headers,
       });
@@ -154,10 +154,13 @@ function BottomComponent({
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get('http://10.0.2.2:8002/participants', {
-        params,
-        headers,
-      });
+      const response = await axios.get(
+        'http://146.56.188.32:8002/participants',
+        {
+          params,
+          headers,
+        },
+      );
       setApprovedAllMembersInfo(response.data);
     } catch (err: AxiosError | any) {
       console.log(err);

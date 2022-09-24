@@ -46,10 +46,13 @@ function SignInPage({navigation}: any) {
     }
     try {
       setLoading(true);
-      const response = await axios.post('http://10.0.2.2:8002/auth/login', {
-        email: email,
-        password: password,
-      });
+      const response = await axios.post(
+        'http://146.56.188.32:8002/auth/login',
+        {
+          email: email,
+          password: password,
+        },
+      );
       dispatch(
         userActions.setUser({
           name: response.data.user,

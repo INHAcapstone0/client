@@ -50,7 +50,6 @@ function HomePage({navigation}: any) {
   const snapPoints = useMemo(() => ['80%'], []);
 
   const getAllSchedules = async () => {
-    console.log('accessTocken : ', accessToken);
     try {
       const params = {
         status: '승인',
@@ -59,7 +58,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        'http://10.0.2.2:8002/schedules/status',
+        'http://146.56.188.32:8002/schedules/status',
         {params, headers},
       );
       setInfo(response.data);
@@ -99,6 +98,7 @@ function HomePage({navigation}: any) {
                   setBottomModalType={setBottomModalType}
                   openBottomModal={openBottomModal}
                   doRefresh={getAllSchedules}
+                  navigation={navigation}
                 />
               );
             }
