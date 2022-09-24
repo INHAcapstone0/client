@@ -26,14 +26,16 @@ import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
-import {string} from 'prop-types';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
 interface ScheduleCardProps {
   item: any;
-  setSelectedScheduleId: any;
-  setBottomModalType: any;
-  openBottomModal: any;
-  doRefresh: any;
+  setSelectedScheduleId: (scheduleId: any) => void;
+  setBottomModalType: (modalType: string) => void;
+  openBottomModal: () => void;
+  doRefresh: () => void;
+  navigation: any;
 }
 function ScheduleCard({
   item,
@@ -41,6 +43,7 @@ function ScheduleCard({
   setBottomModalType,
   openBottomModal,
   doRefresh,
+  navigation: {navigate},
 }: ScheduleCardProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -60,14 +63,17 @@ function ScheduleCard({
 
   const [visible, setVisible] = useState(false);
 
+  const uploadReceipt = () => {
+    console.log('upload Receipt');
+  };
+  const showSummary = () => {
+    console.log('showSummary');
+  };
   useEffect(() => {
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
 
-    if (totalPrice == null) {
-      setTotalPrice(0);
-    }
     if (totalPrice == null) {
       setTotalPrice(0);
     }
@@ -138,7 +144,7 @@ function ScheduleCard({
                             Authorization: `Bearer ${accessToken}`,
                           };
                           const response = await axios.delete(
-                            `http://10.0.2.2:8002/schedules/${item.id}`,
+                            `http://146.56.188.32:8002/schedules/${item.id}`,
                             {headers},
                           );
                           doRefresh();
@@ -163,7 +169,34 @@ function ScheduleCard({
         <Text style={styles.cardDate}>
           {startDate} ~ {endDate}
         </Text>
-        <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+        <View style={styles.cardBody}>
+          <Text style={styles.cardTotalPrice}>
+            {'\n'}
+            {totalPrice} 원{'\n'}
+          </Text>
+          <View style={styles.buttonArea}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.button}
+              onPress={() => {
+                showSummary();
+                navigate('SelectReceiptPage');
+              }}>
+              <Text style={styles.buttonText}>영수증 등록</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.button}
+              onPress={() => {
+                showSummary();
+                navigate('ExpenseHistoryPage', {
+                  schedule: item,
+                });
+              }}>
+              <Text style={styles.buttonText}>지출 내역</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     );
   } else {
@@ -215,7 +248,7 @@ function ScheduleCard({
                           };
 
                           const response = await axios.delete(
-                            `http://10.0.2.2:8002/participants/${userId}/${item.id}`,
+                            `http://146.56.188.32:8002/participants/${userId}/${item.id}`,
                             {headers},
                           );
                           doRefresh();
@@ -239,7 +272,34 @@ function ScheduleCard({
         <Text style={styles.cardDate}>
           {startDate} ~ {endDate}
         </Text>
-        <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+        <View style={styles.cardBody}>
+          <Text style={styles.cardTotalPrice}>
+            {'\n'}
+            {totalPrice} 원{'\n'}
+          </Text>
+          <View style={styles.buttonArea}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.button}
+              onPress={() => {
+                showSummary();
+                navigate('SelectReceiptPage');
+              }}>
+              <Text style={styles.buttonText}>영수증 등록</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.button}
+              onPress={() => {
+                showSummary();
+                navigate('ExpenseHistoryPage', {
+                  schedule: item.id,
+                });
+              }}>
+              <Text style={styles.buttonText}>지출 내역</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     );
   }
@@ -258,6 +318,12 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  cardBody: {
+    height: 150,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardTitle: {
     fontSize: 16,
@@ -287,11 +353,30 @@ const styles = StyleSheet.create({
     color: '#4D483D',
     marginLeft: 7,
     fontFamily: 'Jalnan',
+    fontSize: 25,
   },
   cardMenuIcon: {
     color: '#4D483D',
     marginTop: 12,
     marginRight: 8,
+  },
+  buttonArea: {
+    width: Dimensions.get('window').width * 0.7,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    width: 130,
+    height: 40,
+    borderRadius: 5,
+    backgroundColor: '#4D483D',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontFamily: 'Jalnan',
   },
 });
 

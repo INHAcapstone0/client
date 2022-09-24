@@ -10,6 +10,7 @@ import {
   Alert,
   Button,
 } from 'react-native';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faCrown, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 
 interface ParticipantCardProps {

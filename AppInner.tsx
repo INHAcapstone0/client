@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, StackActions} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
@@ -15,6 +15,8 @@ import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
 import CameraPage from './screen/CameraPage';
 import CapturePage from './screen/CapturePage';
+import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
+import SelectReceiptPage from './screen/SelectReceiptPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import {
@@ -54,7 +56,7 @@ function AppInner() {
           const refreshToken = await EncryptedStorage.getItem('refreshToken');
           // token refresh 요청
           const {data} = await axios.post(
-            `http://10.0.2.2:8002/users/auth/refersh`, // token refresh api
+            'http://10.0.2.2:8002/users/auth/refresh', // token refresh api
             {},
             {
               headers: {
@@ -90,6 +92,11 @@ function AppInner() {
         <Stack.Screen name="SettingPage" component={SettingPage} />
         <Stack.Screen name="CameraPage" component={CameraPage} />
         <Stack.Screen name="CapturePage" component={CapturePage} />
+        <Stack.Screen
+          name="ExpenseHistoryPage"
+          component={ExpenseHistoryPage}
+        />
+        <Stack.Screen name="SelectReceiptPage" component={SelectReceiptPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -17,7 +17,6 @@ import {RNCamera} from 'react-native-camera';
 import {useCamera} from 'react-native-camera-hooks';
 import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
-import RNFS from 'react-native-fs';
 
 function CameraPage({navigation}: any) {
   const dispatch = useAppDispatch();
