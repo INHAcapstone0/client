@@ -12,6 +12,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
@@ -44,7 +45,7 @@ function AlarmPage({navigation}: any) {
   const getAllAlarms = async () => {
     try {
       const response = await axios.get(
-        `http://10.0.2.2:8002/alarms?user_id=${userId}`,
+        `http://146.56.188.32:8002/alarms?user_id=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -150,7 +151,10 @@ function AlarmPage({navigation}: any) {
 }
 const styles = StyleSheet.create({
   alarmPage: {
-    margin: 20,
+    padding: 20,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
   },
   alarmWrapper: {
     paddingTop: 8,

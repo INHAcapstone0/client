@@ -122,16 +122,13 @@ function CreateGroupPage({navigation}: any) {
 
   const addToGroupMember = (user: userType) => (event: any) => {
     if (selectedUsers.includes(user)) {
-      return;
+      const newSelectedUsers = selectedUsers.filter(
+        selectedUser => selectedUser.id !== user.id,
+      );
+      setSelectedUseres([...newSelectedUsers]);
+    } else {
+      setSelectedUseres([...selectedUsers, user]);
     }
-    setSelectedUseres([...selectedUsers, user]);
-  };
-
-  const removeToGroupMember = (user: userType) => (event: any) => {
-    const newSelectedUsers = selectedUsers.filter(
-      selectedUser => selectedUser.id !== user.id,
-    );
-    setSelectedUseres(newSelectedUsers);
   };
 
   const createGroup = async () => {
@@ -153,7 +150,7 @@ function CreateGroupPage({navigation}: any) {
         selectedUsersId,
       );
 
-      await axios.post(
+      const result = await axios.post(
         'http://146.56.188.32:8002/schedules',
         {
           name: groupName,
@@ -168,6 +165,7 @@ function CreateGroupPage({navigation}: any) {
           },
         },
       );
+      console.log(result);
       Alert.alert('알림', '그룹생성이 완료되었습니다', [
         {
           text: '확인',
@@ -224,27 +222,6 @@ function CreateGroupPage({navigation}: any) {
         </View>
         <View style={styles.elementWrapper}>
           <Text style={styles.elementLabel}>그룹원 선택</Text>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
-            <View style={styles.selectedUserContainer}>
-              {selectedUsers.map(user => (
-                <TouchableOpacity
-                  style={styles.selectedUserWrapper}
-                  onPress={removeToGroupMember(user)}
-                  key={user.id}>
-                  <Image
-                    key={user.id}
-                    style={styles.selectedUserImage}
-                    source={{
-                      uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
-                    }}
-                  />
-                  <Text style={styles.selectedUserName} key={user.id}>
-                    {user.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
           <View style={styles.memberInvitation}>
             <TextInput
               style={styles.serchTextInput}
@@ -274,6 +251,17 @@ function CreateGroupPage({navigation}: any) {
                           }}
                         />
                         <Text style={styles.userName}>{user.name}</Text>
+                        {selectedUsers.includes(user) ? (
+                          <Image
+                            style={styles.checkButton}
+                            source={require('../resources/icons/CircleCheck.png')}
+                          />
+                        ) : (
+                          <Image
+                            style={styles.checkButton}
+                            source={require('../resources/icons/Circle.png')}
+                          />
+                        )}
                       </View>
                     </TouchableHighlight>
                   );
@@ -296,6 +284,7 @@ const styles = StyleSheet.create({
     borderColor: '#4D483D',
   },
   groupCreateWrapper: {
+    backgroundColor: 'white',
     padding: 20,
   },
   elementWrapper: {
@@ -308,7 +297,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   calendar: {
-    borderColor: '#4D483D',
+    borderWidth: 0.9,
+    // borderColor: 'white',
+    // backgroundColor: '#FFDCFF',
   },
   memberInvitation: {
     minHeight: 500,
@@ -372,6 +363,10 @@ const styles = StyleSheet.create({
   },
   groupCreateButtonText: {
     color: 'white',
+  },
+  checkButton: {
+    position: 'absolute',
+    right: 17,
   },
 });
 export default CreateGroupPage;

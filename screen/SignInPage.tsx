@@ -15,6 +15,10 @@ import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
+import {
+  requestUserPermission,
+  notificationListner,
+} from '../utils/push_notification_helper';
 
 function SignInPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -53,6 +57,10 @@ function SignInPage({navigation}: any) {
           password: password,
         },
       );
+      EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
+      EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      requestUserPermission();
+      notificationListner();
       dispatch(
         userActions.setUser({
           name: response.data.user,
@@ -61,7 +69,6 @@ function SignInPage({navigation}: any) {
         }),
       );
       console.log(response.data.data);
-      EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
       Alert.alert(error.response.data.msg);
