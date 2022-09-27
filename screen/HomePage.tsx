@@ -128,6 +128,9 @@ function HomePage({navigation}: any) {
 const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
   },
   label: {
     fontWeight: 'bold',
@@ -162,6 +165,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
   },
   errMsg: {
     fontSize: 20,

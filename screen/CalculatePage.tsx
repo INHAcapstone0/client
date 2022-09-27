@@ -12,6 +12,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 
 const dummyData1 = [
@@ -107,6 +108,9 @@ const styles = StyleSheet.create({
   calculatePage: {
     paddingLeft: 20,
     paddingRight: 20,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'white',
   },
   calculateContainer: {
     paddingBottom: 20,
