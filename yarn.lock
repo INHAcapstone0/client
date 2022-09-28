@@ -6807,6 +6807,11 @@
   "resolved" "https://registry.npmjs.org/react-native-keyboard-aware-scrollview/-/react-native-keyboard-aware-scrollview-2.1.0.tgz"
   "version" "2.1.0"
 
+"react-native-login-screen@^4.1.0":
+  "integrity" "sha512-pLr+p0qVNfzZpzJdrD6lQTFiQjD6yzaaDjRflotdrCNJdNqsvPAu0rWjp2PPDHIzctPKJ8P3MOCbNANTG+K3HA=="
+  "resolved" "https://registry.npmjs.org/react-native-login-screen/-/react-native-login-screen-4.1.0.tgz"
+  "version" "4.1.0"
+
 "react-native-material-menu@^2.0.0":
   "integrity" "sha512-SmO9PLE3E469EPbVWZqvdu6JGPPZIm7YjqDcWs2PPoY0k7w2V9tFo3BmmLXNzNZDCVCAi+PPSsL7h/5WkfHcSg=="
   "resolved" "https://registry.npmjs.org/react-native-material-menu/-/react-native-material-menu-2.0.0.tgz"
@@ -6880,6 +6885,11 @@
   "integrity" "sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw=="
   "resolved" "https://registry.npmjs.org/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz"
   "version" "1.0.5"
+
+"react-native-text-input-interactive@>= 0.1.3":
+  "integrity" "sha512-Y8oCZkfZ03EiSXcSV9AWns2Zr5XVNRMRQRFMFXBS5vpYvpfvR3fp9MSP4uNZ3aNi6i27qLQQOCoVXf8vZiMngg=="
+  "resolved" "https://registry.npmjs.org/react-native-text-input-interactive/-/react-native-text-input-interactive-0.1.4.tgz"
+  "version" "0.1.4"
 
 "react-native-vector-icons@*", "react-native-vector-icons@^9.2.0":
   "integrity" "sha512-wKYLaFuQST/chH3AJRjmOLoLy3JEs1JR6zMNgTaemFpNoXs0ztRnTxcxFD9xhX7cJe1/zoN5BpQYe7kL0m5yyA=="

@@ -46,6 +46,7 @@
     "react-native-gesture-handler": "^2.6.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
+    "react-native-login-screen": "^4.1.0",
     "react-native-material-menu": "^2.0.0",
     "react-native-paper": "^5.0.0-rc.4",
     "react-native-permissions": "^3.6.0",

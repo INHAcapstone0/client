@@ -1,19 +1,26 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
+import LoginScreen from 'react-native-login-screen';
+import FormInput from '../components/FormInput';
+import FormButton from '../components/FormButton';
 
 function SignUpPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -110,165 +117,260 @@ function SignUpPage({navigation}: any) {
   const canGoNext = email && name && password;
 
   return (
-    <KeyboardAwareScrollView>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>이메일</Text>
-        <View style={styles.emailWrapper}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="이메일"
-            placeholderTextColor="#666"
-            onChangeText={onChangeEmail}
-            value={email}
-            textContentType="name"
-            returnKeyType="next"
-            clearButtonMode="while-editing"
-            ref={nameRef}
-            onSubmitEditing={() => passwordRef.current?.focus()}
-            blurOnSubmit={false}
-          />
-          <Pressable
-            style={
-              !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
-                email,
-              ) === false
-                ? StyleSheet.compose(
-                    styles.duplicateButton,
-                    styles.duplicateButtonActive,
-                  )
-                : styles.duplicateButton
-            }
-            disabled={email.length === 0 || loading}
-            onPress={emailDuplicateCheck}>
-            <Text style={styles.duplicateButtonText}>중복확인</Text>
-          </Pressable>
-        </View>
-      </View>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>닉네임</Text>
-        <View style={styles.emailWrapper}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="닉네임"
-            placeholderTextColor="#666"
-            onChangeText={onChangeName}
-            value={name}
-            textContentType="name"
-            returnKeyType="next"
-            clearButtonMode="while-editing"
-            ref={nameRef}
-            onSubmitEditing={() => passwordRef.current?.focus()}
-            blurOnSubmit={false}
-          />
-          <Pressable
-            style={
-              name.length > 0
-                ? StyleSheet.compose(
-                    styles.duplicateButton,
-                    styles.duplicateButtonActive,
-                  )
-                : styles.duplicateButton
-            }
-            disabled={name.length === 0 || loading}
-            onPress={nameDuplicateCheck}>
-            <Text style={styles.duplicateButtonText}>중복확인</Text>
-          </Pressable>
-        </View>
-      </View>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>비밀번호</Text>
-        <TextInput
-          style={styles.passwordTextInput}
-          placeholder="비밀번호(영문,숫자,특수문자 포함하여 8자 이상)"
-          placeholderTextColor="#666"
-          onChangeText={onChangePassword}
-          value={password}
-          keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
-          textContentType="password"
-          secureTextEntry
-          returnKeyType="send"
-          clearButtonMode="while-editing"
-          ref={passwordRef}
-          onSubmitEditing={() => passwordConfirmRef.current?.focus()}
+    <View style={styles.container}>
+      <Image
+        source={require('../resources/icons/LoginImage.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.text}>회원가입</Text>
+      <View style={styles.formWrapper}>
+        <FormInput
+          labelValue={email}
+          onChangeText={onChangeEmail}
+          placeholderText="이메일"
+          iconType="user"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          inputType="register"
         />
-      </View>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>비밀번호 확인</Text>
-        <TextInput
-          style={styles.passwordTextInput}
-          placeholder="비밀번호 확인(영문,숫자,특수문자 포함하여 8자 이상)"
-          placeholderTextColor="#666"
-          onChangeText={onChangePasswordConfirm}
-          value={passwordConfirm}
-          keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
-          textContentType="password"
-          secureTextEntry
-          returnKeyType="send"
-          clearButtonMode="while-editing"
-          ref={passwordConfirmRef}
-          onSubmitEditing={onSubmit}
-        />
-      </View>
-      <View style={styles.buttonZone}>
         <Pressable
           style={
-            canGoNext
+            !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+              email,
+            ) === false
               ? StyleSheet.compose(
-                  styles.registerButton,
-                  styles.registerButtonActive,
+                  styles.duplicateButton,
+                  styles.duplicateButtonActive,
                 )
-              : styles.registerButton
+              : styles.duplicateButton
           }
-          disabled={!canGoNext || loading}
-          onPress={onSubmit}>
-          {loading ? (
-            <ActivityIndicator color="white" /> //로딩창
-          ) : (
-            <Text style={styles.registerButtonText}>회원가입</Text>
-          )}
-        </Pressable>
-        <Pressable onPress={toSignInPage}>
-          <Text>로그인하기</Text>
+          disabled={email.length === 0 || loading}
+          onPress={emailDuplicateCheck}>
+          <Text style={styles.duplicateButtonText}>중복확인</Text>
         </Pressable>
       </View>
-    </KeyboardAwareScrollView>
+      <View style={styles.formWrapper}>
+        <FormInput
+          labelValue={password}
+          onChangeText={onChangeName}
+          placeholderText="닉네임"
+          iconType="user"
+          keyboardType="email-address"
+          secureTextEntry={true}
+          inputType="register"
+        />
+        <Pressable
+          style={
+            !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+              email,
+            ) === false
+              ? StyleSheet.compose(
+                  styles.duplicateButton,
+                  styles.duplicateButtonActive,
+                )
+              : styles.duplicateButton
+          }
+          disabled={name.length === 0 || loading}
+          onPress={nameDuplicateCheck}>
+          <Text style={styles.duplicateButtonText}>중복확인</Text>
+        </Pressable>
+      </View>
+      <FormInput
+        labelValue={password}
+        onChangeText={onChangePassword}
+        placeholderText="비밀번호"
+        iconType="lock"
+        secureTextEntry={true}
+        inputType="login"
+      />
+      <FormInput
+        labelValue={passwordConfirm}
+        onChangeText={onChangePasswordConfirm}
+        placeholderText="비밀번호 확인"
+        iconType="lock"
+        secureTextEntry={true}
+        inputType="login"
+      />
+      <FormButton buttonTitle="회원가입" onPress={onSubmit} />
+      <TouchableOpacity style={styles.navButton} onPress={toSignInPage}>
+        <Text style={styles.navButtonText}>로그인 하러가기</Text>
+      </TouchableOpacity>
+    </View>
+    // <KeyboardAwareScrollView style={styles.signUpPage}>
+    //   <View style={styles.inputWrapper}>
+    //     <Text style={styles.label}>이메일</Text>
+    //     <View style={styles.emailWrapper}>
+    //       <TextInput
+    //         style={styles.textInput}
+    //         placeholder="이메일"
+    //         placeholderTextColor="#666"
+    //         onChangeText={onChangeEmail}
+    //         value={email}
+    //         textContentType="name"
+    //         returnKeyType="next"
+    //         clearButtonMode="while-editing"
+    //         ref={nameRef}
+    //         onSubmitEditing={() => passwordRef.current?.focus()}
+    //         blurOnSubmit={false}
+    //       />
+    //       <Pressable
+    //         style={
+    //           !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+    //             email,
+    //           ) === false
+    //             ? StyleSheet.compose(
+    //                 styles.duplicateButton,
+    //                 styles.duplicateButtonActive,
+    //               )
+    //             : styles.duplicateButton
+    //         }
+    //         disabled={email.length === 0 || loading}
+    //         onPress={emailDuplicateCheck}>
+    //         <Text style={styles.duplicateButtonText}>중복확인</Text>
+    //       </Pressable>
+    //     </View>
+    //   </View>
+    //   <View style={styles.inputWrapper}>
+    //     <Text style={styles.label}>닉네임</Text>
+    //     <View style={styles.emailWrapper}>
+    //       <TextInput
+    //         style={styles.textInput}
+    //         placeholder="닉네임"
+    //         placeholderTextColor="#666"
+    //         onChangeText={onChangeName}
+    //         value={name}
+    //         textContentType="name"
+    //         returnKeyType="next"
+    //         clearButtonMode="while-editing"
+    //         ref={nameRef}
+    //         onSubmitEditing={() => passwordRef.current?.focus()}
+    //         blurOnSubmit={false}
+    //       />
+    //       <Pressable
+    //         style={
+    //           name.length > 0
+    //             ? StyleSheet.compose(
+    //                 styles.duplicateButton,
+    //                 styles.duplicateButtonActive,
+    //               )
+    //             : styles.duplicateButton
+    //         }
+    //         disabled={name.length === 0 || loading}
+    //         onPress={nameDuplicateCheck}>
+    //         <Text style={styles.duplicateButtonText}>중복확인</Text>
+    //       </Pressable>
+    //     </View>
+    //   </View>
+    //   <View style={styles.inputWrapper}>
+    //     <Text style={styles.label}>비밀번호</Text>
+    //     <TextInput
+    //       style={styles.passwordTextInput}
+    //       placeholder="비밀번호(영문,숫자,특수문자 포함하여 8자 이상)"
+    //       placeholderTextColor="#666"
+    //       onChangeText={onChangePassword}
+    //       value={password}
+    //       keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
+    //       textContentType="password"
+    //       secureTextEntry
+    //       returnKeyType="send"
+    //       clearButtonMode="while-editing"
+    //       ref={passwordRef}
+    //       onSubmitEditing={() => passwordConfirmRef.current?.focus()}
+    //     />
+    //   </View>
+    //   <View style={styles.inputWrapper}>
+    //     <Text style={styles.label}>비밀번호 확인</Text>
+    //     <TextInput
+    //       style={styles.passwordTextInput}
+    //       placeholder="비밀번호 확인(영문,숫자,특수문자 포함하여 8자 이상)"
+    //       placeholderTextColor="#666"
+    //       onChangeText={onChangePasswordConfirm}
+    //       value={passwordConfirm}
+    //       keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
+    //       textContentType="password"
+    //       secureTextEntry
+    //       returnKeyType="send"
+    //       clearButtonMode="while-editing"
+    //       ref={passwordConfirmRef}
+    //       onSubmitEditing={onSubmit}
+    //     />
+    //   </View>
+    //   <View style={styles.buttonZone}>
+    //     <Pressable
+    //       style={
+    //         canGoNext
+    //           ? StyleSheet.compose(
+    //               styles.registerButton,
+    //               styles.registerButtonActive,
+    //             )
+    //           : styles.registerButton
+    //       }
+    //       disabled={!canGoNext || loading}
+    //       onPress={onSubmit}>
+    //       {loading ? (
+    //         <ActivityIndicator color="white" /> //로딩창
+    //       ) : (
+    //         <Text style={styles.registerButtonText}>회원가입</Text>
+    //       )}
+    //     </Pressable>
+    //     <Pressable onPress={toSignInPage}>
+    //       <Text>로그인하기</Text>
+    //     </Pressable>
+    //   </View>
+    // </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    width: '80%',
-    padding: 5,
-    borderWidth: 0.7,
-    marginRight: 7,
-    borderColor: '#4D483D',
-  },
-  passwordTextInput: {
-    width: '100%',
-    padding: 5,
-    borderWidth: 0.7,
-    borderColor: '#4D483D',
-  },
-  inputWrapper: {
-    padding: 20,
-  },
-  emailWrapper: {
-    flex: 1,
+  // signUpPage: {
+  //   backgroundColor: '#F3EFEA',
+  // },
+  // textInput: {
+  //   width: '80%',
+  //   padding: 6,
+  //   borderWidth: 0,
+  //   marginRight: 7,
+  //   backgroundColor: 'white',
+  //   fontSize: 14,
+  //   // borderColor: '#4D483D',
+  // },
+  // passwordTextInput: {
+  //   width: '100%',
+  //   padding: 5,
+  //   borderWidth: 0.7,
+  //   borderColor: '#4D483D',
+  // },
+  // inputWrapper: {
+  //   padding: 20,
+  // },
+  formWrapper: {
+    display: 'flex',
     flexDirection: 'row',
-  },
-  label: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  buttonZone: {
     alignItems: 'center',
   },
+  inputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+  },
+  // label: {
+  //   fontWeight: 'bold',
+  //   fontSize: 11,
+  //   marginBottom: 5,
+  // },
+  // buttonZone: {
+  //   alignItems: 'center',
+  // },
   duplicateButton: {
     backgroundColor: 'gray',
     paddingHorizontal: 10,
     paddingVertical: 10,
-    borderRadius: 5,
+    // borderRadius: 5,
+    height: Dimensions.get('window').height / 16,
+    borderRadius: 3,
+    marginBottom: 4,
+    marginLeft: 10,
   },
   duplicateButtonActive: {
     backgroundColor: '#4D483D',
@@ -277,19 +379,58 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
-  registerButton: {
-    backgroundColor: 'gray',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
+  // registerButton: {
+  //   backgroundColor: 'gray',
+  //   paddingHorizontal: 20,
+  //   paddingVertical: 10,
+  //   borderRadius: 5,
+  //   marginBottom: 10,
+  // },
+  // registerButtonActive: {
+  //   backgroundColor: '#4D483D',
+  // },
+  // registerButtonText: {
+  //   color: 'white',
+  //   fontSize: 16,
+  // },
+  container: {
+    backgroundColor: '#f9fafd',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  logo: {
+    height: 150,
+    width: 150,
+    resizeMode: 'cover',
+  },
+  text: {
+    fontFamily: 'Kufam-SemiBoldItalic',
+    fontSize: 28,
     marginBottom: 10,
+    color: '#3E382F',
   },
-  registerButtonActive: {
-    backgroundColor: '#4D483D',
+  navButton: {
+    marginTop: 15,
   },
-  registerButtonText: {
-    color: 'white',
-    fontSize: 16,
+  navButtonText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#3E382F',
+    fontFamily: 'Lato-Regular',
+  },
+  textPrivate: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginVertical: 35,
+    justifyContent: 'center',
+  },
+  color_textPrivate: {
+    fontSize: 13,
+    fontWeight: '400',
+    fontFamily: 'Lato-Regular',
+    color: 'grey',
   },
 });
 

@@ -39,7 +39,7 @@ async function getFCMToken() {
         AsyncStorage.setItem('fcmToken', fcmToken);
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data.msg);
     }
   }
 }

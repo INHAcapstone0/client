@@ -13,13 +13,11 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface alarmType {
   alarm_type: string;
@@ -60,16 +58,19 @@ function AlarmPage({navigation}: any) {
   };
 
   return (
-    <View style={styles.alarmPage}>
+    <SafeAreaView style={styles.alarmPage}>
       <ScrollView>
         {allAlarms.map((alarm: alarmType) => {
-          if (alarm.alarm_type === 'invite') {
+          if (alarm.alarm_type === '초대') {
             return (
               <TouchableOpacity
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <FontAwesome name="envelope-o" color="black" size={40} />
+                <Image
+                  source={require('../resources/icons/Invitation.png')}
+                  style={styles.alarmIcon}
+                />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -81,7 +82,11 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <Ionicons name="receipt-outline" color="black" size={40} />
+                <Image
+                  source={require('../resources/icons/Receipt.png')}
+                  style={styles.alarmIcon}
+                />
+                {/* <Ionicons name="receipt-outline" color="black" size={40} /> */}
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -93,10 +98,9 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <MaterialCommunityIcons
-                  name="calendar-arrow-right"
-                  color="black"
-                  size={40}
+                <Image
+                  source={require('../resources/icons/LoginImage.png')}
+                  style={styles.alarmIcon}
                 />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
@@ -109,10 +113,9 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <MaterialCommunityIcons
-                  name="calendar-check"
-                  color="black"
-                  size={40}
+                <Image
+                  source={require('../resources/icons/Suitcase.png')}
+                  style={styles.alarmIcon}
                 />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
@@ -125,7 +128,10 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <FontAwesome name="check" color="black" size={40} />
+                <Image
+                  source={require('../resources/icons/smartphone.png')}
+                  style={styles.alarmIcon}
+                />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}
                 </Text>
@@ -137,7 +143,10 @@ function AlarmPage({navigation}: any) {
                 style={styles.alarmWrapper}
                 // onPress={removeToGroupMember(user)}
                 key={alarm.id}>
-                <MaterialCommunityIcons name="bell" color="black" size={40} />
+                <Image
+                  source={require('../resources/icons/checked.png')}
+                  style={styles.alarmIcon}
+                />
                 <Text style={styles.alarmText} key={alarm.id}>
                   {alarm.message}.
                 </Text>
@@ -146,13 +155,12 @@ function AlarmPage({navigation}: any) {
           }
         })}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   alarmPage: {
     padding: 20,
-    height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     backgroundColor: 'white',
   },
@@ -162,8 +170,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: 'gray',
+    borderBottomWidth: 0.2,
+    borderColor: '#4D483D',
   },
   alarmImage: {
     width: 54,
@@ -173,10 +181,14 @@ const styles = StyleSheet.create({
   alarmText: {
     width: '100%',
     paddingLeft: 20,
-    fontSize: 13,
-    fontWeight: '400',
-    color: '#000000',
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4D483D',
     flexShrink: 1,
+  },
+  alarmIcon: {
+    width: 55,
+    height: 55,
   },
 });
 export default AlarmPage;
