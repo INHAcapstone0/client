@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import axios, {AxiosError} from 'axios';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -14,6 +16,8 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/Store';
 
 const dummyData1 = [
   {
@@ -56,8 +60,44 @@ const dummyData2 = [
     id: 3,
   },
 ];
+interface alarmType {
+  alarm_type: string;
+  checked: false;
+  createdAt: string;
+  deletedAt: null;
+  id: string;
+  message: string;
+  updatedAt: string;
+  user_id: string;
+}
 
 function CalculatePage({navigation}: any) {
+  const accessToken = useSelector(
+    (state: RootState) => state.persist.user.accessToken,
+  );
+  const userId = useSelector((state: RootState) => state.persist.user.id);
+  const [allSettlements, setAllSettlements] = useState<Array<any>>([]);
+
+  useEffect(() => {
+    getSettlements();
+  }, []);
+
+  const getSettlements = async () => {
+    try {
+      const response = await axios.get(
+        `http://146.56.188.32:8002/settlements`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setAllSettlements(response.data);
+      console.log(response.data);
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+    }
+  };
   return (
     <ScrollView style={styles.calculatePage}>
       <View style={styles.calculateContainer}>
