@@ -65,28 +65,23 @@ function BottomComponent({
   const [searchName, setSearchName] = useState('');
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
 
-  useEffect(() => {
-    getAllUsers();
-  }, []);
+  // useEffect(() => {
+  //   getAllUsers();
+  // }, []);
 
   const onChangeSearchName = useCallback((text: string) => {
     setSearchName(text.trim());
   }, []);
 
   const addToGroupMember = (user: userType) => (event: any) => {
-    console.log(user);
-    console.log(selectedUsers.includes(user));
     if (selectedUsers.includes(user)) {
-      return;
+      const newSelectedUsers = selectedUsers.filter(
+        selectedUser => selectedUser.id !== user.id,
+      );
+      setSelectedUseres([...newSelectedUsers]);
+    } else {
+      setSelectedUseres([...selectedUsers, user]);
     }
-    setSelectedUseres([...selectedUsers, user]);
-  };
-
-  const removeToGroupMember = (user: userType) => (event: any) => {
-    const newSelectedUsers = selectedUsers.filter(
-      selectedUser => selectedUser.id !== user.id,
-    );
-    setSelectedUseres(newSelectedUsers);
   };
 
   const InviteAdditionalMember = async () => {
@@ -172,6 +167,7 @@ function BottomComponent({
 
   const getAllUsers = async () => {
     try {
+      console.log(111);
       const response = await axios.get(
         `http://146.56.188.32:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
         {
@@ -180,7 +176,7 @@ function BottomComponent({
           },
         },
       );
-      console.log(response.data);
+      console.log(response);
       setAllUsers(response.data);
     } catch (err: any) {
       console.log(err.response.data.msg);
@@ -234,27 +230,13 @@ function BottomComponent({
       </View>
     );
   } else if (bottomModalType === '멤버목록_호스트') {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      getAllUsers();
+    }, []);
     return (
       <ScrollView style={styles.memberInvitation}>
         <Text style={styles.elementLabel}>그룹원 초대</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
-          <View style={styles.selectedUserContainer}>
-            {selectedUsers.map((user: userType) => (
-              <TouchableOpacity
-                style={styles.selectedUserWrapper}
-                onPress={removeToGroupMember(user)}
-                key={user.id}>
-                <Image
-                  style={styles.selectedUserImage}
-                  source={{
-                    uri: user.img_url,
-                  }}
-                />
-                <Text style={styles.selectedUserName}>{user.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
         <TextInput
           style={styles.serchTextInput}
           placeholder="그룹원 검색"
@@ -274,17 +256,25 @@ function BottomComponent({
                 key={user.id}
                 underlayColor="#d9d4d4"
                 onPress={addToGroupMember(user)}>
-                <View style={styles.userWrapper} key={user.id}>
+                <View style={styles.userWrapper}>
                   <Image
                     style={styles.userImage}
-                    key={user.id}
                     source={{
                       uri: user.img_url,
                     }}
                   />
-                  <Text style={styles.userName} key={user.id}>
-                    {user.name}
-                  </Text>
+                  <Text style={styles.userName}>{user.name}</Text>
+                  {selectedUsers.includes(user) ? (
+                    <Image
+                      style={styles.checkButton}
+                      source={require('../resources/icons/CircleCheck.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.checkButton}
+                      source={require('../resources/icons/Circle.png')}
+                    />
+                  )}
                 </View>
               </TouchableHighlight>
             );
@@ -409,6 +399,10 @@ const styles = StyleSheet.create({
   },
   groupCreateButtonText: {
     color: 'white',
+  },
+  checkButton: {
+    position: 'absolute',
+    right: 17,
   },
 });
 

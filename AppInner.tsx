@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -20,63 +21,54 @@ import SelectReceiptPage from './screen/SelectReceiptPage';
 import ReceiptInfoPage from './screen/ReceiptInfoPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
-import {
-  requestUserPermission,
-  notificationListner,
-} from './utils/push_notification_helper';
+
 const Stack = createStackNavigator();
 
 function AppInner() {
-  const dispatch = useAppDispatch();
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-
-  useEffect(() => {
-    requestUserPermission();
-    notificationListner();
-  }, []);
-
-  useEffect(() => {
-    axios.interceptors.response.use(
-      //성공한경우
-      response => {
-        return response;
-      },
-      //실패한경우
-      async error => {
-        const {
-          config, //error.config -> 원래요청
-          response: {status}, //error.response.status
-        } = error;
-        //토큰 만료 에러코드
-        if (status === 401) {
-          console.log(status);
-          console.log(config);
-          const originalRequest = config;
-          const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          // token refresh 요청
-          const {data} = await axios.post(
-            'http://146.56.188.32:8002/users/auth/refresh', // token refresh api
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                Refresh: `${refreshToken}`,
-              },
-            },
-          );
-          // 새로운 토큰 저장
-          dispatch(userActions.setAccessToken(data.data.accessToken));
-          EncryptedStorage.setItem('refreshToken', data.data.refreshToken);
-          originalRequest.headers.Authorization = `${data.data.accessToken}`;
-          // 419로 요청 실패했던 요청 새로운 토큰으로 재요청
-          return axios(originalRequest);
-        }
-        return Promise.reject(error);
-      },
-    );
-  }, [accessToken, dispatch]);
+  // const dispatch = useAppDispatch();
+  // const accessToken = useSelector(
+  //   (state: RootState) => state.persist.user.accessToken,
+  // );
+  // useEffect(() => {
+  //   axios.interceptors.response.use(
+  //     //성공한경우
+  //     response => {
+  //       return response;
+  //     },
+  //     //실패한경우
+  //     async error => {
+  //       const {
+  //         config, //error.config -> 원래요청
+  //         response: {status}, //error.response.status
+  //       } = error;
+  //       //토큰 만료 에러코드
+  //       if (status === 401) {
+  //         console.log(status);
+  //         console.log(config);
+  //         const originalRequest = config;
+  //         const refreshToken = await EncryptedStorage.getItem('refreshToken');
+  //         // token refresh 요청
+  //         const {data} = await axios.post(
+  //           'http://146.56.188.32:8002/users/auth/refresh', // token refresh api
+  //           {},
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${accessToken}`,
+  //               Refresh: `${refreshToken}`,
+  //             },
+  //           },
+  //         );
+  //         // 새로운 토큰 저장
+  //         dispatch(userActions.setAccessToken(data.data.accessToken));
+  //         EncryptedStorage.setItem('refreshToken', data.data.refreshToken);
+  //         originalRequest.headers.Authorization = `${data.data.accessToken}`;
+  //         // 419로 요청 실패했던 요청 새로운 토큰으로 재요청
+  //         return axios(originalRequest);
+  //       }
+  //       return Promise.reject(error);
+  //     },
+  //   );
+  // }, [accessToken, dispatch]);
 
   return (
     <NavigationContainer>

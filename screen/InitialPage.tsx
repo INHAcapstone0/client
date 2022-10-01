@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -21,6 +22,11 @@ import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {
+  requestUserPermission,
+  notificationListner,
+} from '../utils/push_notification_helper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
@@ -57,7 +63,11 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '홈',
           tabBarIcon: ({color}: any) => (
-            <AntDesign name="home" color={color} size={26} />
+            // <AntDesign name="home" color={color} size={26} />
+            <Image
+              source={require('../resources/icons/home.png')}
+              style={styles.alarmIcon}
+            />
           ),
         }}
       />
@@ -68,7 +78,11 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '정산',
           tabBarIcon: ({color}: any) => (
-            <AntDesign name="calculator" color={color} size={26} />
+            // <AntDesign name="calculator" color={color} size={26} />
+            <Image
+              source={require('../resources/icons/Calculator.png')}
+              style={styles.alarmIcon}
+            />
           ),
         }}
       />
@@ -77,9 +91,13 @@ function InitialPage({navigation}: any) {
         component={CreateGroupPage}
         options={{
           headerShown: false,
-          tabBarLabel: '새그룹 생성',
+          tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            <AntDesign name="pluscircleo" color={color} size={26} />
+            // <AntDesign name="pluscircleo" color={color} size={26} />
+            <Image
+              source={require('../resources/icons/add.png')}
+              style={styles.alarmIcon}
+            />
           ),
         }}
       />
@@ -88,9 +106,13 @@ function InitialPage({navigation}: any) {
         component={AlarmPage}
         options={{
           headerShown: false,
-          tabBarLabel: '알림',
+          tabBarLabel: '알람',
           tabBarIcon: ({color}: any) => (
-            <MaterialCommunityIcons name="bell" color={color} size={26} />
+            // <MaterialCommunityIcons name="bell" color={color} size={26} />
+            <Image
+              source={require('../resources/icons/Notification.png')}
+              style={styles.alarmIcon}
+            />
           ),
         }}
       />
@@ -101,7 +123,11 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '세팅',
           tabBarIcon: ({color}: any) => (
-            <AntDesign name="setting" color={color} size={26} />
+            // <AntDesign name="setting" color={color} size={26} />
+            <Image
+              source={require('../resources/icons/Setting.png')}
+              style={styles.alarmIcon}
+            />
           ),
         }}
       />
@@ -132,6 +158,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     flexDirection: 'row',
+  },
+  alarmIcon: {
+    width: 25,
+    height: 25,
   },
 });
 
