@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {NavigationContainer, StackActions} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import CameraPage from './screen/CameraPage';
 import CapturePage from './screen/CapturePage';
 import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
 import SelectReceiptPage from './screen/SelectReceiptPage';
+import ReceiptInfoPage from './screen/ReceiptInfoPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import {
@@ -56,7 +57,7 @@ function AppInner() {
           const refreshToken = await EncryptedStorage.getItem('refreshToken');
           // token refresh 요청
           const {data} = await axios.post(
-            'http://10.0.2.2:8002/users/auth/refresh', // token refresh api
+            'http://146.56.188.32:8002/users/auth/refresh', // token refresh api
             {},
             {
               headers: {
@@ -96,6 +97,7 @@ function AppInner() {
           name="ExpenseHistoryPage"
           component={ExpenseHistoryPage}
         />
+        <Stack.Screen name="ReceiptInfoPage" component={ReceiptInfoPage} />
         <Stack.Screen name="SelectReceiptPage" component={SelectReceiptPage} />
       </Stack.Navigator>
     </NavigationContainer>

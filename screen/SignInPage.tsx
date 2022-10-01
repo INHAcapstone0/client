@@ -45,6 +45,7 @@ function SignInPage({navigation}: any) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
+      console.log('asdf');
       setLoading(true);
       const response = await axios.post(
         'http://146.56.188.32:8002/auth/login',
@@ -53,6 +54,8 @@ function SignInPage({navigation}: any) {
           password: password,
         },
       );
+
+      console.log('asdf');
       dispatch(
         userActions.setUser({
           name: response.data.user,
@@ -60,10 +63,14 @@ function SignInPage({navigation}: any) {
           accessToken: response.data.data.accessToken,
         }),
       );
+
+      console.log('asdf');
       console.log(response.data.data);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       navigation.navigate('InitialPage');
+      console.log('asdf');
     } catch (error: AxiosError | any) {
+      console.log('login error');
       Alert.alert(error.response.data.msg);
     } finally {
       setLoading(false);

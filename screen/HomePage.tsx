@@ -72,6 +72,7 @@ function HomePage({navigation}: any) {
   };
 
   useEffect(() => {
+    console.log(navigation);
     getAllSchedules();
   }, []);
 

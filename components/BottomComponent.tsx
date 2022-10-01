@@ -101,7 +101,7 @@ function BottomComponent({
       console.log(selectedUsersId);
 
       await axios.post(
-        'http://10.0.2.2:8002/participants',
+        'http://146.56.188.32:8002/participants',
         {
           participant_ids: selectedUsersId,
           schedule_id: selectedScheduleId,
@@ -112,7 +112,7 @@ function BottomComponent({
           },
         },
       );
-      Alert.alert('알림', '그룹원 초대를 완료되었습니다', [
+      Alert.alert('알림', '그룹원 초대가 완료되었습니다', [
         {
           text: '확인',
           onPress: () => {
@@ -173,7 +173,7 @@ function BottomComponent({
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
-        `http://10.0.2.2:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
+        `http://146.56.188.32:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -187,6 +187,7 @@ function BottomComponent({
     }
   };
 
+  /*
   if (bottomModalType === '지출요약') {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
@@ -208,13 +209,15 @@ function BottomComponent({
           <Text style={styles.modalTitle}>지출 요약 확인하기</Text>
           {allReceiptsInfo.map((item: any) => {
             if (item != null) {
-              return <ReceiptCard key={item.id} item={item} />;
+             return <ReceiptCard key={item.id} item={item} />;
             }
           })}
         </View>
       );
     }
-  } else if (bottomModalType === '멤버목록_멤버') {
+  } else
+  */
+  if (bottomModalType === '멤버목록_멤버') {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       getApprovedAllMembersInfo();
