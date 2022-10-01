@@ -13,6 +13,7 @@ import {
   Button,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -34,7 +35,12 @@ import {configureStore} from '@reduxjs/toolkit';
 function SelectReceiptPage(route: any) {
   return (
     <View>
-      <Text>영수증 등록페이지</Text>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
+        <Text>카메라</Text>
+      </TouchableOpacity>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
+        <Text>갤러리</Text>
+      </TouchableOpacity>
     </View>
   );
 }
