@@ -30,6 +30,8 @@ import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 import ReceiptCard from '../components/ReceiptCard';
 import {faReceipt} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Presenter from 'react-native-calendars/src/expandableCalendar/Context/Presenter';
 
 function ExpenseHistoryPage(route: any) {
   const accessToken = useSelector(
@@ -37,7 +39,7 @@ function ExpenseHistoryPage(route: any) {
   );
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
-  const [scheduleId, setScheduleId] = useState(route.route.params.schedule.id);
+  const [scheduleId, setScheduleId] = useState(route.route.params.scheduleId);
   const [scheduleInfo, setScheduleInfo] = useState<{
     name: string;
     startAt: string;
@@ -52,17 +54,14 @@ function ExpenseHistoryPage(route: any) {
     total_pay: 0,
   });
   const [receiptsInfo, setReceiptsInfo] = useState([]);
-  const [selectedScheduleId, setSelectedScheduleId] = useState('');
-  const [bottomModalType, setBottomModalType] = useState('');
+
   const [errFlag, setErrFlag] = useState(false);
   const [ownerFlag, setOwnerFlag] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
 
+  const [categoryList, setCategoryList] = useState(Array);
   const getScheduleInfo = async () => {
     try {
-      console.log('schedule id : ', scheduleId);
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -78,70 +77,83 @@ function ExpenseHistoryPage(route: any) {
       if (totalPrice == null) {
         setTotalPrice(0);
       }
-      setStartDate(scheduleInfo.startAt.substring(0, 10));
-      setEndDate(scheduleInfo.endAt.substring(0, 10));
     } catch (err: AxiosError | any) {
       console.log(err);
     }
   };
 
-  const getReceiptsInfo = async () => {
-    try {
+  const getReceiptsInfo = async (category: string) => {
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+    if (category === '전체') {
       const params = {
         schedule_id: scheduleId,
       };
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
+
+      try {
+        const response = await axios.get('http://146.56.188.32:8002/receipts', {
+          params,
+          headers,
+        });
+
+        setReceiptsInfo(response.data);
+
+        return response.data;
+      } catch (err: AxiosError | any) {
+        console.log(err);
+        if (err.response.status === 404) {
+          setErrFlag(true);
+        }
+        return Promise.reject;
+      }
+    } else {
+      const params = {
+        schedule_id: scheduleId,
+        category: category,
       };
-      const response = await axios.get('http://146.56.188.32:8002/receipts', {
-        params,
-        headers,
-      });
-      setReceiptsInfo(response.data);
-    } catch (err: AxiosError | any) {
-      console.log(err);
-      if (err.response.status === 404) {
-        setErrFlag(true);
+
+      try {
+        const response = await axios.get('http://146.56.188.32:8002/receipts', {
+          params,
+          headers,
+        });
+        setReceiptsInfo(response.data);
+      } catch (err: AxiosError | any) {
+        console.log(err);
+        if (err.response.status === 404) {
+          setErrFlag(true);
+        }
       }
     }
   };
 
-  console.log();
   useEffect(() => {
+    getReceiptsInfo('전체')
+      .then(receipts => {
+        receipts.map((item: {category: string}) => {
+          if (!categoryList.includes(item.category)) {
+            categoryList.push(item.category);
+          }
+        });
+        categoryList.sort();
+      })
+      .catch(err => {
+        console.log(err);
+      });
     getScheduleInfo();
-    getReceiptsInfo();
-  }, []);
+  }, categoryList);
 
   if (errFlag) {
     //등록된 영수증이 0개일 경우
-    return (
-      <View style={styles.errScreen}>
-        <View style={styles.schedule}>
-          <View style={styles.scheduleHeader}>
-            <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
-            <Text style={styles.scheduleDate}>
-              {startDate} ~ {endDate}
-            </Text>
-          </View>
-          <View style={styles.scheduleBody}>
-            <Text style={styles.scheduleTotalPrice}>
-              지출 금액 : {scheduleInfo.total_pay} 원
-            </Text>
-          </View>
-        </View>
-        <FontAwesomeIcon style={styles.errIcon} icon={faReceipt} size={80} />
-        <Text style={styles.errMsg}>{'\n'}지출 내역이 없으시네요</Text>
-        <Text style={styles.errMsg}>영수증을 등록해 보세요!</Text>
-      </View>
-    );
-  } else {
     return (
       <View>
         <View style={styles.schedule}>
           <View style={styles.scheduleHeader}>
             <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
             <Text style={styles.scheduleDate}>
-              {startDate} ~ {endDate}
+              {scheduleInfo.startAt.substring(0, 10)} ~{' '}
+              {scheduleInfo.endAt.substring(0, 10)}
             </Text>
           </View>
           <View style={styles.scheduleBody}>
@@ -150,14 +162,66 @@ function ExpenseHistoryPage(route: any) {
             </Text>
           </View>
         </View>
-        <ScrollView>
-          {receiptsInfo.map((item: any) => {
-            if (item != null) {
-              return <ReceiptCard key={item.id} item={item} />;
-            }
+        <View style={styles.errScreen}>
+          <FontAwesomeIcon style={styles.errIcon} icon={faReceipt} size={80} />
+          <Text style={styles.errMsg}>{'\n'}지출 내역이 없으시네요</Text>
+          <Text style={styles.errMsg}>영수증을 등록해 보세요!</Text>
+        </View>
+      </View>
+    );
+  } else {
+    return (
+      <ScrollView>
+        <View style={styles.schedule}>
+          <View style={styles.scheduleHeader}>
+            <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+            <Text style={styles.scheduleDate}>
+              {scheduleInfo.startAt.substring(0, 10)} ~{' '}
+              {scheduleInfo.endAt.substring(0, 10)}
+            </Text>
+          </View>
+          <View style={styles.scheduleBody}>
+            <Text style={styles.scheduleTotalPrice}>
+              지출 금액 : {scheduleInfo.total_pay} 원
+            </Text>
+          </View>
+        </View>
+        <ScrollView horizontal={true}>
+          <Pressable
+            style={() => [{}, styles.categoryButton]}
+            onPress={() => {
+              getReceiptsInfo('전체');
+            }}>
+            <Text style={styles.categoryTitle}>
+              {'    '}전체{'    '}
+            </Text>
+          </Pressable>
+          {categoryList.map(function (result) {
+            let categoryName: any = result;
+            return (
+              <Pressable
+                key={categoryName}
+                style={() => [{}, styles.categoryButton]}
+                onPress={() => {
+                  getReceiptsInfo(categoryName);
+                }}>
+                <Text style={styles.categoryTitle}>
+                  {'    '}
+                  {categoryName}
+                  {'    '}
+                </Text>
+              </Pressable>
+            );
           })}
         </ScrollView>
-      </View>
+        <View style={styles.receiptSection}>
+          {receiptsInfo.map((item: any) => {
+            if (item != null) {
+              return <ReceiptCard key={item.id} item={item} route={route} />;
+            }
+          })}
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -197,6 +261,30 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: 'Jalnan',
     color: '#FFFFFF',
+  },
+  categoryButton: {
+    backgroundColor: '#E1E1E1',
+    height: 40,
+    borderColor: '#ACACAC',
+    borderRadius: 120,
+    borderWidth: 2,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 10,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  categoryTitle: {
+    fontSize: 14,
+    fontFamily: 'Jalnan',
+    color: '#4D483D',
+  },
+  receiptSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errScreen: {
     flex: 1,

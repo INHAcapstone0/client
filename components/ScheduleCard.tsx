@@ -63,12 +63,6 @@ function ScheduleCard({
 
   const [visible, setVisible] = useState(false);
 
-  const uploadReceipt = () => {
-    console.log('upload Receipt');
-  };
-  const showSummary = () => {
-    console.log('showSummary');
-  };
   useEffect(() => {
     if (userId === item.owner_id) {
       setOwnerFlag(true);
@@ -179,7 +173,6 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                showSummary();
                 navigate('SelectReceiptPage');
               }}>
               <Text style={styles.buttonText}>영수증 등록</Text>
@@ -188,9 +181,8 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                showSummary();
                 navigate('ExpenseHistoryPage', {
-                  schedule: item,
+                  scheduleId: item.id,
                 });
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
@@ -282,7 +274,6 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                showSummary();
                 navigate('SelectReceiptPage');
               }}>
               <Text style={styles.buttonText}>영수증 등록</Text>
@@ -291,9 +282,8 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                showSummary();
                 navigate('ExpenseHistoryPage', {
-                  schedule: item.id,
+                  scheduleId: item.id,
                 });
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
