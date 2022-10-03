@@ -10,81 +10,143 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   ScrollView,
   Dimensions,
+  Image,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, {AxiosError} from 'axios';
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
-import ScheduleCard from '../components/ScheduleCard';
-import BottomComponent from '../components/BottomComponent';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/Store';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
-import ReceiptCard from '../components/ReceiptCard';
-import {faReceipt} from '@fortawesome/free-solid-svg-icons';
-import {configureStore} from '@reduxjs/toolkit';
+// import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 
-function SelectReceiptPage(route: any) {
+const imagePickerOption: any = {
+  mediaType: 'photo',
+  maxWidth: 768,
+  maxHeight: 768,
+  includeBase64: Platform.OS === 'android',
+};
+
+function SelectReceiptPage({navigation}: any) {
+  const [selectImg, setSelectImg] = useState({});
+
+  const moveToCameraPage = () => {
+    navigation.navigate('CameraPage');
+  };
+
+  const onLaunchCamera = () => {
+    const options: any = {
+      storageOptions: {
+        path: 'images',
+        mediaType: 'photo',
+      },
+      includeBase64: true,
+    };
+
+    launchCamera(options, (response: any) => {
+      console.log('Response =', response);
+      if (response.didCancle) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error', response.error);
+      } else {
+        const source = {uri: 'data:image/jpeg;base64' + response.base64};
+        console.log(source);
+        setSelectImg(source);
+      }
+    });
+  };
+
+  const onLaunchImageLibrary = () => {
+    const options: any = {
+      storageOptions: {
+        path: 'images',
+        mediaType: 'photo',
+      },
+      includeBase64: true,
+    };
+
+    launchImageLibrary(options, (response: any) => {
+      const source = {uri: 'data:image/jpeg;base64' + response.base64};
+      console.log(source);
+    });
+  };
   return (
-    <View>
-      <Text>영수증 등록페이지</Text>
+    <View style={styles.receiptPage}>
+      <Text style={styles.text}>영수증을 등록해주세요</Text>
+      <View style={styles.imageContainer}>
+        <Pressable style={styles.imageWrapper} onPress={onLaunchCamera}>
+          <Image
+            source={require('../resources/icons/camera.png')}
+            style={styles.imageIcon}
+          />
+        </Pressable>
+        <Pressable style={styles.imageWrapper} onPress={onLaunchImageLibrary}>
+          <Image
+            source={require('../resources/icons/gallery.png')}
+            style={styles.imageIcon}
+          />
+        </Pressable>
+      </View>
+      <Text style={styles.manualFirstText}>
+        영수증이 없다면 [다음]을 누르신 후
+      </Text>
+      <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text>
+      <Image source={selectImg} />
+      {/* <Pressable>
+        <Text style={styles.nextButton}>다음</Text>
+      </Pressable> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  schedule: {
-    backgroundColor: '#4D483D',
+  receiptPage: {
+    backgroundColor: 'white',
+    height: Dimensions.get('window').height,
+  },
+  text: {
+    padding: 60,
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#4D483D',
+    fontWeight: '700',
+  },
+  manualFirstText: {
+    paddingTop: 70,
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#4D483D',
+    fontWeight: '700',
+  },
+  manualSecondText: {
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#4D483D',
+    fontWeight: '700',
+  },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageWrapper: {
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageIcon: {
+    width: 100,
     height: 100,
   },
-  scheduleHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  scheduleBody: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errIcon: {
-    color: '#4D483D',
-  },
-  scheduleName: {
-    fontSize: 17,
-    fontFamily: 'Jalnan',
-    color: '#FFFFFF',
-    marginTop: 10,
-    marginLeft: 10,
-  },
-  scheduleDate: {
-    fontSize: 15,
-    fontFamily: 'Jalnan',
-    color: '#FFFFFF',
-    marginTop: 10,
-    marginRight: 10,
-  },
-  scheduleTotalPrice: {
-    fontSize: 25,
-    fontFamily: 'Jalnan',
-    color: '#FFFFFF',
-  },
-  errScreen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: Dimensions.get('window').height * 0.6,
-  },
-  errMsg: {
-    fontSize: 20,
-    fontFamily: 'Jalnan',
-    color: '#4D483D',
+  nextButton: {
+    // display: 'flex',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    textAlign: 'center',
+    width: 40,
+    height: 40,
+    backgroundColor: '#4D483D',
+    color: 'white',
   },
 });
 export default SelectReceiptPage;

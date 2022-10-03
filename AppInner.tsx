@@ -14,8 +14,6 @@ import SettingPage from './screen/SettingPage';
 import CalculatePage from './screen/CalculatePage';
 import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
-import CameraPage from './screen/CameraPage';
-import CapturePage from './screen/CapturePage';
 import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
 import SelectReceiptPage from './screen/SelectReceiptPage';
 import {useAppDispatch} from './store/Store';
@@ -83,8 +81,6 @@ function AppInner() {
         <Stack.Screen name="CreateGroupPage" component={CreateGroupPage} />
         <Stack.Screen name="AlarmPage" component={AlarmPage} />
         <Stack.Screen name="SettingPage" component={SettingPage} />
-        <Stack.Screen name="CameraPage" component={CameraPage} />
-        <Stack.Screen name="CapturePage" component={CapturePage} />
         <Stack.Screen
           name="ExpenseHistoryPage"
           component={ExpenseHistoryPage}

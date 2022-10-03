@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
   alarmPage: {
     padding: 20,
     width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
     backgroundColor: 'white',
   },
   alarmWrapper: {
@@ -182,9 +183,10 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingLeft: 20,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '100',
     color: '#4D483D',
     flexShrink: 1,
+    fontFamily: 'Jalnan',
   },
   alarmIcon: {
     width: 55,

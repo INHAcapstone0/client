@@ -124,63 +124,6 @@ function SignInPage({navigation}: any) {
         <Text style={styles.navButtonText}>회원가입하로가기</Text>
       </TouchableOpacity>
     </ScrollView>
-    // <ScrollView>
-    //   <View style={styles.inputWrapper}>
-    //     <Text style={styles.label}>이메일</Text>
-    //     <TextInput
-    //       style={styles.textInput}
-    //       onChangeText={onChangeEmail}
-    //       placeholder="이메일을 입력해주세요"
-    //       placeholderTextColor="#666"
-    //       importantForAutofill="yes"
-    //       autoComplete="email"
-    //       textContentType="emailAddress"
-    //       value={email}
-    //       returnKeyType="next"
-    //       clearButtonMode="while-editing"
-    //       ref={emailRef}
-    //       onSubmitEditing={() => passwordRef.current?.focus()}
-    //       blurOnSubmit={false}
-    //     />
-    //   </View>
-    //   <View style={styles.inputWrapper}>
-    //     <Text style={styles.label}>비밀번호</Text>
-    //     <TextInput
-    //       style={styles.textInput}
-    //       placeholder="비밀번호를 입력해주세요(영문,숫자,특수문자)"
-    //       placeholderTextColor="#666"
-    //       importantForAutofill="yes"
-    //       onChangeText={onChangePassword}
-    //       value={password}
-    //       autoComplete="password"
-    //       textContentType="password"
-    //       secureTextEntry
-    //       returnKeyType="send"
-    //       clearButtonMode="while-editing"
-    //       ref={passwordRef}
-    //       onSubmitEditing={onSubmit}
-    //     />
-    //   </View>
-    //   <View style={styles.buttonZone}>
-    //     <Pressable
-    //       style={
-    //         canGoNext
-    //           ? StyleSheet.compose(styles.loginButton, styles.loginButtonActive)
-    //           : styles.loginButton
-    //       }
-    //       disabled={!canGoNext || loading}
-    //       onPress={onSubmit}>
-    //       {loading ? (
-    //         <ActivityIndicator color="white" />
-    //       ) : (
-    //         <Text style={styles.loginButtonText}>로그인</Text>
-    //       )}
-    //     </Pressable>
-    //     <Pressable onPress={toSignUpPage}>
-    //       <Text>회원가입하기</Text>
-    //     </Pressable>
-    //   </View>
-    // </ScrollView>
   );
 }
 
@@ -221,6 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     paddingTop: 50,
+    backgroundColor: 'white',
   },
   logo: {
     height: 150,
