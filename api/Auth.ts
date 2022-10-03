@@ -52,9 +52,10 @@ async function signUp(
         password: password,
       },
     );
+    console.log(response);
     success(response);
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    console.log(err.response.data.msg);
   }
 }
 

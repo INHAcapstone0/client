@@ -15,11 +15,16 @@ import {
   Image,
   TouchableHighlight,
   TouchableOpacity,
+  Button,
+  Modal,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
+import FormButton from '../components/FormButton';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DatePicker from 'react-native-date-picker';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -45,15 +50,46 @@ function CreateGroupPage({navigation}: any) {
   const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
   const [allUsers, setAllUsers] = useState<Array<userType>>([]);
+  const [isDateModalVisible, setIsDateModalVisible] = useState(false);
+  const [isMemberModalVisible, setIsMemberModalVisible] = useState(false);
+  const [isStartTimeModalVisible, setIsStartTimeModalVisible] = useState(false);
+  const [isEndTimeModalVisible, setIsEndTimeModalVisible] = useState(false);
+
+  const [selectedStartTime, setSelectedStartTime] = useState(new Date());
+  const [selectedEndTime, setSelectedEndTime] = useState(new Date());
+
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
   const ownerId = useSelector((state: RootState) => state.persist.user.id);
 
+  const toggleDateModal = () => {
+    setIsDateModalVisible(!isDateModalVisible);
+  };
+
+  const toggleMemberModal = () => {
+    setIsMemberModalVisible(!isMemberModalVisible);
+  };
+
+  const toggleStartTimeModal = () => {
+    setIsStartTimeModalVisible(!isStartTimeModalVisible);
+  };
+
+  const toggleEndTimeModal = () => {
+    setIsEndTimeModalVisible(!isEndTimeModalVisible);
+  };
+
   useEffect(() => {
     groupNameRef.current?.focus();
     getAllUsers();
   }, []);
+
+  useEffect(() => {
+    console.log(String(selectedStartTime.getHours()).padStart(2, '0'));
+    console.log(selectedStartTime.getMinutes());
+    console.log(String(selectedEndTime.getHours()).padStart(2, '0'));
+    console.log(selectedEndTime.getMinutes());
+  }, [selectedStartTime, selectedEndTime]);
 
   const getAllUsers = async () => {
     try {
@@ -155,8 +191,14 @@ function CreateGroupPage({navigation}: any) {
         {
           name: groupName,
           owner_id: ownerId,
-          startAt: orderedDate[0].replace(/\-/g, ''),
-          endAt: orderedDate[orderedDate.length - 1].replace(/\-/g, ''),
+          startAt:
+            orderedDate[0].replace(/\-/g, '') +
+            String(selectedStartTime.getHours()).padStart(2, '0') +
+            selectedStartTime.getMinutes(),
+          endAt:
+            orderedDate[orderedDate.length - 1].replace(/\-/g, '') +
+            String(selectedEndTime.getHours()).padStart(2, '0') +
+            selectedEndTime.getMinutes(),
           participants: selectedUsersId,
         },
         {
@@ -185,6 +227,10 @@ function CreateGroupPage({navigation}: any) {
     }
   };
 
+  const onSubmit = useCallback(() => {
+    console.log(1);
+  }, []);
+
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
@@ -194,7 +240,7 @@ function CreateGroupPage({navigation}: any) {
             style={styles.textInput}
             onChangeText={onChangeGroupName}
             placeholder="그룹명을 입력해주세요"
-            placeholderTextColor="#666"
+            placeholderTextColor="#4D483D"
             importantForAutofill="yes"
             textContentType="familyName"
             value={groupName}
@@ -205,70 +251,152 @@ function CreateGroupPage({navigation}: any) {
           />
         </View>
         <View style={styles.elementWrapper}>
-          <Text style={styles.elementLabel}>일정 선택</Text>
-          <Calendar
-            style={styles.calendar}
-            markedDates={selectedDate}
-            theme={{
-              selectedDayBackgroundColor: '#4D483D',
-              arrowColor: '#4D483D',
-              dotColor: '#4D483D',
-              todayTextColor: '#4D483D',
+          <Text style={styles.elementLabel}>일정</Text>
+          <Button color="#4D483D" title="일정" onPress={toggleDateModal} />
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={isDateModalVisible}
+            onRequestClose={() => {
+              setIsDateModalVisible(!isDateModalVisible);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Calendar
+                  style={styles.calendar}
+                  markedDates={selectedDate}
+                  theme={{
+                    selectedDayBackgroundColor: '#4D483D',
+                    arrowColor: '#4D483D',
+                    dotColor: '#4D483D',
+                    todayTextColor: '#4D483D',
+                  }}
+                  onDayPress={day => {
+                    addSelectedDate(day.dateString);
+                  }}
+                />
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setIsDateModalVisible(!isDateModalVisible)}>
+                  <Text style={styles.textStyle}>선택 완료</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View style={styles.elementWrapper}>
+          <Text style={styles.elementLabel}>시작 시간</Text>
+          <Button
+            color="#4D483D"
+            title="시작 시간"
+            onPress={toggleStartTimeModal}
+          />
+          <DatePicker
+            modal
+            title={null}
+            mode={'time'}
+            open={isStartTimeModalVisible}
+            date={selectedStartTime}
+            confirmText={'선택'}
+            cancelText={'취소'}
+            onConfirm={date => {
+              setSelectedStartTime(date);
             }}
-            onDayPress={day => {
-              addSelectedDate(day.dateString);
+            onCancel={() => {
+              toggleStartTimeModal;
             }}
           />
         </View>
         <View style={styles.elementWrapper}>
-          <Text style={styles.elementLabel}>그룹원 선택</Text>
-          <View style={styles.memberInvitation}>
-            <TextInput
-              style={styles.serchTextInput}
-              placeholder="그룹원 검색"
-              placeholderTextColor="#666"
-              importantForAutofill="yes"
-              onChangeText={onChangeSearchName}
-              value={searchName}
-              autoComplete="name"
-              textContentType="name"
-              returnKeyType="send"
-              clearButtonMode="while-editing"
-            />
-            <>
-              {allUsers.map(user => {
-                if (user.name.includes(searchName)) {
-                  return (
-                    <TouchableHighlight
-                      key={user.id}
-                      underlayColor="#d9d4d4"
-                      onPress={addToGroupMember(user)}>
-                      <View style={styles.userWrapper}>
-                        <Image
-                          style={styles.userImage}
-                          source={{
-                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
-                          }}
-                        />
-                        <Text style={styles.userName}>{user.name}</Text>
-                        {selectedUsers.includes(user) ? (
+          <Text style={styles.elementLabel}>종료 시간</Text>
+          <Button
+            color="#4D483D"
+            title="종료 시간"
+            onPress={toggleEndTimeModal}
+          />
+          <DatePicker
+            modal
+            title={null}
+            mode={'time'}
+            open={isEndTimeModalVisible}
+            date={selectedEndTime}
+            confirmText={'선택'}
+            cancelText={'취소'}
+            onConfirm={date => {
+              setSelectedEndTime(date);
+            }}
+            onCancel={() => {
+              toggleStartTimeModal;
+            }}
+          />
+        </View>
+        <View style={styles.elementWrapper}>
+          <Text style={styles.elementLabel}>그룹원 초대</Text>
+          <Button
+            color="#4D483D"
+            title="그룹원 초대"
+            onPress={toggleMemberModal}
+          />
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={isMemberModalVisible}
+            onRequestClose={() => {
+              setIsMemberModalVisible(!isMemberModalVisible);
+            }}>
+            <ScrollView style={styles.memberInvitation}>
+              <TextInput
+                style={styles.serchTextInput}
+                placeholder="그룹원 검색"
+                placeholderTextColor="#666"
+                importantForAutofill="yes"
+                onChangeText={onChangeSearchName}
+                value={searchName}
+                autoComplete="name"
+                textContentType="name"
+                returnKeyType="send"
+                clearButtonMode="while-editing"
+              />
+              <>
+                {allUsers.map(user => {
+                  if (user.name.includes(searchName)) {
+                    return (
+                      <TouchableHighlight
+                        key={user.id}
+                        underlayColor="#d9d4d4"
+                        onPress={addToGroupMember(user)}>
+                        <View style={styles.userWrapper}>
                           <Image
-                            style={styles.checkButton}
-                            source={require('../resources/icons/CircleCheck.png')}
+                            style={styles.userImage}
+                            source={{
+                              uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
+                            }}
                           />
-                        ) : (
-                          <Image
-                            style={styles.checkButton}
-                            source={require('../resources/icons/Circle.png')}
-                          />
-                        )}
-                      </View>
-                    </TouchableHighlight>
-                  );
-                }
-              })}
-            </>
-          </View>
+                          <Text style={styles.userName}>{user.name}</Text>
+                          {selectedUsers.includes(user) ? (
+                            <Image
+                              style={styles.checkButton}
+                              source={require('../resources/icons/CircleCheck.png')}
+                            />
+                          ) : (
+                            <Image
+                              style={styles.checkButton}
+                              source={require('../resources/icons/Circle.png')}
+                            />
+                          )}
+                        </View>
+                      </TouchableHighlight>
+                    );
+                  }
+                })}
+              </>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setIsMemberModalVisible(!isMemberModalVisible)}>
+                <Text style={styles.textStyle}>선택 완료</Text>
+              </Pressable>
+            </ScrollView>
+          </Modal>
         </View>
         <Pressable onPress={createGroup} style={styles.groupCreateButton}>
           <Text style={styles.groupCreateButtonText}>그룹 생성하기</Text>
@@ -282,6 +410,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderBottomWidth: 0.3,
     borderColor: '#4D483D',
+    fontFamily: 'Jalnan',
   },
   groupCreateWrapper: {
     backgroundColor: 'white',
@@ -291,18 +420,18 @@ const styles = StyleSheet.create({
     paddingBottom: 25,
   },
   elementLabel: {
-    fontWeight: 'bold',
+    color: '#4D483D',
+    fontFamily: 'Jalnan',
     fontSize: 20,
     marginTop: 10,
     marginBottom: 20,
   },
   calendar: {
-    borderWidth: 0.9,
-    // borderColor: 'white',
-    // backgroundColor: '#FFDCFF',
+    width: '100%',
+    borderColor: 'white',
   },
   memberInvitation: {
-    minHeight: 500,
+    padding: 20,
     borderWidth: 1,
     borderColor: '#4D483D',
   },
@@ -312,6 +441,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#4D483D',
+    fontFamily: 'Jalnan',
   },
   userWrapper: {
     display: 'flex',
@@ -329,7 +459,8 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 15,
     fontWeight: '400',
-    color: '#000000',
+    color: '#4D483D',
+    fontFamily: 'Jalnan',
   },
   selectedUserWrapper: {
     paddingRight: 10,
@@ -367,6 +498,53 @@ const styles = StyleSheet.create({
   checkButton: {
     position: 'absolute',
     right: 17,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButton: {
+    color: '#4D483D',
+  },
+  button: {
+    marginTop: 20,
+    marginBottom: 30,
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: '#4D483D',
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#4D483D',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 export default CreateGroupPage;

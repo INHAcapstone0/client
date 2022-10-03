@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
   calculateLabel: {
     fontSize: 20,
     color: '#3E382F',
+    fontFamily: 'Jalnan',
     fontWeight: '400',
     paddingTop: 20,
     paddingBottom: 10,
@@ -183,8 +184,9 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     fontSize: 13,
     fontWeight: '400',
-    color: '#000000',
+    color: '#4D483D',
     flexShrink: 1,
+    fontFamily: 'Jalnan',
   },
 });
 export default CalculatePage;

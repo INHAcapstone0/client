@@ -63,17 +63,10 @@ function SettingPage({navigation}: any) {
     }
   };
 
-  const moveToCameraPage = () => {
-    navigation.navigate('CameraPage');
-  };
-
   return (
     <View style={styles.settingContainer}>
       <Pressable onPress={signOut}>
         <Text>로그아웃</Text>
-      </Pressable>
-      <Pressable onPress={moveToCameraPage}>
-        <Text>카메라</Text>
       </Pressable>
     </View>
   );

@@ -63,7 +63,6 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '홈',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="home" color={color} size={26} />
             <Image
               source={require('../resources/icons/home.png')}
               style={styles.alarmIcon}
@@ -78,7 +77,6 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '정산',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="calculator" color={color} size={26} />
             <Image
               source={require('../resources/icons/Calculator.png')}
               style={styles.alarmIcon}
@@ -93,7 +91,6 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="pluscircleo" color={color} size={26} />
             <Image
               source={require('../resources/icons/add.png')}
               style={styles.alarmIcon}
@@ -108,7 +105,6 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '알람',
           tabBarIcon: ({color}: any) => (
-            // <MaterialCommunityIcons name="bell" color={color} size={26} />
             <Image
               source={require('../resources/icons/Notification.png')}
               style={styles.alarmIcon}
@@ -123,7 +119,6 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '세팅',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="setting" color={color} size={26} />
             <Image
               source={require('../resources/icons/Setting.png')}
               style={styles.alarmIcon}
