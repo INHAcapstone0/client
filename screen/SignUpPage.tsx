@@ -15,12 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  ALERT_TYPE,
-  Dialog,
-  AlertNotificationRoot,
-  Toast,
-} from 'react-native-alert-notification';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {emailCheck, nickNameCheck, signUp} from '../api/Auth';
@@ -217,27 +211,6 @@ function SignUpPage({navigation}: any) {
 }
 
 const styles = StyleSheet.create({
-  // signUpPage: {
-  //   backgroundColor: '#F3EFEA',
-  // },
-  // textInput: {
-  //   width: '80%',
-  //   padding: 6,
-  //   borderWidth: 0,
-  //   marginRight: 7,
-  //   backgroundColor: 'white',
-  //   fontSize: 14,
-  //   // borderColor: '#4D483D',
-  // },
-  // passwordTextInput: {
-  //   width: '100%',
-  //   padding: 5,
-  //   borderWidth: 0.7,
-  //   borderColor: '#4D483D',
-  // },
-  // inputWrapper: {
-  //   padding: 20,
-  // },
   formWrapper: {
     display: 'flex',
     flexDirection: 'row',
@@ -248,19 +221,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
   },
-  // label: {
-  //   fontWeight: 'bold',
-  //   fontSize: 11,
-  //   marginBottom: 5,
-  // },
-  // buttonZone: {
-  //   alignItems: 'center',
-  // },
   duplicateButton: {
     backgroundColor: 'gray',
     paddingHorizontal: 10,
     paddingVertical: 10,
-    // borderRadius: 5,
     height: Dimensions.get('window').height / 16,
     borderRadius: 3,
     marginBottom: 4,
@@ -273,26 +237,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
-  // registerButton: {
-  //   backgroundColor: 'gray',
-  //   paddingHorizontal: 20,
-  //   paddingVertical: 10,
-  //   borderRadius: 5,
-  //   marginBottom: 10,
-  // },
-  // registerButtonActive: {
-  //   backgroundColor: '#4D483D',
-  // },
-  // registerButtonText: {
-  //   color: 'white',
-  //   fontSize: 16,
-  // },
   container: {
     backgroundColor: 'white',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
   },
   logo: {
     height: 150,

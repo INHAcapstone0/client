@@ -11,6 +11,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
@@ -132,43 +133,14 @@ function SignInPage({navigation}: any) {
 }
 
 const styles = StyleSheet.create({
-  // textInput: {
-  //   padding: 5,
-  //   borderWidth: 0.7,
-  //   marginRight: 7,
-  //   borderColor: '#4D483D',
-  // },
-  // inputWrapper: {
-  //   padding: 20,
-  // },
-  // label: {
-  //   fontWeight: 'bold',
-  //   fontSize: 16,
-  //   marginBottom: 20,
-  // },
-  // buttonZone: {
-  //   alignItems: 'center',
-  // },
-  // loginButton: {
-  //   backgroundColor: 'gray',
-  //   paddingHorizontal: 20,
-  //   paddingVertical: 10,
-  //   borderRadius: 5,
-  //   marginBottom: 10,
-  // },
-  // loginButtonActive: {
-  //   backgroundColor: '#4D483D',
-  // },
-  // loginButtonText: {
-  //   color: 'white',
-  //   fontSize: 16,
-  // },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
     paddingTop: 50,
     backgroundColor: 'white',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
   },
   logo: {
     height: 150,

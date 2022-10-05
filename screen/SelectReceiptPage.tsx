@@ -13,6 +13,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 // import ImagePicker from 'react-native-image-picker';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
@@ -31,7 +32,31 @@ function SelectReceiptPage({navigation}: any) {
     navigation.navigate('CameraPage');
   };
 
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'App Camera Permission',
+          message: 'App needs access to your camera ',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Camera permission given');
+        onLaunchCamera();
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   const onLaunchCamera = () => {
+    console.log(1);
     const options: any = {
       storageOptions: {
         path: 'images',
@@ -72,7 +97,9 @@ function SelectReceiptPage({navigation}: any) {
     <View style={styles.receiptPage}>
       <Text style={styles.text}>영수증을 등록해주세요</Text>
       <View style={styles.imageContainer}>
-        <Pressable style={styles.imageWrapper} onPress={onLaunchCamera}>
+        <Pressable
+          style={styles.imageWrapper}
+          onPress={requestCameraPermission}>
           <Image
             source={require('../resources/icons/camera.png')}
             style={styles.imageIcon}
