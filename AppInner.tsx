@@ -17,6 +17,8 @@ import CreateGroupPage from './screen/CreateGroupPage';
 import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
 import SelectReceiptPage from './screen/SelectReceiptPage';
 import ReceiptInfoPage from './screen/ReceiptInfoPage';
+import CreateGroupSecondPage from './screen/CreateGroupSecondPage';
+import CreateGroupFinalPage from './screen/CreateGroupFinalPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 
@@ -79,6 +81,14 @@ function AppInner() {
         <Stack.Screen name="HomePage" component={HomePage} />
         <Stack.Screen name="CalculatePage" component={CalculatePage} />
         <Stack.Screen name="CreateGroupPage" component={CreateGroupPage} />
+        <Stack.Screen
+          name="CreateGroupSecondPage"
+          component={CreateGroupSecondPage}
+        />
+        <Stack.Screen
+          name="CreateGroupFinalPage"
+          component={CreateGroupFinalPage}
+        />
         <Stack.Screen name="AlarmPage" component={AlarmPage} />
         <Stack.Screen name="SettingPage" component={SettingPage} />
         <Stack.Screen
