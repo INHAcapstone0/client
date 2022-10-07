@@ -14,8 +14,8 @@ const BottomSheetBackDrop = ({
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       animatedIndex.value,
-      [1, 1],
-      [1, 1],
+      [0.6, 0.6],
+      [0.6, 0.6],
       Extrapolate.CLAMP,
     ),
   }));
@@ -25,7 +25,7 @@ const BottomSheetBackDrop = ({
     () => [
       style,
       {
-        backgroundColor: '#21B8CD',
+        backgroundColor: 'black',
       },
       containerAnimatedStyle,
     ],

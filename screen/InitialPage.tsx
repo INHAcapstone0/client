@@ -63,9 +63,9 @@ function InitialPage({navigation}: any) {
   ) : (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: {height: 60},
+        tabBarStyle: {height: 60, borderTopWidth: 1},
         tabBarInactiveTintColor: 'gray',
-        tabBarActiveTintColor: '#21B8CD',
+        tabBarActiveTintColor: 'black',
       }}>
       <Tab.Screen
         name="HomePage"
@@ -89,7 +89,11 @@ function InitialPage({navigation}: any) {
             //   source={require('../resources/icons/Calculator.png')}
             //   style={styles.alarmIcon}
             // />
-            <FontAwesome name="dollar" size={25} color={color} />
+            <MaterialCommunityIcons
+              name="calculator-variant"
+              size={30}
+              color={color}
+            />
           ),
         }}
       />
@@ -115,7 +119,7 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            <FontAwesome name="bell" size={25} color={color} />
+            <FontAwesome name="bell" size={20} color={color} />
             // <Image
             //   source={require('../resources/icons/Notification.png')}
             //   style={styles.alarmIcon}

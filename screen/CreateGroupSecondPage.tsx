@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useCallback, useRef, useState, useEffect, useMemo} from 'react';
@@ -34,10 +35,13 @@ import {
   Toast,
 } from 'react-native-alert-notification';
 import BottomSheet, {
+  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
+import Animated from 'react-native-reanimated';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -70,26 +74,26 @@ function CreateGroupSecondPage({navigation}: any) {
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // variables
-  const snapPoints = useMemo(() => ['77%', '77%'], []);
-
-  // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const snapPoints = useMemo(() => ['78%', '78%'], []);
 
   const openBottomModal = () => {
     bottomSheetRef.current?.present();
+    toggleDateModal();
   };
 
   const closeBottomModal = () => {
     bottomSheetRef.current?.close();
+    toggleDateModal2();
   };
 
   const dispatch = useAppDispatch();
 
   const toggleDateModal = () => {
-    setIsDateModalVisible(!isDateModalVisible);
+    setIsDateModalVisible(true);
+  };
+
+  const toggleDateModal2 = () => {
+    setIsDateModalVisible(false);
   };
 
   const toggleStartTimeModal = () => {
@@ -192,7 +196,25 @@ function CreateGroupSecondPage({navigation}: any) {
     <SafeAreaView>
       <BottomSheetModalProvider>
         <ScrollView style={styles.groupCreateWrapper}>
-          <AlertNotificationRoot>
+          <AlertNotificationRoot
+            colors={[
+              {
+                label: '',
+                card: '#e5e8e8',
+                overlay: '',
+                success: '',
+                danger: '',
+                warning: '',
+              },
+              {
+                label: 'gray',
+                card: 'gray',
+                overlay: 'gray',
+                success: 'gray',
+                danger: 'gray',
+                warning: 'gray',
+              },
+            ]}>
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
@@ -233,7 +255,7 @@ function CreateGroupSecondPage({navigation}: any) {
                 ref={bottomSheetRef}
                 index={0}
                 snapPoints={snapPoints}
-                // enableContentPanningGesture={false}
+                backdropComponent={BottomSheetBackDrop}
                 style={styles.bottomModal}>
                 <BottomSheetScrollView>
                   <View style={styles.centeredView}>
@@ -267,45 +289,6 @@ function CreateGroupSecondPage({navigation}: any) {
                   </View>
                 </BottomSheetScrollView>
               </BottomSheetModal>
-              {/* <Modal
-                animationType="slide"
-                transparent={false}
-                visible={isDateModalVisible}
-                onRequestClose={() => {
-                  setIsDateModalVisible(!isDateModalVisible);
-                }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <Calendar
-                      style={styles.calendar}
-                      markedDates={selectedDate}
-                      theme={{
-                        selectedDayBackgroundColor: '#21B8CD',
-                        arrowColor: '#21B8CD',
-                        dotColor: '#21B8CD',
-                        todayTextColor: 'black',
-                      }}
-                      onDayPress={day => {
-                        addSelectedDate(day.dateString);
-                      }}
-                    />
-                  </View>
-                  <View style={styles.modalButtonWrapper}>
-                    <Pressable
-                      style={styles.cancleButton}
-                      onPress={removeSelectedDate}>
-                      <Text style={styles.textStyle}>취소</Text>
-                    </Pressable>
-                    <Pressable
-                      style={styles.button}
-                      onPress={() =>
-                        setIsDateModalVisible(!isDateModalVisible)
-                      }>
-                      <Text style={styles.textStyle}>확인</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </Modal> */}
             </View>
             <View style={styles.elementWrapper}>
               <Text style={styles.elementLabel}>시작 시간</Text>
@@ -436,9 +419,8 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 5,
     padding: 35,
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -489,8 +471,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 7,
     marginLeft: 50,
     marginRight: 50,
   },
@@ -514,6 +495,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 24,
     elevation: 24,
+  },
+  shadowContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000',
   },
 });
 export default CreateGroupSecondPage;

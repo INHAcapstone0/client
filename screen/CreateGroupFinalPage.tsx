@@ -76,18 +76,6 @@ function CreateGroupFinalPage({navigation}: any) {
   // variables
   const snapPoints = useMemo(() => ['70%', '75%'], []);
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={1}
-        appearsOnIndex={2}
-        opacity={0.1}
-        style={{backgroundColor: 'red'}}
-      />
-    ),
-    [],
-  );
   const openBottomModal = () => {
     bottomSheetRef.current?.present();
   };
@@ -206,7 +194,25 @@ function CreateGroupFinalPage({navigation}: any) {
     <SafeAreaView>
       <BottomSheetModalProvider>
         <ScrollView style={styles.groupCreateWrapper}>
-          <AlertNotificationRoot>
+          <AlertNotificationRoot
+            colors={[
+              {
+                label: '',
+                card: '#e5e8e8',
+                overlay: '',
+                success: '',
+                danger: '',
+                warning: '',
+              },
+              {
+                label: 'gray',
+                card: 'gray',
+                overlay: 'gray',
+                success: 'gray',
+                danger: 'gray',
+                warning: 'gray',
+              },
+            ]}>
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
@@ -263,7 +269,7 @@ function CreateGroupFinalPage({navigation}: any) {
                     <TextInput
                       style={styles.serchTextInput}
                       placeholder="그룹원 검색"
-                      placeholderTextColor="#666"
+                      placeholderTextColor="rgba(0, 0, 0, 0.25)"
                       importantForAutofill="yes"
                       onChangeText={onChangeSearchName}
                       value={searchName}
@@ -271,6 +277,10 @@ function CreateGroupFinalPage({navigation}: any) {
                       textContentType="name"
                       returnKeyType="send"
                       clearButtonMode="while-editing"
+                    />
+                    <Image
+                      style={styles.magnifyingGlass}
+                      source={require('../resources/icons/MagnifyingGlass.png')}
                     />
                     <ScrollView style={styles.userContainer}>
                       {allUsers.map(user => {
@@ -382,11 +392,12 @@ const styles = StyleSheet.create({
   },
   serchTextInput: {
     marginBottom: 40,
-    fontSize: 16,
+    fontSize: 17,
     borderBottomWidth: 1.5,
     borderColor: 'gray',
     fontFamily: 'Roboto',
-    fontWeight: '400',
+    fontWeight: '900',
+    position: 'relative',
   },
   userContainer: {
     height: 300,
@@ -515,6 +526,11 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     flex: 1,
     backgroundColor: '#ccc',
+  },
+  magnifyingGlass: {
+    position: 'absolute',
+    top: 30,
+    right: 30,
   },
 });
 export default CreateGroupFinalPage;
