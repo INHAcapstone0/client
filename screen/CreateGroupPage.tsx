@@ -32,6 +32,8 @@ import {
   Dialog,
   AlertNotificationRoot,
   Toast,
+  IConfigDialog,
+  IConfigToast,
 } from 'react-native-alert-notification';
 
 interface selectDateType {
@@ -49,6 +51,24 @@ interface userType {
   name: string;
   updatedAt: string;
 }
+
+type IProps = {
+  dialogConfig?: Pick<IConfigDialog, 'closeOnOverlayTap' | 'autoClose'>;
+  toastConfig?: Pick<
+    IConfigToast,
+    'autoClose' | 'titleStyle' | 'textBodyStyle'
+  >;
+  theme?: 'light' | 'dark';
+  colors?: [IColors, IColors] /** ['light_colors' , 'dark_colors'] */;
+};
+type IColors = {
+  label: string;
+  card: string;
+  overlay: string;
+  success: string;
+  danger: string;
+  warning: string;
+};
 
 function CreateGroupPage({navigation}: any) {
   const [groupName, setGroupName] = useState('');
@@ -94,7 +114,25 @@ function CreateGroupPage({navigation}: any) {
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
-        <AlertNotificationRoot>
+        <AlertNotificationRoot
+          colors={[
+            {
+              label: '',
+              card: '#e5e8e8',
+              overlay: '',
+              success: '',
+              danger: '',
+              warning: '',
+            },
+            {
+              label: 'gray',
+              card: 'gray',
+              overlay: 'gray',
+              success: 'gray',
+              danger: 'gray',
+              warning: 'gray',
+            },
+          ]}>
           <View style={styles.stepWrapper}>
             <View style={styles.stepImg}>
               <Image source={require('../resources/icons/first.png')} />
