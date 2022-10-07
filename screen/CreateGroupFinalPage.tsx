@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useRef, useState, useEffect} from 'react';
+import React, {useCallback, useRef, useState, useEffect, useMemo} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -33,6 +33,13 @@ import {
   AlertNotificationRoot,
   Toast,
 } from 'react-native-alert-notification';
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
+import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -43,7 +50,7 @@ interface userType {
   deletedAt: null;
   email: string;
   id: string;
-  img_url: null;
+  img_url: string;
   is_locked: false;
   login_failed_cnt: number;
   name: string;
@@ -63,6 +70,31 @@ function CreateGroupFinalPage({navigation}: any) {
   const {groupName, startAt, endAt} = useSelector(
     (state: RootState) => state.persist.schedule,
   );
+
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['70%', '75%'], []);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={1}
+        appearsOnIndex={2}
+        opacity={0.1}
+        style={{backgroundColor: 'red'}}
+      />
+    ),
+    [],
+  );
+  const openBottomModal = () => {
+    bottomSheetRef.current?.present();
+  };
+
+  const closeBottomModal = () => {
+    bottomSheetRef.current?.close();
+  };
 
   const toggleMemberModal = () => {
     setIsMemberModalVisible(!isMemberModalVisible);
@@ -172,100 +204,125 @@ function CreateGroupFinalPage({navigation}: any) {
 
   return (
     <SafeAreaView>
-      <ScrollView style={styles.groupCreateWrapper}>
-        <AlertNotificationRoot>
-          <View style={styles.stepWrapper}>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/check.png')} />
-              <Text style={styles.stepActiveText}>그룹 이름</Text>
+      <BottomSheetModalProvider>
+        <ScrollView style={styles.groupCreateWrapper}>
+          <AlertNotificationRoot>
+            <View style={styles.stepWrapper}>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/check.png')} />
+                <Text style={styles.stepActiveText}>그룹 이름</Text>
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/check.png')} />
+                <Text style={styles.stepText}>일정/시간 설정</Text>
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/thirdCheck.png')} />
+                <Text style={styles.stepText}>그룹원 초대</Text>
+              </View>
             </View>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/check.png')} />
-              <Text style={styles.stepText}>일정/시간 설정</Text>
+            <View style={styles.elementWrapper}>
+              <Text style={styles.elementLabel}>그룹원 초대</Text>
+              <Text style={styles.elementSubLabel}>
+                스케줄을 함께 할 그룹원을 초대하세요
+              </Text>
+              <Button
+                color="#21B8CD"
+                title="그룹원 초대"
+                onPress={openBottomModal}
+              />
+              {/* <Modal
+                animationType="slide"
+                transparent={false}
+                visible={isMemberModalVisible}
+                style={styles.modalContent}
+                onRequestClose={() => {
+                  setIsMemberModalVisible(!isMemberModalVisible);
+                }}> */}
+              <BottomSheetModal
+                ref={bottomSheetRef}
+                index={0}
+                backdropComponent={BottomSheetBackDrop}
+                snapPoints={snapPoints}
+                enableContentPanningGesture={false}
+                style={styles.bottomModal}>
+                <BottomSheetScrollView>
+                  <View style={styles.memberInvitation}>
+                    <TextInput
+                      style={styles.serchTextInput}
+                      placeholder="그룹원 검색"
+                      placeholderTextColor="#666"
+                      importantForAutofill="yes"
+                      onChangeText={onChangeSearchName}
+                      value={searchName}
+                      autoComplete="name"
+                      textContentType="name"
+                      returnKeyType="send"
+                      clearButtonMode="while-editing"
+                    />
+                    <ScrollView style={styles.userContainer}>
+                      {allUsers.map(user => {
+                        if (user.name.includes(searchName)) {
+                          return (
+                            <TouchableHighlight
+                              key={user.id}
+                              underlayColor="#d9d4d4"
+                              onPress={addToGroupMember(user)}>
+                              <View style={styles.userWrapper}>
+                                <Image
+                                  style={styles.userImage}
+                                  source={{
+                                    uri: user.img_url,
+                                  }}
+                                />
+                                <Text style={styles.userName}>{user.name}</Text>
+                                {selectedUsers.includes(user) ? (
+                                  <Image
+                                    style={styles.checkButton}
+                                    source={require('../resources/icons/buttonCheck.png')}
+                                  />
+                                ) : (
+                                  <Image
+                                    style={styles.checkButton}
+                                    source={require('../resources/icons/buttonNoCheck.png')}
+                                  />
+                                )}
+                              </View>
+                            </TouchableHighlight>
+                          );
+                        }
+                      })}
+                    </ScrollView>
+                    <Pressable style={styles.button} onPress={closeBottomModal}>
+                      <Text style={styles.textStyle}>초대 하기</Text>
+                    </Pressable>
+                  </View>
+                </BottomSheetScrollView>
+              </BottomSheetModal>
+              {/* </Modal> */}
             </View>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/thirdCheck.png')} />
-              <Text style={styles.stepText}>그룹원 초대</Text>
+            <View style={styles.nextButton}>
+              <Button
+                color="#21B8CD"
+                title="스케줄 생성하기"
+                onPress={createGroup}
+              />
             </View>
-          </View>
-          <View style={styles.elementWrapper}>
-            <Text style={styles.elementLabel}>그룹원 초대</Text>
-            <Text style={styles.elementSubLabel}>
-              스케줄을 함께 할 그룹원을 초대하세요
-            </Text>
-            <Button
-              color="#21B8CD"
-              title="그룹원 초대"
-              onPress={toggleMemberModal}
-            />
-            <Modal
-              animationType="slide"
-              transparent={false}
-              visible={isMemberModalVisible}
-              onRequestClose={() => {
-                setIsMemberModalVisible(!isMemberModalVisible);
-              }}>
-              <ScrollView style={styles.memberInvitation}>
-                <TextInput
-                  style={styles.serchTextInput}
-                  placeholder="그룹원 검색"
-                  placeholderTextColor="#666"
-                  importantForAutofill="yes"
-                  onChangeText={onChangeSearchName}
-                  value={searchName}
-                  autoComplete="name"
-                  textContentType="name"
-                  returnKeyType="send"
-                  clearButtonMode="while-editing"
-                />
-                <>
-                  {allUsers.map(user => {
-                    if (user.name.includes(searchName)) {
-                      return (
-                        <TouchableHighlight
-                          key={user.id}
-                          underlayColor="#d9d4d4"
-                          onPress={addToGroupMember(user)}>
-                          <View style={styles.userWrapper}>
-                            <Image
-                              style={styles.userImage}
-                              source={{
-                                uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
-                              }}
-                            />
-                            <Text style={styles.userName}>{user.name}</Text>
-                            {selectedUsers.includes(user) ? (
-                              <Image
-                                style={styles.checkButton}
-                                source={require('../resources/icons/buttonCheck.png')}
-                              />
-                            ) : (
-                              <Image
-                                style={styles.checkButton}
-                                source={require('../resources/icons/buttonNoCheck.png')}
-                              />
-                            )}
-                          </View>
-                        </TouchableHighlight>
-                      );
-                    }
-                  })}
-                </>
-                <Pressable style={styles.button} onPress={toggleMemberModal}>
-                  <Text style={styles.textStyle}>초대 하기</Text>
-                </Pressable>
-              </ScrollView>
-            </Modal>
-          </View>
-          <View style={styles.nextButton}>
-            <Button
-              color="#21B8CD"
-              title="스케줄 생성하기"
-              onPress={createGroup}
-            />
-          </View>
-        </AlertNotificationRoot>
-      </ScrollView>
+          </AlertNotificationRoot>
+        </ScrollView>
+      </BottomSheetModalProvider>
     </SafeAreaView>
   );
 }
@@ -322,15 +379,17 @@ const styles = StyleSheet.create({
   },
   memberInvitation: {
     padding: 20,
-    borderWidth: 1,
-    borderColor: '#4D483D',
   },
   serchTextInput: {
     marginBottom: 40,
     fontSize: 16,
-    borderBottomWidth: 1,
-    borderColor: '#4D483D',
+    borderBottomWidth: 1.5,
+    borderColor: 'gray',
     fontFamily: 'Roboto',
+    fontWeight: '400',
+  },
+  userContainer: {
+    height: 300,
   },
   userWrapper: {
     display: 'flex',
@@ -413,7 +472,7 @@ const styles = StyleSheet.create({
     color: '#4D483D',
   },
   button: {
-    marginTop: 20,
+    marginTop: 40,
     marginBottom: 30,
     borderRadius: 10,
     padding: 10,
@@ -434,7 +493,28 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     borderRadius: 10,
-    marginTop: Dimensions.get('window').height / 2,
+    marginTop: Dimensions.get('window').height / 2 + 40,
+  },
+  bottomModal: {
+    // backgroundColor: 'white',
+    borderRadius: 24,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: -15,
+    },
+    shadowOpacity: 0.24,
+    shadowRadius: 4,
+    elevation: 24,
+  },
+  modalContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 0,
+  },
+  bottomSheetContainer: {
+    flex: 1,
+    backgroundColor: '#ccc',
   },
 });
 export default CreateGroupFinalPage;

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useRef, useState, useEffect} from 'react';
+import React, {useCallback, useRef, useState, useEffect, useMemo} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -33,6 +33,11 @@ import {
   AlertNotificationRoot,
   Toast,
 } from 'react-native-alert-notification';
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -63,10 +68,24 @@ function CreateGroupSecondPage({navigation}: any) {
   const [selectedStartTime, setSelectedStartTime] = useState(new Date());
   const [selectedEndTime, setSelectedEndTime] = useState(new Date());
 
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-  const ownerId = useSelector((state: RootState) => state.persist.user.id);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['77%', '77%'], []);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+  const openBottomModal = () => {
+    bottomSheetRef.current?.present();
+  };
+
+  const closeBottomModal = () => {
+    bottomSheetRef.current?.close();
+  };
+
   const dispatch = useAppDispatch();
 
   const toggleDateModal = () => {
@@ -137,7 +156,7 @@ function CreateGroupSecondPage({navigation}: any) {
     setSelectedDate({});
     setSelectedDayes([]);
     setTimeout(() => {
-      toggleDateModal();
+      closeBottomModal();
     }, 100);
   };
 
@@ -171,123 +190,181 @@ function CreateGroupSecondPage({navigation}: any) {
 
   return (
     <SafeAreaView>
-      <ScrollView style={styles.groupCreateWrapper}>
-        <AlertNotificationRoot>
-          <View style={styles.stepWrapper}>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/check.png')} />
-              <Text style={styles.stepText}>그룹 이름</Text>
-            </View>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/secondCheck.png')} />
-              <Text style={styles.stepActiveText}>일정/시간 설정</Text>
-            </View>
-            <View style={styles.stepImg}>
-              <Image source={require('../resources/icons/third.png')} />
-              <Text style={styles.stepText}>그룹원 초대</Text>
-            </View>
-          </View>
-          <View style={styles.elementWrapper}>
-            <Text style={styles.elementLabel}>일정</Text>
-            <Text style={styles.elementSubLabel}>
-              원하는 날짜를 선택해주세요
-            </Text>
-            <Button
-              color="#21B8CD"
-              title="일정 설정하기"
-              onPress={toggleDateModal}
-            />
-            <Modal
-              animationType="slide"
-              transparent={false}
-              visible={isDateModalVisible}
-              onRequestClose={() => {
-                setIsDateModalVisible(!isDateModalVisible);
-              }}>
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <Calendar
-                    style={styles.calendar}
-                    markedDates={selectedDate}
-                    theme={{
-                      selectedDayBackgroundColor: '#21B8CD',
-                      arrowColor: '#21B8CD',
-                      dotColor: '#21B8CD',
-                      todayTextColor: 'black',
-                    }}
-                    onDayPress={day => {
-                      addSelectedDate(day.dateString);
-                    }}
-                  />
-                </View>
-                <View style={styles.modalButtonWrapper}>
-                  <Pressable
-                    style={styles.cancleButton}
-                    onPress={removeSelectedDate}>
-                    <Text style={styles.textStyle}>취소</Text>
-                  </Pressable>
-                  <Pressable
-                    style={styles.button}
-                    onPress={() => setIsDateModalVisible(!isDateModalVisible)}>
-                    <Text style={styles.textStyle}>확인</Text>
-                  </Pressable>
-                </View>
+      <BottomSheetModalProvider>
+        <ScrollView style={styles.groupCreateWrapper}>
+          <AlertNotificationRoot>
+            <View style={styles.stepWrapper}>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/check.png')} />
+                <Text style={styles.stepText}>그룹 이름</Text>
               </View>
-            </Modal>
-          </View>
-          <View style={styles.elementWrapper}>
-            <Text style={styles.elementLabel}>시작 시간</Text>
-            <Text style={styles.elementSubLabel}>시작시간을 설정해주세요</Text>
-            <Button
-              color="#21B8CD"
-              title="시작시간 설정하기"
-              onPress={toggleStartTimeModal}
-            />
-            <DatePicker
-              modal
-              title={null}
-              mode={'time'}
-              open={isStartTimeModalVisible}
-              date={selectedStartTime}
-              confirmText={'선택'}
-              cancelText={'취소'}
-              onConfirm={date => {
-                setSelectedStartTime(date);
-              }}
-              onCancel={() => {
-                toggleStartTimeModal;
-              }}
-            />
-          </View>
-          <View style={styles.elementWrapper}>
-            <Text style={styles.elementLabel}>종료 시간</Text>
-            <Text style={styles.elementSubLabel}>종료시간을 설정해주세요</Text>
-            <Button
-              color="#21B8CD"
-              title="종료시간 설정하기"
-              onPress={toggleEndTimeModal}
-            />
-            <DatePicker
-              modal
-              title={null}
-              mode={'time'}
-              open={isEndTimeModalVisible}
-              date={selectedEndTime}
-              confirmText={'선택'}
-              cancelText={'취소'}
-              onConfirm={date => {
-                setSelectedEndTime(date);
-              }}
-              onCancel={() => {
-                toggleStartTimeModal;
-              }}
-            />
-          </View>
-          <View style={styles.nextButton}>
-            <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
-          </View>
-        </AlertNotificationRoot>
-      </ScrollView>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/CellActive.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/secondCheck.png')} />
+                <Text style={styles.stepActiveText}>일정/시간 설정</Text>
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/Cell.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/Cell.png')} />
+              </View>
+              <View style={styles.stepImg}>
+                <Image source={require('../resources/icons/third.png')} />
+                <Text style={styles.stepText}>그룹원 초대</Text>
+              </View>
+            </View>
+            <View style={styles.elementWrapper}>
+              <Text style={styles.elementLabel}>일정</Text>
+              <Text style={styles.elementSubLabel}>
+                원하는 날짜를 선택해주세요
+              </Text>
+              <Button
+                color="#21B8CD"
+                title="일정 설정하기"
+                onPress={openBottomModal}
+              />
+              <BottomSheetModal
+                ref={bottomSheetRef}
+                index={0}
+                snapPoints={snapPoints}
+                // enableContentPanningGesture={false}
+                style={styles.bottomModal}>
+                <BottomSheetScrollView>
+                  <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                      <Calendar
+                        style={styles.calendar}
+                        markedDates={selectedDate}
+                        theme={{
+                          selectedDayBackgroundColor: '#21B8CD',
+                          arrowColor: '#21B8CD',
+                          dotColor: '#21B8CD',
+                          todayTextColor: 'black',
+                        }}
+                        onDayPress={day => {
+                          addSelectedDate(day.dateString);
+                        }}
+                      />
+                    </View>
+                    <View style={styles.modalButtonWrapper}>
+                      <Pressable
+                        style={styles.cancleButton}
+                        onPress={removeSelectedDate}>
+                        <Text style={styles.textStyle}>취소</Text>
+                      </Pressable>
+                      <Pressable
+                        style={styles.button}
+                        onPress={closeBottomModal}>
+                        <Text style={styles.textStyle}>확인</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </BottomSheetScrollView>
+              </BottomSheetModal>
+              {/* <Modal
+                animationType="slide"
+                transparent={false}
+                visible={isDateModalVisible}
+                onRequestClose={() => {
+                  setIsDateModalVisible(!isDateModalVisible);
+                }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Calendar
+                      style={styles.calendar}
+                      markedDates={selectedDate}
+                      theme={{
+                        selectedDayBackgroundColor: '#21B8CD',
+                        arrowColor: '#21B8CD',
+                        dotColor: '#21B8CD',
+                        todayTextColor: 'black',
+                      }}
+                      onDayPress={day => {
+                        addSelectedDate(day.dateString);
+                      }}
+                    />
+                  </View>
+                  <View style={styles.modalButtonWrapper}>
+                    <Pressable
+                      style={styles.cancleButton}
+                      onPress={removeSelectedDate}>
+                      <Text style={styles.textStyle}>취소</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() =>
+                        setIsDateModalVisible(!isDateModalVisible)
+                      }>
+                      <Text style={styles.textStyle}>확인</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal> */}
+            </View>
+            <View style={styles.elementWrapper}>
+              <Text style={styles.elementLabel}>시작 시간</Text>
+              <Text style={styles.elementSubLabel}>
+                시작시간을 설정해주세요
+              </Text>
+              <Button
+                color="#21B8CD"
+                title="시작시간 설정하기"
+                onPress={toggleStartTimeModal}
+              />
+              <DatePicker
+                modal
+                title={null}
+                mode={'time'}
+                open={isStartTimeModalVisible}
+                date={selectedStartTime}
+                confirmText={'선택'}
+                cancelText={'취소'}
+                onConfirm={date => {
+                  setSelectedStartTime(date);
+                }}
+                onCancel={() => {
+                  toggleStartTimeModal;
+                }}
+              />
+            </View>
+            <View style={styles.elementWrapper}>
+              <Text style={styles.elementLabel}>종료 시간</Text>
+              <Text style={styles.elementSubLabel}>
+                종료시간을 설정해주세요
+              </Text>
+              <Button
+                color="#21B8CD"
+                title="종료시간 설정하기"
+                onPress={toggleEndTimeModal}
+              />
+              <DatePicker
+                modal
+                title={null}
+                mode={'time'}
+                open={isEndTimeModalVisible}
+                date={selectedEndTime}
+                confirmText={'선택'}
+                cancelText={'취소'}
+                onConfirm={date => {
+                  setSelectedEndTime(date);
+                }}
+                onCancel={() => {
+                  toggleStartTimeModal;
+                }}
+              />
+            </View>
+            <View style={styles.nextButton}>
+              <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
+            </View>
+          </AlertNotificationRoot>
+        </ScrollView>
+      </BottomSheetModalProvider>
     </SafeAreaView>
   );
 }
@@ -406,7 +483,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   nextButton: {
-    marginTop: Dimensions.get('window').height / 4,
+    marginTop: Dimensions.get('window').height / 5,
   },
   modalButtonWrapper: {
     display: 'flex',
@@ -416,6 +493,27 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginLeft: 50,
     marginRight: 50,
+  },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  bottomModal: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: -15,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    elevation: 24,
   },
 });
 export default CreateGroupSecondPage;
