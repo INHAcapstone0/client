@@ -75,6 +75,7 @@ function CreateGroupPage({navigation}: any) {
 
   const moveToNextStep = () => {
     if (groupName === '') {
+      console.log(1);
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: '일정명을 입력해주세요',
@@ -100,8 +101,20 @@ function CreateGroupPage({navigation}: any) {
               <Text style={styles.stepActiveText}>일정 이름</Text>
             </View>
             <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
               <Image source={require('../resources/icons/second.png')} />
               <Text style={styles.stepText}>일정/시간 설정</Text>
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
             </View>
             <View style={styles.stepImg}>
               <Image source={require('../resources/icons/third.png')} />
