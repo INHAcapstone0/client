@@ -110,6 +110,7 @@ function HomePage({navigation}: any) {
               ref={bottomSheetModalRef}
               index={0}
               snapPoints={snapPoints}
+              enableContentPanningGesture={false}
               backdropComponent={BottomSheetBackDrop}
               style={styles.bottomModal}>
               <BottomSheetScrollView>
