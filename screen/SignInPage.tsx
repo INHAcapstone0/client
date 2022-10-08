@@ -97,7 +97,7 @@ function SignInPage({navigation}: any) {
         source={require('../resources/icons/LoginImage.png')}
         style={styles.logo}
       />
-      <Text style={styles.text}>로그인</Text>
+      {/* <Text style={styles.text}>로그인</Text> */}
       <FormInput
         labelValue={email}
         onChangeText={onChangeEmail}
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Kufam-SemiBoldItalic',
     fontSize: 28,
     marginBottom: 10,
-    color: '#3E382F',
+    color: '#21B8CD',
   },
   navButton: {
     marginTop: 15,

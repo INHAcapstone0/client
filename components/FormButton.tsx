@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 3,
-    backgroundColor: '#3E382F',
+    backgroundColor: '#21B8CD',
   },
   buttonText: {
     fontSize: 18,

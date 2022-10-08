@@ -218,7 +218,7 @@ function CreateGroupSecondPage({navigation}: any) {
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
-                <Text style={styles.stepText}>그룹 이름</Text>
+                <Text style={styles.stepText}>일정 이름</Text>
               </View>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/CellActive.png')} />

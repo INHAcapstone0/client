@@ -28,6 +28,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
+import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
@@ -48,7 +49,7 @@ function HomePage({navigation}: any) {
   const closeBottomModal = () => {
     bottomSheetModalRef.current?.close();
   };
-  const snapPoints = useMemo(() => ['80%'], []);
+  const snapPoints = useMemo(() => ['70%'], []);
 
   const getAllSchedules = async () => {
     try {
@@ -109,6 +110,7 @@ function HomePage({navigation}: any) {
               ref={bottomSheetModalRef}
               index={0}
               snapPoints={snapPoints}
+              backdropComponent={BottomSheetBackDrop}
               style={styles.bottomModal}>
               <BottomSheetScrollView>
                 <BottomComponent
