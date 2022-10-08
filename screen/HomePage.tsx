@@ -22,6 +22,7 @@ import BottomSheet, {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import Modal from 'react-native-modal';
 import ScheduleCard from '../components/ScheduleCard';
 import BottomComponent from '../components/BottomComponent';
 import {useSelector} from 'react-redux';
@@ -49,7 +50,16 @@ function HomePage({navigation}: any) {
     bottomSheetModalRef.current?.close();
   };
   const snapPoints = useMemo(() => ['80%'], []);
-
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+  const openModal = () => {
+    setModalVisible(true);
+  };
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   const getAllSchedules = async () => {
     try {
       const params = {
@@ -98,6 +108,7 @@ function HomePage({navigation}: any) {
                   setSelectedScheduleId={setSelectedScheduleId}
                   setBottomModalType={setBottomModalType}
                   openBottomModal={openBottomModal}
+                  openModal={openModal}
                   doRefresh={getAllSchedules}
                   navigation={navigation}
                 />
@@ -119,6 +130,62 @@ function HomePage({navigation}: any) {
                 />
               </BottomSheetScrollView>
             </BottomSheetModal>
+            <Modal
+              isVisible={isModalVisible}
+              animationIn={'slideInUp'}
+              animationOut={'slideOutDown'}
+              style={{
+                alignItems: 'center',
+              }}>
+              <View style={styles.modalContainer}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
+                  <Text style={styles.modalComment}>
+                    정말 스케줄을 떠나시겠습니까?
+                  </Text>
+                  <View style={styles.modalButtonArea}>
+                    <Pressable style={styles.modalButton} onPress={closeModal}>
+                      <Text style={styles.modalButtonText}>아니오</Text>
+                    </Pressable>
+                    <Pressable style={styles.modalButton} onPress={closeModal}>
+                      <Text style={styles.modalButtonText}>예</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              isVisible={isModalVisible}
+              animationIn={'slideInUp'}
+              animationOut={'slideOutDown'}
+              style={{
+                alignItems: 'center',
+              }}>
+              <View style={styles.modalContainer}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
+                  <Text style={styles.modalComment}>
+                    정말 스케줄을 떠나시겠습니까?
+                  </Text>
+                  <View style={styles.modalButtonArea}>
+                    <Pressable style={styles.modalButton} onPress={closeModal}>
+                      <Text style={styles.modalButtonText}>아니오</Text>
+                    </Pressable>
+                    <Pressable style={styles.modalButton} onPress={closeModal}>
+                      <Text style={styles.modalButtonText}>예</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
           </View>
         </ScrollView>
       </BottomSheetModalProvider>
@@ -129,6 +196,7 @@ function HomePage({navigation}: any) {
 const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,
+    backgroundColor: 'white',
   },
   label: {
     fontWeight: 'bold',
@@ -172,6 +240,37 @@ const styles = StyleSheet.create({
   },
   errIcon: {
     color: '#4D483D',
+  },
+  modalContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 195,
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 20,
+    color: 'black',
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
   },
 });
 export default HomePage;

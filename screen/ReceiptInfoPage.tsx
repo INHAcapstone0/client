@@ -14,7 +14,6 @@ import {
   ScrollView,
   Dimensions,
   Image,
-  Modal,
   Touchable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,6 +33,7 @@ import ReceiptCard from '../components/ReceiptCard';
 import {faXmark} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
 import AutoHeightImage from 'react-native-auto-height-image';
+import Modal from 'react-native-modal';
 
 function ReceiptInfoPage(route: any) {
   const accessToken = useSelector(
@@ -99,13 +99,7 @@ function ReceiptInfoPage(route: any) {
           />
         </Pressable>
       </View>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
+      <Modal isVisible={modalVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.modalHeader}>

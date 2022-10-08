@@ -19,8 +19,8 @@ interface ParticipantCardProps {
 function ParticipantCard({item}: ParticipantCardProps) {
   return (
     <View style={styles.card}>
+      <Image style={styles.userImage} source={{uri: item.User.img_url}} />
       <Text style={styles.userName}>
-        <Image style={styles.userImage} source={{uri: item.User.img_url}} />
         {'   '}
         {item.User.name}
       </Text>
@@ -31,15 +31,22 @@ function ParticipantCard({item}: ParticipantCardProps) {
 const styles = StyleSheet.create({
   card: {
     marginLeft: 20,
+    flexDirection: 'row',
   },
   userName: {
     height: 60,
     color: '#4D483D',
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
+    fontSize: 16,
+    marginTop: 10,
+  },
+  forRadius: {
+    borderRadius: 30,
   },
   userImage: {
-    width: 40,
-    height: 40,
+    borderRadius: 30,
+    width: 54,
+    height: 54,
   },
 });
 

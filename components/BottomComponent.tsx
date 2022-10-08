@@ -236,11 +236,11 @@ function BottomComponent({
     }, []);
     return (
       <ScrollView style={styles.memberInvitation}>
-        <Text style={styles.elementLabel}>그룹원 초대</Text>
+        <Text style={styles.modalTitle}>그룹원 초대</Text>
         <TextInput
           style={styles.serchTextInput}
           placeholder="그룹원 검색"
-          placeholderTextColor="#666"
+          placeholderTextColor="rgba(0, 0, 0, 0.25)"
           importantForAutofill="yes"
           onChangeText={onChangeSearchName}
           value={searchName}
@@ -249,41 +249,45 @@ function BottomComponent({
           returnKeyType="send"
           clearButtonMode="while-editing"
         />
-        {allUsers.map((user: userType) => {
-          if (user.name.includes(searchName)) {
-            return (
-              <TouchableHighlight
-                key={user.id}
-                underlayColor="#d9d4d4"
-                onPress={addToGroupMember(user)}>
-                <View style={styles.userWrapper}>
-                  <Image
-                    style={styles.userImage}
-                    source={{
-                      uri: user.img_url,
-                    }}
-                  />
-                  <Text style={styles.userName}>{user.name}</Text>
-                  {selectedUsers.includes(user) ? (
+        <Image
+          style={styles.magnifyingGlass}
+          source={require('../resources/icons/MagnifyingGlass.png')}
+        />
+        <ScrollView style={styles.userContainer}>
+          {allUsers.map(user => {
+            if (user.name.includes(searchName)) {
+              return (
+                <TouchableHighlight
+                  key={user.id}
+                  underlayColor="#d9d4d4"
+                  onPress={addToGroupMember(user)}>
+                  <View style={styles.userWrapper}>
                     <Image
-                      style={styles.checkButton}
-                      source={require('../resources/icons/CircleCheck.png')}
+                      style={styles.userImage}
+                      source={{
+                        uri: user.img_url,
+                      }}
                     />
-                  ) : (
-                    <Image
-                      style={styles.checkButton}
-                      source={require('../resources/icons/Circle.png')}
-                    />
-                  )}
-                </View>
-              </TouchableHighlight>
-            );
-          }
-        })}
-        <Pressable
-          onPress={InviteAdditionalMember}
-          style={styles.groupCreateButton}>
-          <Text style={styles.groupCreateButtonText}>초대하기</Text>
+                    <Text style={styles.userName}>{user.name}</Text>
+                    {selectedUsers.includes(user) ? (
+                      <Image
+                        style={styles.checkButton}
+                        source={require('../resources/icons/buttonCheck.png')}
+                      />
+                    ) : (
+                      <Image
+                        style={styles.checkButton}
+                        source={require('../resources/icons/buttonNoCheck.png')}
+                      />
+                    )}
+                  </View>
+                </TouchableHighlight>
+              );
+            }
+          })}
+        </ScrollView>
+        <Pressable style={styles.button} onPress={closeBottomModal}>
+          <Text style={styles.textStyle}>초대 하기</Text>
         </Pressable>
       </ScrollView>
     );
@@ -304,7 +308,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     fontSize: 24,
     marginLeft: 20,
     marginBottom: 10,
@@ -321,7 +325,7 @@ const styles = StyleSheet.create({
   },
   errMsg: {
     fontSize: 20,
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     color: '#4D483D',
   },
   textInput: {
@@ -331,17 +335,17 @@ const styles = StyleSheet.create({
   },
   memberInvitation: {
     minHeight: 500,
-    borderWidth: 1,
     borderColor: '#4D483D',
     paddingLeft: 20,
     paddingRight: 20,
   },
   serchTextInput: {
     marginBottom: 20,
+    marginLeft: 20,
     paddingLeft: 20,
-    borderRadius: 20,
-    borderWidth: 2,
+    borderBottomWidth: 1,
     borderColor: '#4D483D',
+    width: Dimensions.get('window').width * 0.9,
   },
   userWrapper: {
     display: 'flex',
@@ -403,6 +407,32 @@ const styles = StyleSheet.create({
   checkButton: {
     position: 'absolute',
     right: 17,
+  },
+  button: {
+    marginTop: 40,
+    marginBottom: 30,
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: '#21B8CD',
+  },
+  bottomSheetView: {
+    backgroundColor: 'red',
+  },
+
+  magnifyingGlass: {
+    position: 'absolute',
+    top: 55,
+    right: 30,
+  },
+
+  userContainer: {
+    height: 300,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
