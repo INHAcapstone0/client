@@ -29,6 +29,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
+import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 
 function HomePage({navigation}: any) {
   const accessToken = useSelector(
@@ -120,6 +121,8 @@ function HomePage({navigation}: any) {
               ref={bottomSheetModalRef}
               index={0}
               snapPoints={snapPoints}
+              enableContentPanningGesture={false}
+              backdropComponent={BottomSheetBackDrop}
               style={styles.bottomModal}>
               <BottomSheetScrollView>
                 <BottomComponent

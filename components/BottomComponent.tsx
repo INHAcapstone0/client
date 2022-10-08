@@ -235,8 +235,8 @@ function BottomComponent({
       getAllUsers();
     }, []);
     return (
-      <ScrollView style={styles.memberInvitation}>
-        <Text style={styles.modalTitle}>그룹원 초대</Text>
+      <View style={styles.memberInvitation}>
+      <Text style={styles.modalTitle}>그룹원 초대</Text>
         <TextInput
           style={styles.serchTextInput}
           placeholder="그룹원 검색"
@@ -289,7 +289,7 @@ function BottomComponent({
         <Pressable style={styles.button} onPress={closeBottomModal}>
           <Text style={styles.textStyle}>초대 하기</Text>
         </Pressable>
-      </ScrollView>
+      </View>
     );
   } else {
     return <View />;
@@ -335,17 +335,16 @@ const styles = StyleSheet.create({
   },
   memberInvitation: {
     minHeight: 500,
-    borderColor: '#4D483D',
     paddingLeft: 20,
     paddingRight: 20,
   },
   serchTextInput: {
-    marginBottom: 20,
-    marginLeft: 20,
-    paddingLeft: 20,
-    borderBottomWidth: 1,
-    borderColor: '#4D483D',
-    width: Dimensions.get('window').width * 0.9,
+    marginBottom: 40,
+    fontSize: 17,
+    borderBottomWidth: 1.5,
+    borderColor: 'gray',
+    fontFamily: 'Roboto',
+    fontWeight: '900',
   },
   userWrapper: {
     display: 'flex',
@@ -407,6 +406,14 @@ const styles = StyleSheet.create({
   checkButton: {
     position: 'absolute',
     right: 17,
+  },
+  magnifyingGlass: {
+    position: 'absolute',
+    top: 15,
+    right: 30,
+  },
+  userContainer: {
+    height: 300,
   },
   button: {
     marginTop: 40,
