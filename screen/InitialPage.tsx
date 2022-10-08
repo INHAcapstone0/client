@@ -22,16 +22,25 @@ import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import {
   requestUserPermission,
   notificationListner,
 } from '../utils/push_notification_helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {useRoute} from '@react-navigation/native';
 const Tab = createBottomTabNavigator();
 
 function InitialPage({navigation}: any) {
   const isLoggedIn = useSelector((state: RootState) => state.persist.user.name);
+  const route = useRoute();
+  // console.log(route.name);
+
+  useEffect(() => {
+    console.log(route.name);
+  }, [route]);
 
   return isLoggedIn === '' ? (
     <SafeAreaView>
@@ -54,6 +63,8 @@ function InitialPage({navigation}: any) {
   ) : (
     <Tab.Navigator
       screenOptions={{
+        tabBarStyle: {height: 60, borderTopWidth: 1},
+        tabBarInactiveTintColor: 'gray',
         tabBarActiveTintColor: 'black',
       }}>
       <Tab.Screen
@@ -61,13 +72,9 @@ function InitialPage({navigation}: any) {
         component={HomePage}
         options={{
           headerShown: false,
-          tabBarLabel: '홈',
+          tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="home" color={color} size={26} />
-            <Image
-              source={require('../resources/icons/home.png')}
-              style={styles.alarmIcon}
-            />
+            <Entypo name="home" size={25} color={color} />
           ),
         }}
       />
@@ -76,12 +83,16 @@ function InitialPage({navigation}: any) {
         component={CalculatePage}
         options={{
           headerShown: false,
-          tabBarLabel: '정산',
+          tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="calculator" color={color} size={26} />
-            <Image
-              source={require('../resources/icons/Calculator.png')}
-              style={styles.alarmIcon}
+            // <Image
+            //   source={require('../resources/icons/Calculator.png')}
+            //   style={styles.alarmIcon}
+            // />
+            <MaterialCommunityIcons
+              name="calculator-variant"
+              size={30}
+              color={color}
             />
           ),
         }}
@@ -93,7 +104,7 @@ function InitialPage({navigation}: any) {
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="pluscircleo" color={color} size={26} />
+            // <AntDesign name="plus" size={30} color={color} />
             <Image
               source={require('../resources/icons/add.png')}
               style={styles.alarmIcon}
@@ -106,13 +117,13 @@ function InitialPage({navigation}: any) {
         component={AlarmPage}
         options={{
           headerShown: false,
-          tabBarLabel: '알람',
+          tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <MaterialCommunityIcons name="bell" color={color} size={26} />
-            <Image
-              source={require('../resources/icons/Notification.png')}
-              style={styles.alarmIcon}
-            />
+            <FontAwesome name="bell" size={20} color={color} />
+            // <Image
+            //   source={require('../resources/icons/Notification.png')}
+            //   style={styles.alarmIcon}
+            // />
           ),
         }}
       />
@@ -121,13 +132,13 @@ function InitialPage({navigation}: any) {
         component={SettingPage}
         options={{
           headerShown: false,
-          tabBarLabel: '세팅',
+          tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="setting" color={color} size={26} />
-            <Image
-              source={require('../resources/icons/Setting.png')}
-              style={styles.alarmIcon}
-            />
+            <Ionicons name="settings" size={25} color={color} />
+            // <Image
+            //   source={require('../resources/icons/Setting.png')}
+            //   style={styles.alarmIcon}
+            // />
           ),
         }}
       />

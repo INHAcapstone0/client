@@ -15,11 +15,26 @@ import {
   Image,
   TouchableHighlight,
   TouchableOpacity,
+  Button,
+  Modal,
+  Dimensions,
 } from 'react-native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
-import {RootState} from '../store/Store';
+import {RootState, useAppDispatch} from '../store/Store';
+import FormButton from '../components/FormButton';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DatePicker from 'react-native-date-picker';
+import {scheduleAction} from '../slices/Schedule';
+import {
+  ALERT_TYPE,
+  Dialog,
+  AlertNotificationRoot,
+  Toast,
+  IConfigDialog,
+  IConfigToast,
+} from 'react-native-alert-notification';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -37,336 +52,189 @@ interface userType {
   updatedAt: string;
 }
 
+type IProps = {
+  dialogConfig?: Pick<IConfigDialog, 'closeOnOverlayTap' | 'autoClose'>;
+  toastConfig?: Pick<
+    IConfigToast,
+    'autoClose' | 'titleStyle' | 'textBodyStyle'
+  >;
+  theme?: 'light' | 'dark';
+  colors?: [IColors, IColors] /** ['light_colors' , 'dark_colors'] */;
+};
+type IColors = {
+  label: string;
+  card: string;
+  overlay: string;
+  success: string;
+  danger: string;
+  warning: string;
+};
+
 function CreateGroupPage({navigation}: any) {
   const [groupName, setGroupName] = useState('');
-  const [searchName, setSearchName] = useState('');
   const groupNameRef = useRef<TextInput | null>(null);
-  const [selectedDate, setSelectedDate] = useState<selectDateType>({});
-  const [selectedDayes, setSelectedDayes] = useState<Array<string>>([]);
-  const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
-  const [allUsers, setAllUsers] = useState<Array<userType>>([]);
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-  const ownerId = useSelector((state: RootState) => state.persist.user.id);
+
+  const [selectedStartTime, setSelectedStartTime] = useState(new Date());
+  const [selectedEndTime, setSelectedEndTime] = useState(new Date());
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     groupNameRef.current?.focus();
-    getAllUsers();
   }, []);
 
-  const getAllUsers = async () => {
-    try {
-      const response = await axios.get(
-        'http://146.56.188.32:8002/users?exceptMe=true',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      setAllUsers(response.data);
-    } catch (err: any) {
-      console.log(err.response);
-    }
-  };
+  useEffect(() => {
+    console.log(String(selectedStartTime.getHours()).padStart(2, '0'));
+    console.log(selectedStartTime.getMinutes());
+    console.log(String(selectedEndTime.getHours()).padStart(2, '0'));
+    console.log(selectedEndTime.getMinutes());
+  }, [selectedStartTime, selectedEndTime]);
 
   const onChangeGroupName = useCallback((text: string) => {
     setGroupName(text.trim());
   }, []);
 
-  const onChangeSearchName = useCallback((text: string) => {
-    setSearchName(text.trim());
-  }, []);
-
-  const addSelectedDate = (date: string) => {
-    if (selectedDate[date] !== undefined) {
-      setSelectedDate({});
-      setSelectedDayes([]);
+  const moveToNextStep = () => {
+    if (groupName === '') {
+      console.log(1);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '일정명을 입력해주세요',
+      });
+      return;
     } else {
-      const newlyAddedDate: any = {};
-      if (Object.keys(selectedDate).length > 0) {
-        const newDate = new Date(date);
-        const minDate = new Date(selectedDayes[0]);
-        const maxDate = new Date(selectedDayes[selectedDayes.length - 1]);
-        while (newDate < minDate) {
-          newlyAddedDate[newDate.toISOString().split('T')[0]] = {
-            selected: true,
-          };
-          setSelectedDate({...selectedDate, ...newlyAddedDate});
-          setSelectedDayes([
-            ...selectedDayes,
-            newDate.toISOString().split('T')[0],
-          ]);
-          newDate.setDate(newDate.getDate() + 1);
-        }
-        while (newDate > maxDate) {
-          newlyAddedDate[newDate.toISOString().split('T')[0]] = {
-            selected: true,
-          };
-          setSelectedDate({...selectedDate, ...newlyAddedDate});
-          setSelectedDayes([
-            ...selectedDayes,
-            newDate.toISOString().split('T')[0],
-          ]);
-          newDate.setDate(newDate.getDate() - 1);
-        }
-      } else {
-        const newDate: any = {};
-        newDate[date] = {selected: true};
-        setSelectedDate({...selectedDate, ...newDate});
-        setSelectedDayes([...selectedDayes, date]);
-      }
-    }
-  };
-
-  const addToGroupMember = (user: userType) => (event: any) => {
-    if (selectedUsers.includes(user)) {
-      const newSelectedUsers = selectedUsers.filter(
-        selectedUser => selectedUser.id !== user.id,
+      dispatch(
+        scheduleAction.setGroupName({
+          groupName: groupName,
+        }),
       );
-      setSelectedUseres([...newSelectedUsers]);
-    } else {
-      setSelectedUseres([...selectedUsers, user]);
-    }
-  };
-
-  const createGroup = async () => {
-    if (Object.keys(selectedDate).length < 2) {
-      Alert.alert('시작일과 종료일을 선택해주세요');
-    }
-    try {
-      const orderedDate = Object.keys(selectedDate).sort(
-        (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
-      );
-      const selectedUsersId: string[] = [];
-
-      selectedUsers.filter(user => selectedUsersId.push(user.id));
-      console.log(
-        groupName,
-        ownerId,
-        orderedDate[0],
-        orderedDate[orderedDate.length - 1],
-        selectedUsersId,
-      );
-
-      const result = await axios.post(
-        'http://146.56.188.32:8002/schedules',
-        {
-          name: groupName,
-          owner_id: ownerId,
-          startAt: orderedDate[0].replace(/\-/g, ''),
-          endAt: orderedDate[orderedDate.length - 1].replace(/\-/g, ''),
-          participants: selectedUsersId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log(result);
-      Alert.alert('알림', '그룹생성이 완료되었습니다', [
-        {
-          text: '확인',
-          onPress: () => {
-            navigation.reset({
-              routes: [
-                {
-                  name: 'HomePage',
-                },
-              ],
-            });
-          },
-        },
-      ]);
-    } catch (err: any) {
-      Alert.alert(err.response.data.msg);
+      navigation.navigate('CreateGroupSecondPage');
     }
   };
 
   return (
     <SafeAreaView>
       <ScrollView style={styles.groupCreateWrapper}>
-        <View style={styles.elementWrapper}>
-          <Text style={styles.elementLabel}>그룹 이름</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={onChangeGroupName}
-            placeholder="그룹명을 입력해주세요"
-            placeholderTextColor="#666"
-            importantForAutofill="yes"
-            textContentType="familyName"
-            value={groupName}
-            returnKeyType="next"
-            clearButtonMode="while-editing"
-            ref={groupNameRef}
-            blurOnSubmit={false}
-          />
-        </View>
-        <View style={styles.elementWrapper}>
-          <Text style={styles.elementLabel}>일정 선택</Text>
-          <Calendar
-            style={styles.calendar}
-            markedDates={selectedDate}
-            theme={{
-              selectedDayBackgroundColor: '#4D483D',
-              arrowColor: '#4D483D',
-              dotColor: '#4D483D',
-              todayTextColor: '#4D483D',
-            }}
-            onDayPress={day => {
-              addSelectedDate(day.dateString);
-            }}
-          />
-        </View>
-        <View style={styles.elementWrapper}>
-          <Text style={styles.elementLabel}>그룹원 선택</Text>
-          <View style={styles.memberInvitation}>
-            <TextInput
-              style={styles.serchTextInput}
-              placeholder="그룹원 검색"
-              placeholderTextColor="#666"
-              importantForAutofill="yes"
-              onChangeText={onChangeSearchName}
-              value={searchName}
-              autoComplete="name"
-              textContentType="name"
-              returnKeyType="send"
-              clearButtonMode="while-editing"
-            />
-            <>
-              {allUsers.map(user => {
-                if (user.name.includes(searchName)) {
-                  return (
-                    <TouchableHighlight
-                      key={user.id}
-                      underlayColor="#d9d4d4"
-                      onPress={addToGroupMember(user)}>
-                      <View style={styles.userWrapper}>
-                        <Image
-                          style={styles.userImage}
-                          source={{
-                            uri: 'https://firebasestorage.googleapis.com/v0/b/instagram-aaebd.appspot.com/o/profile_image.jpg?alt=media&token=5bebe0eb-6552-40f6-9aef-cd11d816b619',
-                          }}
-                        />
-                        <Text style={styles.userName}>{user.name}</Text>
-                        {selectedUsers.includes(user) ? (
-                          <Image
-                            style={styles.checkButton}
-                            source={require('../resources/icons/CircleCheck.png')}
-                          />
-                        ) : (
-                          <Image
-                            style={styles.checkButton}
-                            source={require('../resources/icons/Circle.png')}
-                          />
-                        )}
-                      </View>
-                    </TouchableHighlight>
-                  );
-                }
-              })}
-            </>
+        <AlertNotificationRoot
+          colors={[
+            {
+              label: '',
+              card: '#e5e8e8',
+              overlay: '',
+              success: '',
+              danger: '',
+              warning: '',
+            },
+            {
+              label: 'gray',
+              card: 'gray',
+              overlay: 'gray',
+              success: 'gray',
+              danger: 'gray',
+              warning: 'gray',
+            },
+          ]}>
+          <View style={styles.stepWrapper}>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/first.png')} />
+              <Text style={styles.stepActiveText}>일정 이름</Text>
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/second.png')} />
+              <Text style={styles.stepText}>일정/시간 설정</Text>
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/Cell.png')} />
+            </View>
+            <View style={styles.stepImg}>
+              <Image source={require('../resources/icons/third.png')} />
+              <Text style={styles.stepText}>그룹원 초대</Text>
+            </View>
           </View>
-        </View>
-        <Pressable onPress={createGroup} style={styles.groupCreateButton}>
-          <Text style={styles.groupCreateButtonText}>그룹 생성하기</Text>
-        </Pressable>
+          <View style={styles.elementWrapper}>
+            <Text style={styles.elementLabel}>일정 이름</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={onChangeGroupName}
+              placeholder="일정명을 입력해주세요"
+              // placeholderTextColor="#21B8CD"
+              importantForAutofill="yes"
+              textContentType="familyName"
+              value={groupName}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={groupNameRef}
+              blurOnSubmit={false}
+            />
+          </View>
+          <View style={styles.nextButton}>
+            <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
+          </View>
+        </AlertNotificationRoot>
       </ScrollView>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  textInput: {
-    padding: 5,
-    borderBottomWidth: 0.3,
-    borderColor: '#4D483D',
-  },
   groupCreateWrapper: {
     backgroundColor: 'white',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
     padding: 20,
+  },
+  textInput: {
+    padding: 5,
+    borderBottomWidth: 1,
+    borderColor: '#D9D9D9',
+    fontFamily: 'Jalnan',
+  },
+  stepWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    textAlign: 'center',
+    margin: 5,
+    paddingBottom: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: '#D9D9D9',
+  },
+  stepImg: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepActiveText: {
+    marginTop: 5,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  stepText: {
+    marginTop: 5,
+    fontSize: 12,
   },
   elementWrapper: {
     paddingBottom: 25,
   },
   elementLabel: {
-    fontWeight: 'bold',
-    fontSize: 20,
+    color: 'black',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
+    fontSize: 18,
     marginTop: 10,
     marginBottom: 20,
   },
-  calendar: {
-    borderWidth: 0.9,
-    // borderColor: 'white',
-    // backgroundColor: '#FFDCFF',
-  },
-  memberInvitation: {
-    minHeight: 500,
-    borderWidth: 1,
-    borderColor: '#4D483D',
-  },
-  serchTextInput: {
-    margin: 20,
-    paddingLeft: 20,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#4D483D',
-  },
-  userWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: 10,
-    paddingLeft: 20,
-  },
-  userImage: {
-    width: 54,
-    height: 54,
-    borderRadius: 30,
-    marginRight: 10,
-  },
-  userName: {
-    fontSize: 15,
-    fontWeight: '400',
-    color: '#000000',
-  },
-  selectedUserWrapper: {
-    paddingRight: 10,
-    paddingBottom: 10,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  selectedUserContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  selectedUserName: {
-    fontSize: 10,
-    fontWeight: '400',
-    color: '#000000',
-  },
-  selectedUserImage: {
-    width: 54,
-    height: 54,
-    borderRadius: 30,
-  },
-  groupCreateButton: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: 50,
-    textAlign: 'center',
-    backgroundColor: 'gray',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  groupCreateButtonText: {
-    color: 'white',
-  },
-  checkButton: {
-    position: 'absolute',
-    right: 17,
+  nextButton: {
+    marginTop: Dimensions.get('window').height / 2,
   },
 });
 export default CreateGroupPage;
