@@ -13,6 +13,7 @@ import {
   Button,
   ScrollView,
   Dimensions,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -72,7 +73,6 @@ function HomePage({navigation}: any) {
   };
 
   useEffect(() => {
-    console.log(navigation);
     getAllSchedules();
   }, []);
 
@@ -80,7 +80,7 @@ function HomePage({navigation}: any) {
     //갖고있는 스케줄이 0개일 경우
     return (
       <View style={styles.errScreen}>
-        <FontAwesomeIcon style={styles.errIcon} icon={faSuitcase} size={80} />
+        <FontAwesomeIcon icon={faSuitcase} size={150} style={styles.errIcon} />
         <Text style={styles.errMsg}>{'\n'}보유하고 계신 일정이 없으시네요</Text>
         <Text style={styles.errMsg}>여행 일정을 등록해 보세요!</Text>
       </View>
@@ -129,9 +129,6 @@ function HomePage({navigation}: any) {
 const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-    backgroundColor: 'white',
   },
   label: {
     fontWeight: 'bold',
@@ -159,20 +156,21 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 24,
   },
-  errIcon: {
-    color: '#4D483D',
+  errImg: {
+    height: 200,
+    width: 200,
   },
   errScreen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-    backgroundColor: 'white',
   },
   errMsg: {
     fontSize: 20,
     fontFamily: 'Jalnan',
+    color: '#4D483D',
+  },
+  errIcon: {
     color: '#4D483D',
   },
 });

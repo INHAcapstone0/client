@@ -13,6 +13,7 @@ import {
   Button,
   ScrollView,
   Dimensions,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -62,6 +63,8 @@ function ExpenseHistoryPage(route: any) {
   const [categoryList, setCategoryList] = useState(Array);
   const getScheduleInfo = async () => {
     try {
+      console.log('scheduleId :', scheduleId);
+      console.log('accessTocken : ', accessToken);
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -74,10 +77,15 @@ function ExpenseHistoryPage(route: any) {
         setOwnerFlag(true);
       }
 
-      if (totalPrice == null) {
-        setTotalPrice(0);
+      console.log('total_pay', scheduleInfo.total_pay);
+      if (scheduleInfo.total_pay == null) {
+        console.log('null?');
+        scheduleInfo.total_pay = 0;
       }
+      console.log('scheduleInfo : ', scheduleInfo);
     } catch (err: AxiosError | any) {
+      console.log('here?');
+      console.log(err.response.data.msg);
       console.log(err);
     }
   };
@@ -127,8 +135,8 @@ function ExpenseHistoryPage(route: any) {
       }
     }
   };
-
   useEffect(() => {
+    getScheduleInfo();
     getReceiptsInfo('전체')
       .then(receipts => {
         receipts.map((item: {category: string}) => {
@@ -137,11 +145,11 @@ function ExpenseHistoryPage(route: any) {
           }
         });
         categoryList.sort();
+        console.log('category list : ', categoryList);
       })
       .catch(err => {
         console.log(err);
       });
-    getScheduleInfo();
   }, categoryList);
 
   if (errFlag) {
@@ -163,7 +171,7 @@ function ExpenseHistoryPage(route: any) {
           </View>
         </View>
         <View style={styles.errScreen}>
-          <FontAwesomeIcon style={styles.errIcon} icon={faReceipt} size={80} />
+          <FontAwesomeIcon icon={faReceipt} size={150} style={styles.errIcon} />
           <Text style={styles.errMsg}>{'\n'}지출 내역이 없으시네요</Text>
           <Text style={styles.errMsg}>영수증을 등록해 보세요!</Text>
         </View>
@@ -287,10 +295,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errScreen: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: Dimensions.get('window').height * 0.6,
+    height: Dimensions.get('window').height * 0.7,
+  },
+  errImg: {
+    height: 200,
+    width: 200,
   },
   errMsg: {
     fontSize: 20,

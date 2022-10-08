@@ -94,6 +94,7 @@ function SelectReceiptPage({navigation}: any) {
     });
   };
   return (
+
     <View style={styles.receiptPage}>
       <Text style={styles.text}>영수증을 등록해주세요</Text>
       <View style={styles.imageContainer}>
@@ -117,9 +118,13 @@ function SelectReceiptPage({navigation}: any) {
       </Text>
       <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text>
       <Image source={selectImg} />
-      {/* <Pressable>
+      <Pressable
+        onPress={() => {
+          console.log(route);
+          route.navigation.navigate('ReceiptUploadPage');
+        }}>
         <Text style={styles.nextButton}>다음</Text>
-      </Pressable> */}
+      </Pressable>
     </View>
   );
 }

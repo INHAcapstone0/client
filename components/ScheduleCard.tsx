@@ -93,19 +93,19 @@ function ScheduleCard({
               onPress={() => {
                 closeMenu();
                 setSelectedScheduleId(item.id);
-                setBottomModalType('지출요약');
+                setBottomModalType('멤버목록_호스트');
                 openBottomModal();
               }}>
-              <Text style={styles.cardMenuItem}>지출 요약 확인하기</Text>
+              <Text style={styles.cardMenuItem}>멤버 추가하기</Text>
             </MenuItem>
             <MenuItem
               onPress={() => {
                 closeMenu();
                 setSelectedScheduleId(item.id);
-                setBottomModalType('멤버목록_호스트');
+                setBottomModalType('멤버목록_멤버');
                 openBottomModal();
               }}>
-              <Text style={styles.cardMenuItem}>멤버 추가하기</Text>
+              <Text style={styles.cardMenuItem}>멤버 확인하기</Text>
             </MenuItem>
             <MenuItem
               onPress={() => {
@@ -158,10 +158,9 @@ function ScheduleCard({
           {startDate} ~ {endDate}
         </Text>
         <View style={styles.cardBody}>
-          <Text style={styles.cardTotalPrice}>
-            {'\n'}
-            {totalPrice} 원{'\n'}
-          </Text>
+          <View style={styles.cardTotalPriceArea}>
+            <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+          </View>
           <View style={styles.buttonArea}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -199,15 +198,6 @@ function ScheduleCard({
               </Text>
             }
             onRequestClose={closeMenu}>
-            <MenuItem
-              onPress={() => {
-                closeMenu();
-                setSelectedScheduleId(item.id);
-                setBottomModalType('지출요약');
-                openBottomModal();
-              }}>
-              <Text style={styles.cardMenuItem}>지출 요약 확인하기</Text>
-            </MenuItem>
             <MenuItem
               onPress={() => {
                 closeMenu();
@@ -259,10 +249,9 @@ function ScheduleCard({
           {startDate} ~ {endDate}
         </Text>
         <View style={styles.cardBody}>
-          <Text style={styles.cardTotalPrice}>
-            {'\n'}
-            {totalPrice} 원{'\n'}
-          </Text>
+          <View style={styles.cardTotalPriceArea}>
+            <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+          </View>
           <View style={styles.buttonArea}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -333,9 +322,15 @@ const styles = StyleSheet.create({
     color: '#FFB900',
     marginTop: 12,
   },
+  cardTotalPriceArea: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 70,
+    paddingTop: 10,
+  },
   cardTotalPrice: {
     color: '#4D483D',
-    marginLeft: 7,
     fontFamily: 'Jalnan',
     fontSize: 25,
   },
