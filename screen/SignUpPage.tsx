@@ -122,7 +122,7 @@ function SignUpPage({navigation}: any) {
         source={require('../resources/icons/LoginImage.png')}
         style={styles.logo}
       />
-      <Text style={styles.text}>회원가입</Text>
+      {/* <Text style={styles.text}>회원가입</Text> */}
       <View style={styles.formWrapper}>
         <FormInput
           labelValue={email}
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   duplicateButton: {
-    backgroundColor: 'gray',
+    backgroundColor: '#21B8CD',
     paddingHorizontal: 10,
     paddingVertical: 10,
     height: Dimensions.get('window').height / 16,
@@ -231,11 +231,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   duplicateButtonActive: {
-    backgroundColor: '#4D483D',
+    backgroundColor: '#21B8CD',
   },
   duplicateButtonText: {
     color: 'white',
     fontSize: 12,
+    paddingTop: 5,
   },
   container: {
     backgroundColor: 'white',
