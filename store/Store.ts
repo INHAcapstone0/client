@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 import {useDispatch} from 'react-redux';
-import {persistedReducer} from './reducer';
+import {persistedReducer} from './Reducer';
 
 const store = configureStore({
   reducer: {persist: persistedReducer},

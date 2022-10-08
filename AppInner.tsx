@@ -19,6 +19,7 @@ import CapturePage from './screen/CapturePage';
 import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
 import SelectReceiptPage from './screen/SelectReceiptPage';
 import ReceiptInfoPage from './screen/ReceiptInfoPage';
+import ReceiptUploadPage from './screen/ReceiptUploadPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 
@@ -91,6 +92,7 @@ function AppInner() {
         />
         <Stack.Screen name="ReceiptInfoPage" component={ReceiptInfoPage} />
         <Stack.Screen name="SelectReceiptPage" component={SelectReceiptPage} />
+        <Stack.Screen name="ReceiptUploadPage" component={ReceiptUploadPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

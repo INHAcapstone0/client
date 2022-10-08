@@ -31,26 +31,21 @@ import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 import ReceiptCard from '../components/ReceiptCard';
 import {faReceipt} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
+import {WebView} from 'react-native-webview';
 
-function SelectReceiptPage(route: any) {
+function ReceiptUploadPage() {
   return (
-    <View>
-      <Pressable onPress={() => {}}>
-        <Text>카메라</Text>
-      </Pressable>
-      <Pressable onPress={() => {}}>
-        <Text>갤러리</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          console.log(route);
-          route.navigation.navigate('ReceiptUploadPage');
-        }}>
-        <Text>영수증 수동 등록 페이지</Text>
-      </Pressable>
+    <View style={styles.webview}>
+      <WebView source={{uri: 'http://192.168.43.2:3000/'}} />
+      <Text>웹뷰 테스트</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
-export default SelectReceiptPage;
+const styles = StyleSheet.create({
+  webview: {
+    height: 300,
+    width: 300,
+  },
+});
+export default ReceiptUploadPage;
