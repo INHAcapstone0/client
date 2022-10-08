@@ -236,6 +236,7 @@ function BottomComponent({
     }, []);
     return (
       <View style={styles.memberInvitation}>
+      <Text style={styles.modalTitle}>그룹원 초대</Text>
         <TextInput
           style={styles.serchTextInput}
           placeholder="그룹원 검색"
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     fontSize: 24,
     marginLeft: 20,
     marginBottom: 10,
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
   },
   errMsg: {
     fontSize: 20,
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     color: '#4D483D',
   },
   textInput: {
@@ -344,7 +345,6 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     fontFamily: 'Roboto',
     fontWeight: '900',
-    position: 'relative',
   },
   userWrapper: {
     display: 'flex',
@@ -422,6 +422,19 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     backgroundColor: '#21B8CD',
+  },
+  bottomSheetView: {
+    backgroundColor: 'red',
+  },
+
+  magnifyingGlass: {
+    position: 'absolute',
+    top: 55,
+    right: 30,
+  },
+
+  userContainer: {
+    height: 300,
   },
   textStyle: {
     color: 'white',

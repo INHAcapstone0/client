@@ -94,7 +94,6 @@ function SelectReceiptPage({navigation}: any) {
     });
   };
   return (
-
     <View style={styles.receiptPage}>
       <Text style={styles.text}>영수증을 등록해주세요</Text>
       <View style={styles.imageContainer}>
@@ -120,8 +119,7 @@ function SelectReceiptPage({navigation}: any) {
       <Image source={selectImg} />
       <Pressable
         onPress={() => {
-          console.log(route);
-          route.navigation.navigate('ReceiptUploadPage');
+          navigation.navigate('ReceiptUploadPage');
         }}>
         <Text style={styles.nextButton}>다음</Text>
       </Pressable>

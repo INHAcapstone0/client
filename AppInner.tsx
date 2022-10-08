@@ -16,10 +16,10 @@ import AlarmPage from './screen/AlarmPage';
 import CreateGroupPage from './screen/CreateGroupPage';
 import ExpenseHistoryPage from './screen/ExpenseHistoryPage';
 import SelectReceiptPage from './screen/SelectReceiptPage';
-import ReceiptInfoPage from './screen/ReceiptInfoPage';-
-import ReceiptUploadPage from './screen/ReceiptUploadPage';-
+import ReceiptInfoPage from './screen/ReceiptInfoPage';
+import ReceiptUploadPage from './screen/ReceiptUploadPage';
 import CreateGroupSecondPage from './screen/CreateGroupSecondPage';
-import CreateGroupFinalPage from './screen/CreateGroupFinalPage';-
+import CreateGroupFinalPage from './screen/CreateGroupFinalPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 

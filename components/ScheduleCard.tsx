@@ -11,6 +11,8 @@ import {
   Dimensions,
   Alert,
   Button,
+  Pressable,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -29,6 +31,7 @@ interface ScheduleCardProps {
   setBottomModalType: (modalType: string) => void;
   openBottomModal: () => void;
   doRefresh: () => void;
+  openModal: () => void;
   navigation: any;
 }
 function ScheduleCard({
@@ -37,11 +40,13 @@ function ScheduleCard({
   setBottomModalType,
   openBottomModal,
   doRefresh,
+  openModal,
   navigation: {navigate},
 }: ScheduleCardProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
@@ -75,18 +80,28 @@ function ScheduleCard({
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={styles.cardTitle}>
-              {item.name}{' '}
-              <FontAwesomeIcon icon={faCrown} style={styles.cardHostIcon} />
-            </Text>
+            <View>
+              <Text style={styles.cardTitleText}>
+                {item.name}{' '}
+                <FontAwesomeIcon icon={faCrown} style={styles.cardHostIcon} />
+              </Text>
+            </View>
+            <View style={styles.cardDateArea}>
+              <Text style={styles.cardDateText}>
+                {startDate} ~ {endDate}
+              </Text>
+            </View>
           </View>
           <Menu
             visible={visible}
             anchor={
-              <Text onPress={openMenu} style={styles.cardMenuIcon}>
-                {' '}
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </Text>
+              <Pressable onPress={openMenu}>
+                <FontAwesomeIcon
+                  style={styles.cardMenuIcon}
+                  size={25}
+                  icon={faEllipsisV}
+                />
+              </Pressable>
             }
             onRequestClose={closeMenu}>
             <MenuItem
@@ -119,48 +134,21 @@ function ScheduleCard({
             <MenuItem
               onPress={() => {
                 closeMenu();
-                Alert.alert(
-                  '알림',
-                  '당신이 만든 그룹을 떠나면 그룹이 영원히 삭제됩니다 정말 떠나시겠습니까?',
-                  [
-                    {text: '아니오', onPress: () => {}, style: 'cancel'},
-                    {
-                      text: '예',
-                      onPress: async () => {
-                        try {
-                          const headers = {
-                            Authorization: `Bearer ${accessToken}`,
-                          };
-                          const response = await axios.delete(
-                            `http://146.56.188.32:8002/schedules/${item.id}`,
-                            {headers},
-                          );
-                          doRefresh();
-                        } catch (err) {
-                          console.log(err);
-                        }
-                        //refresh 필요
-                      },
-                      style: 'destructive',
-                    },
-                  ],
-                  {
-                    cancelable: true,
-                    onDismiss: () => {},
-                  },
-                );
+                openModal();
               }}>
               <Text style={styles.cardMenuItem}>그룹 떠나기</Text>
             </MenuItem>
           </Menu>
         </View>
-        <Text style={styles.cardDate}>
-          {startDate} ~ {endDate}
-        </Text>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
+            <Text style={styles.cardTotalPrice}>
+              {totalPrice}
+              <Text style={styles.cardTotalPriceWon}> 원</Text>
+            </Text>
           </View>
+          <View style={styles.borderLine} />
           <View style={styles.buttonArea}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -189,7 +177,16 @@ function ScheduleCard({
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
+          <View>
+            <View>
+              <Text style={styles.cardTitleText}>{item.name} </Text>
+            </View>
+            <View style={styles.cardDateArea}>
+              <Text style={styles.cardDateText}>
+                {startDate} ~ {endDate}
+              </Text>
+            </View>
+          </View>
           <Menu
             visible={visible}
             anchor={
@@ -245,13 +242,15 @@ function ScheduleCard({
             </MenuItem>
           </Menu>
         </View>
-        <Text style={styles.cardDate}>
-          {startDate} ~ {endDate}
-        </Text>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPrice}>{totalPrice} 원</Text>
+            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
+            <Text style={styles.cardTotalPrice}>
+              {totalPrice}
+              <Text style={styles.cardTotalPriceWon}> 원</Text>
+            </Text>
           </View>
+          <View style={styles.borderLine} />
           <View style={styles.buttonArea}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -280,17 +279,27 @@ function ScheduleCard({
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 2,
     borderRadius: 20,
-    borderColor: '#4D483D',
     backgroundColor: '#FFFFFF',
     width: Dimensions.get('window').width * 0.9,
-    height: 200,
+    height: 210,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
   cardHeader: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    height: 62,
+    backgroundColor: '#F0F0F0',
   },
   cardBody: {
     height: 150,
@@ -298,41 +307,55 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  cardTitle: {
+  cardTitleSection: {},
+  cardTitleText: {
     fontSize: 16,
-    fontFamily: 'Jalnan',
-    color: '#4D483D',
+    fontFamily: 'Roboto',
+    color: '#000000',
     marginLeft: 7,
     marginTop: 10,
+    fontWeight: 'bold',
   },
-  cardDate: {
+  cardDateArea: {},
+  cardDateText: {
     fontSize: 13,
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     marginLeft: 7,
     color: '#4D483D',
   },
   cardMenu: {
     width: 12,
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
   },
   cardMenuItem: {
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
   },
   cardHostIcon: {
     color: '#FFB900',
     marginTop: 12,
   },
   cardTotalPriceArea: {
+    width: Dimensions.get('window').width * 0.8,
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    height: 70,
-    paddingTop: 10,
+    alignItems: 'flex-start',
+  },
+  cardTotalPriceComment: {
+    color: 'black',
+    fontFamily: 'Roboto',
+    fontSize: 12,
   },
   cardTotalPrice: {
-    color: '#4D483D',
-    fontFamily: 'Jalnan',
-    fontSize: 25,
+    color: '#21B8CD',
+    fontFamily: 'Roboto',
+
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  cardTotalPriceWon: {
+    color: 'black',
+    fontFamily: 'Roboto',
+    fontSize: 12,
   },
   cardMenuIcon: {
     color: '#4D483D',
@@ -340,22 +363,29 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   buttonArea: {
-    width: Dimensions.get('window').width * 0.7,
+    width: Dimensions.get('window').width * 0.75,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   button: {
-    width: 130,
-    height: 40,
-    borderRadius: 5,
-    backgroundColor: '#4D483D',
+    width: 140,
+    height: 42,
+    borderRadius: 8,
+    backgroundColor: '#21B8CD',
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
+    fontSize: 16,
+  },
+  borderLine: {
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
+    width: Dimensions.get('window').width * 0.85,
   },
 });
 
