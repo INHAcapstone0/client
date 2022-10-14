@@ -34,6 +34,7 @@ import {faXmark} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Modal from 'react-native-modal';
+import WebView from 'react-native-webview';
 
 function ReceiptInfoPage(route: any) {
   const accessToken = useSelector(
@@ -43,20 +44,26 @@ function ReceiptInfoPage(route: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [receiptId, setReceiptId] = useState(route.route.params.receiptId);
   const [receiptInfo, setReceiptInfo] = useState<{
+    address: string;
     category: string;
-    place_of_payment: string;
+    place: string;
     total_price: number;
     memo: string;
     payDate: string;
+    tel: string;
     img_url: string;
   }>({
+    address: '',
     category: '',
-    place_of_payment: '',
+    place: '',
     total_price: 0,
     memo: '',
+    tel: '정보없음',
     payDate: '2022-03-04T00:09:09.000Z',
     img_url: '', //대체 이미지 추가
   });
+
+  const [totalPrice, setTotalPrice] = useState('0');
 
   const getReceiptInfo = async () => {
     console.log('receiptId : ', receiptId);
@@ -71,7 +78,11 @@ function ReceiptInfoPage(route: any) {
         },
       );
       setReceiptInfo(response.data);
-      console.log(receiptInfo);
+      setTotalPrice(
+        response.data.total_price
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+      );
     } catch (err: AxiosError | any) {
       console.log('receipt error');
       console.log(err);
@@ -86,8 +97,8 @@ function ReceiptInfoPage(route: any) {
     <View style={styles.window}>
       <View style={styles.titleSection}>
         <View style={styles.titleTextSection}>
-          <Text style={styles.itemTitle}>{receiptInfo.place_of_payment}</Text>
-          <Text style={styles.itemText}>
+          <Text style={styles.itemTitle}>{receiptInfo.place}</Text>
+          <Text style={styles.memo}>
             {'\n'}
             {receiptInfo.memo}
           </Text>
@@ -95,7 +106,11 @@ function ReceiptInfoPage(route: any) {
         <Pressable onPress={() => setModalVisible(true)}>
           <Image
             style={styles.receiptImage}
-            source={{uri: receiptInfo.img_url}}
+            source={
+              receiptInfo.img_url === ''
+                ? require('../resources/icons/noReceiptImage.png')
+                : {uri: receiptInfo.img_url}
+            }
           />
         </Pressable>
       </View>
@@ -123,26 +138,51 @@ function ReceiptInfoPage(route: any) {
       <View style={styles.itemSection}>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제 시각</Text>
-          <Text style={styles.itemText}>
-            {receiptInfo.payDate.substring(0, 10)}{' '}
-            {receiptInfo.payDate.substring(11, 19)}
-          </Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>
+              {receiptInfo.payDate.substring(0, 10)}{' '}
+              {receiptInfo.payDate.substring(11, 19)}
+            </Text>
+          </View>
         </View>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제 금액</Text>
-          <Text style={styles.itemText}>{receiptInfo.total_price}원</Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>{totalPrice}원</Text>
+          </View>
         </View>
       </View>
       <View style={styles.borderLine} />
       <View style={styles.itemSection}>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제처</Text>
-          <Text style={styles.itemText}>{receiptInfo.place_of_payment}</Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>{receiptInfo.place}</Text>
+          </View>
         </View>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제처 구분</Text>
-          <Text style={styles.itemText}>{receiptInfo.category}</Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>{receiptInfo.category}</Text>
+          </View>
         </View>
+        <View style={styles.itemAlign}>
+          <Text style={styles.itemText}>주소</Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>{receiptInfo.address}</Text>
+          </View>
+        </View>
+        <View style={styles.itemAlign}>
+          <Text style={styles.itemText}>전화번호</Text>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>{receiptInfo.tel}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.borderLine} />
+      <View style={styles.webview}>
+        <WebView source={{uri: 'http://192.168.43.2:3000/'}} />
       </View>
     </View>
   );
@@ -177,9 +217,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   borderLine: {
-    borderWidth: 0.5,
-    borderColor: '#A8A8A8',
-    width: Dimensions.get('window').width * 0.85,
+    height: 1,
+    backgroundColor: '#21B8CD',
+    width: Dimensions.get('window').width * 0.9,
   },
   itemSection: {
     width: Dimensions.get('window').width,
@@ -192,15 +232,24 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
   },
+  item: {
+    width: Dimensions.get('window').width * 0.6,
+  },
   itemTitle: {
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     fontSize: 24,
-    color: '#4D483D',
+    color: '#000000',
   },
   itemText: {
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
     fontSize: 15,
-    color: '#4D483D',
+    color: '#000000',
+    textAlign: 'right',
+  },
+  memo: {
+    fontFamily: 'Roboto',
+    fontSize: 15,
+    color: '#000000',
   },
   bigReceipt: {
     width: Dimensions.get('window').width * 0.7,
@@ -235,6 +284,11 @@ const styles = StyleSheet.create({
   modalHeader: {flexDirection: 'row', justifyContent: 'space-between'},
   modalCloseButton: {
     color: '#ACACAC',
+  },
+  webview: {
+    marginTop: 20,
+    height: 200,
+    width: Dimensions.get('window').width * 0.8,
   },
 });
 export default ReceiptInfoPage;
