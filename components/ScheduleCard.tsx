@@ -31,7 +31,8 @@ interface ScheduleCardProps {
   setBottomModalType: (modalType: string) => void;
   openBottomModal: () => void;
   doRefresh: () => void;
-  openModal: () => void;
+  openDeleteModalForHost: () => void;
+  openDeleteModalForMember: () => void;
   navigation: any;
 }
 function ScheduleCard({
@@ -40,7 +41,8 @@ function ScheduleCard({
   setBottomModalType,
   openBottomModal,
   doRefresh,
-  openModal,
+  openDeleteModalForHost,
+  openDeleteModalForMember,
   navigation: {navigate},
 }: ScheduleCardProps) {
   const accessToken = useSelector(
@@ -52,7 +54,7 @@ function ScheduleCard({
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [totalPrice, setTotalPrice] = useState(item.total_pay);
+  const [totalPrice, setTotalPrice] = useState('0');
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => {
@@ -62,13 +64,25 @@ function ScheduleCard({
 
   const [visible, setVisible] = useState(false);
 
+  const pressExpenseHistory = () => {
+    navigate('ExpenseHistoryPage', {
+      scheduleId: item.id,
+    });
+  };
+
+  const pressReceiptUpload = () => {
+    navigate('SelectReceiptPage');
+  };
+
   useEffect(() => {
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
 
-    if (totalPrice == null) {
-      setTotalPrice(0);
+    if (item.total_pay != null) {
+      setTotalPrice(
+        item.total_pay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+      );
     }
     setStartDate(item.startAt.substring(0, 10));
     setEndDate(item.endAt.substring(0, 10));
@@ -98,7 +112,6 @@ function ScheduleCard({
               <Pressable onPress={openMenu}>
                 <FontAwesomeIcon
                   style={styles.cardMenuIcon}
-                  size={25}
                   icon={faEllipsisV}
                 />
               </Pressable>
@@ -134,7 +147,8 @@ function ScheduleCard({
             <MenuItem
               onPress={() => {
                 closeMenu();
-                openModal();
+                setSelectedScheduleId(item.id);
+                openDeleteModalForHost();
               }}>
               <Text style={styles.cardMenuItem}>그룹 떠나기</Text>
             </MenuItem>
@@ -154,7 +168,7 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                navigate('SelectReceiptPage');
+                pressReceiptUpload();
               }}>
               <Text style={styles.buttonText}>영수증 등록</Text>
             </TouchableOpacity>
@@ -162,9 +176,7 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                navigate('ExpenseHistoryPage', {
-                  scheduleId: item.id,
-                });
+                pressExpenseHistory();
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
             </TouchableOpacity>
@@ -207,36 +219,8 @@ function ScheduleCard({
             <MenuItem
               onPress={() => {
                 closeMenu();
-                Alert.alert(
-                  '알림',
-                  '정말 그룹을 떠나시겠습니까?',
-                  [
-                    {text: '아니오', onPress: () => {}, style: 'cancel'},
-                    {
-                      text: '예',
-                      onPress: async () => {
-                        try {
-                          const headers = {
-                            Authorization: `Bearer ${accessToken}`,
-                          };
-
-                          const response = await axios.delete(
-                            `http://146.56.188.32:8002/participants/${userId}/${item.id}`,
-                            {headers},
-                          );
-                          doRefresh();
-                        } catch (err) {
-                          console.log(err);
-                        }
-                      },
-                      style: 'destructive',
-                    },
-                  ],
-                  {
-                    cancelable: true,
-                    onDismiss: () => {},
-                  },
-                );
+                setSelectedScheduleId(item.id);
+                openDeleteModalForMember();
               }}>
               <Text style={styles.cardMenuItem}>그룹 떠나기</Text>
             </MenuItem>
@@ -256,7 +240,7 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                navigate('SelectReceiptPage');
+                pressReceiptUpload();
               }}>
               <Text style={styles.buttonText}>영수증 등록</Text>
             </TouchableOpacity>
@@ -264,9 +248,7 @@ function ScheduleCard({
               activeOpacity={0.8}
               style={styles.button}
               onPress={() => {
-                navigate('ExpenseHistoryPage', {
-                  scheduleId: item.id,
-                });
+                pressExpenseHistory();
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
             </TouchableOpacity>
