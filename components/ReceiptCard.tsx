@@ -116,8 +116,8 @@ function ReceiptCard({
       </Pressable>
     );
   } else if (
-    (category === '전체' || category === '숙박업소') &&
-    (item.category === '숙박업소' || item.category === '숙박')
+    (category === '전체' || category === '숙박') &&
+    item.category === '숙박'
   ) {
     return (
       <Pressable
