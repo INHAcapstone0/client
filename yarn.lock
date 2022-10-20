@@ -1709,6 +1709,13 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/masked-view/-/masked-view-0.1.11.tgz"
   "version" "0.1.11"
 
+"@react-native-community/push-notification-ios@^1.10.1":
+  "integrity" "sha512-k6bZWUKLif4GjenyTD3aQLwA2VT3bNmt22INO/34lexnpmqkPDZF7nreqbckTHG0Zso9wDTe4N/AZJUC/d8iRg=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/push-notification-ios/-/push-notification-ios-1.10.1.tgz"
+  "version" "1.10.1"
+  dependencies:
+    "invariant" "^2.2.4"
+
 "@react-native-firebase/analytics@^15.5.0":
   "integrity" "sha512-pk+w1o675JnW+WxgY3/lm1/ET+ynqAXjrVV45eNd8BDRtRUggGCtRPbeue7seL+pm35cYEY64xSLuIAIpjTocA=="
   "resolved" "https://registry.npmjs.org/@react-native-firebase/analytics/-/analytics-15.5.0.tgz"
@@ -6879,6 +6886,11 @@
   "resolved" "git+ssh://git@github.com/instea/react-native-popup-menu.git#7bf0d5a7eee1d5aefc6d69f862040fc9f001821f"
   "version" "0.1.0"
 
+"react-native-push-notification@^8.1.1":
+  "integrity" "sha512-XpBtG/w+a6WXTxu6l1dNYyTiHnbgnvjoc3KxPTxYkaIABRmvuJZkFxqruyGvfCw7ELAlZEAJO+dthdTabCe1XA=="
+  "resolved" "https://registry.npmjs.org/react-native-push-notification/-/react-native-push-notification-8.1.1.tgz"
+  "version" "8.1.1"
+
 "react-native-raw-bottom-sheet@^2.2.0":
   "integrity" "sha512-qL4JKIqvbcVxbkKzeh51hjV7suoJN3ouxzvLmOg0FBUV1yiJAfEbacjQdtRCI6+OU5pyGFBIifLsTXcFDwHggg=="
   "resolved" "https://registry.npmjs.org/react-native-raw-bottom-sheet/-/react-native-raw-bottom-sheet-2.2.0.tgz"
@@ -6957,6 +6969,7 @@
   dependencies:
     "prop-types" "^15.7.2"
     "yargs" "^16.1.1"
+
 
 "react-native-webview@^11.23.1":
   "integrity" "sha512-bmqsdg4RYOUYD37R9XTrQALm7eD62KbLNPRfgvpLGd1SjaurvAjjsLrLN4mt6yOtKOMKeZvlcAl3x6De6cCQsA=="

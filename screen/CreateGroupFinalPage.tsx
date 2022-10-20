@@ -152,6 +152,8 @@ function CreateGroupFinalPage({navigation}: any) {
         },
       );
 
+      console.log(result);
+
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         textBody: '그룹생성이 완료되었습니다',
@@ -216,7 +218,7 @@ function CreateGroupFinalPage({navigation}: any) {
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
-                <Text style={styles.stepActiveText}>일정 이름</Text>
+                <Text style={styles.stepText}>일정 이름</Text>
               </View>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/CellActive.png')} />
@@ -236,7 +238,7 @@ function CreateGroupFinalPage({navigation}: any) {
               </View>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/thirdCheck.png')} />
-                <Text style={styles.stepText}>그룹원 초대</Text>
+                <Text style={styles.stepActiveText}>그룹원 초대</Text>
               </View>
             </View>
             <View style={styles.elementWrapper}>
