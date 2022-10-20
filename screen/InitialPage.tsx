@@ -42,6 +42,13 @@ function InitialPage({navigation}: any) {
     console.log(route.name);
   }, [route]);
 
+  // useEffect(() => {
+  //   if (isLoggedIn !== '') {
+  //     requestUserPermission();
+  //     notificationListner();
+  //   }
+  // }, [isLoggedIn]);
+
   return isLoggedIn === '' ? (
     <SafeAreaView>
       <StatusBar />
@@ -57,6 +64,10 @@ function InitialPage({navigation}: any) {
             title={'로그인'}
             onPress={() => navigation.navigate('SignInPage')}
           />
+          {/* <CustomButton
+            title={'정산'}
+            onPress={() => navigation.navigate('CalculatePage')}
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

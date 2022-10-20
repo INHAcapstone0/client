@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import axios, {AxiosError} from 'axios';
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {
   ActivityIndicator,
@@ -14,9 +15,12 @@ import {
   Dimensions,
   Image,
   PermissionsAndroid,
+  Button,
 } from 'react-native';
 // import ImagePicker from 'react-native-image-picker';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/Store';
 
 const imagePickerOption: any = {
   mediaType: 'photo',
@@ -25,11 +29,18 @@ const imagePickerOption: any = {
   includeBase64: Platform.OS === 'android',
 };
 
-function SelectReceiptPage({navigation}: any) {
-  const [selectImg, setSelectImg] = useState({});
+interface userType {
+  uri: string;
+}
 
-  const moveToCameraPage = () => {
-    navigation.navigate('CameraPage');
+function SelectReceiptPage({navigation}: any) {
+  const [selectImg, setSelectImg] = useState({uri: 'aa'});
+  const accessToken = useSelector(
+    (state: any) => state.persist.user.accessToken,
+  );
+
+  const moveToNextStep = () => {
+    navigation.navigate('ReceiptUploadPage');
   };
 
   const requestCameraPermission = async () => {
@@ -66,17 +77,49 @@ function SelectReceiptPage({navigation}: any) {
     };
 
     launchCamera(options, (response: any) => {
-      console.log('Response =', response);
+      console.log(response.assets[0]);
+      console.log('Response =', response.assets[0].fileName);
+      console.log('Response =', response.assets[0].fileSize);
+      console.log('Response =', response.assets[0].fileHeight);
+      console.log('Response =', response.assets[0].uri);
       if (response.didCancle) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error', response.error);
       } else {
-        const source = {uri: 'data:image/jpeg;base64' + response.base64};
-        console.log(source);
-        setSelectImg(source);
+        // console.log(response.assets[0].base64);
+        const source = {
+          uri: 'data:image/jpeg;base64' + response.assets[0].base64,
+        };
+        // console.log(source);
+        setSelectImg({uri: response.assets[0].uri});
+
+        sendCameraScreenShot(response.assets[0].uri);
       }
     });
+  };
+
+  const sendCameraScreenShot = async (screenShot: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', screenShot);
+      console.log('screenShot', screenShot);
+      console.log('formData', formData);
+
+      const response = await axios.post(
+        `http://146.56.188.32:8002/receipts/test`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'content-type': `multipart/form-data`,
+          },
+        },
+      );
+      console.log('', response.data);
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+    }
   };
 
   const onLaunchImageLibrary = () => {
@@ -95,7 +138,7 @@ function SelectReceiptPage({navigation}: any) {
   };
   return (
     <View style={styles.receiptPage}>
-      <Text style={styles.text}>영수증을 등록해주세요</Text>
+      <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
       <View style={styles.imageContainer}>
         <Pressable
           style={styles.imageWrapper}
@@ -116,13 +159,10 @@ function SelectReceiptPage({navigation}: any) {
         영수증이 없다면 [다음]을 누르신 후
       </Text>
       <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text>
-      <Image source={selectImg} />
-      <Pressable
-        onPress={() => {
-          navigation.navigate('ReceiptUploadPage');
-        }}>
-        <Text style={styles.nextButton}>다음</Text>
-      </Pressable>
+      {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
+      <View style={styles.nextButton}>
+        <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
+      </View>
     </View>
   );
 }
@@ -135,21 +175,21 @@ const styles = StyleSheet.create({
   text: {
     padding: 60,
     textAlign: 'center',
-    fontSize: 20,
-    color: '#4D483D',
+    fontSize: 17,
+    color: 'black',
     fontWeight: '700',
   },
   manualFirstText: {
     paddingTop: 70,
     textAlign: 'center',
     fontSize: 18,
-    color: '#4D483D',
+    color: 'black',
     fontWeight: '700',
   },
   manualSecondText: {
     textAlign: 'center',
     fontSize: 18,
-    color: '#4D483D',
+    color: 'black',
     fontWeight: '700',
   },
   imageContainer: {
@@ -165,18 +205,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageIcon: {
-    width: 100,
-    height: 100,
+    // width: 100,
+    // height: 100,
   },
   nextButton: {
     // display: 'flex',
     // alignItems: 'center',
     // justifyContent: 'center',
-    textAlign: 'center',
-    width: 40,
-    height: 40,
-    backgroundColor: '#4D483D',
-    color: 'white',
+    margin: 20,
+    marginTop: 60,
   },
 });
 export default SelectReceiptPage;

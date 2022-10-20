@@ -64,6 +64,8 @@ function SignInPage({navigation}: any) {
         },
       );
 
+      console.log(response);
+
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       requestUserPermission();
@@ -79,8 +81,8 @@ function SignInPage({navigation}: any) {
 
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
-      console.log('login error');
-      Alert.alert(error.response.data.msg);
+      console.log('login error', error);
+      // Alert.alert(error.response);
     } finally {
       setLoading(false);
     }
@@ -125,7 +127,7 @@ function SignInPage({navigation}: any) {
         onPress={() => console.log(1)}>
         <Text style={styles.navButtonText}>비밀번호를 잊으셨나요?</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.forgotButton} onPress={toSignUpPage}>
+      <TouchableOpacity onPress={toSignUpPage}>
         <Text style={styles.navButtonText}>회원가입하로가기</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -157,6 +159,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   forgotButton: {
+    // marginTop: 40,
+    // marginBottom: 10,
     marginVertical: 35,
   },
   navButtonText: {
