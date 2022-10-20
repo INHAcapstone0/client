@@ -57,6 +57,7 @@
     "react-native-modal-datetime-picker": "^14.0.0",
     "react-native-permissions": "^3.6.0",
     "react-native-popup-menu": "github:instea/react-native-popup-menu",
+    "react-native-push-notification": "^8.1.1",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-reanimated": "^2.10.0",
     "react-native-safe-area-context": "^4.3.1",

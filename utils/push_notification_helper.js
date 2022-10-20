@@ -52,6 +52,7 @@ const notificationListner = () => {
     );
   });
 
+  //check whether an initial notification is available
   messaging()
     .getInitialNotification()
     .then(remoteMessage => {
