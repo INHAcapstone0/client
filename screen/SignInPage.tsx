@@ -54,7 +54,6 @@ function SignInPage({navigation}: any) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
-      console.log('asdf');
       setLoading(true);
       const response = await axios.post(
         'http://146.56.188.32:8002/auth/login',

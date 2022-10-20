@@ -252,7 +252,6 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   bigReceipt: {
-    width: Dimensions.get('window').width * 0.7,
     height: Dimensions.get('window').width * 0.7,
     marginTop: 5,
   },
@@ -281,9 +280,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalHeader: {flexDirection: 'row', justifyContent: 'space-between'},
+  modalHeader: {
+    width: Dimensions.get('window').width * 0.7,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   modalCloseButton: {
-    color: '#ACACAC',
+    color: '#21B8CD',
   },
   webview: {
     marginTop: 20,
