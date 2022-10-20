@@ -6917,6 +6917,14 @@
     "react-freeze" "^1.0.0"
     "warn-once" "^0.1.0"
 
+"react-native-selectmultiple-button@^0.1.105":
+  "integrity" "sha512-I6nu1govK449s0pMw79AO8Vm4q5yQqV4/VPX71Qu5F10hDbV6YKThsiTuhXAQhHsr6rdxEG0zehv/VJGSZE/yQ=="
+  "resolved" "https://registry.npmjs.org/react-native-selectmultiple-button/-/react-native-selectmultiple-button-0.1.105.tgz"
+  "version" "0.1.105"
+  dependencies:
+    "react" ">=16.2.0"
+    "react-native" ">=0.53.0"
+
 "react-native-svg@^13.0.0", "react-native-svg@>= 11.x":
   "integrity" "sha512-CkWB8BYGjvmGiLqqJRHfTH8/Q5tJyhltUYCmi20sqOCbjfTR5dkQUUafV0oUOhvK2lS+zuB9Dpf1Beo92rls5Q=="
   "resolved" "https://registry.npmjs.org/react-native-svg/-/react-native-svg-13.0.0.tgz"
@@ -6958,7 +6966,7 @@
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"
 
-"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@^0.63.0", "react-native@>= 0.67", "react-native@>=0.25.1", "react-native@>=0.40.0", "react-native@>=0.42.0", "react-native@>=0.48.4", "react-native@>=0.57", "react-native@>=0.59", "react-native@>=0.60.5", "react-native@>=0.62.0", "react-native@>=0.63.3", "react-native@>=0.65.0", "react-native@0.69.2":
+"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@^0.63.0", "react-native@>= 0.67", "react-native@>=0.25.1", "react-native@>=0.40.0", "react-native@>=0.42.0", "react-native@>=0.48.4", "react-native@>=0.53.0", "react-native@>=0.57", "react-native@>=0.59", "react-native@>=0.60.5", "react-native@>=0.62.0", "react-native@>=0.63.3", "react-native@>=0.65.0", "react-native@0.69.2":
   "integrity" "sha512-9CdnnAtGYokbBJRFr2VesAOO+BODptpsrwGk2yunHmDM7zHymFeFW1eUS6zDbnxO6yOVgdt7fi7czlkTJrJkuw=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.69.2.tgz"
   "version" "0.69.2"
@@ -7039,7 +7047,7 @@
     "react-shallow-renderer" "^16.13.1"
     "scheduler" "^0.21.0"
 
-"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", "react@^17.0.0", "react@^18.0.0", "react@>=0.14.5", "react@>=15.4.0", "react@>=16", "react@>=16.0", "react@>=16.13.1", "react@>=16.9.0", "react@18.0.0":
+"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", "react@^17.0.0", "react@^18.0.0", "react@>=0.14.5", "react@>=15.4.0", "react@>=16", "react@>=16.0", "react@>=16.13.1", "react@>=16.2.0", "react@>=16.9.0", "react@18.0.0":
   "integrity" "sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A=="
   "resolved" "https://registry.npmjs.org/react/-/react-18.0.0.tgz"
   "version" "18.0.0"
