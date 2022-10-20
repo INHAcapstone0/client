@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
@@ -13,6 +14,9 @@ import {
   Button,
   ScrollView,
   Dimensions,
+  Image,
+  useWindowDimensions,
+  Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -32,14 +36,15 @@ import {faReceipt} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Presenter from 'react-native-calendars/src/expandableCalendar/Context/Presenter';
-
-function ExpenseHistoryPage(route: any) {
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import {any, string} from 'prop-types';
+function ExpenseHistoryPage({route, navigation}: any) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
   const userId = useSelector((state: RootState) => state.persist.user.id);
-
-  const [scheduleId, setScheduleId] = useState(route.route.params.scheduleId);
+  const saveRoute = useState(route);
+  const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
   const [scheduleInfo, setScheduleInfo] = useState<{
     name: string;
     startAt: string;
@@ -57,9 +62,38 @@ function ExpenseHistoryPage(route: any) {
 
   const [errFlag, setErrFlag] = useState(false);
   const [ownerFlag, setOwnerFlag] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
 
-  const [categoryList, setCategoryList] = useState(Array);
+  const [categoryList, setCategoryList] = useState<string[]>(['전체']);
+
+  const [routes, setRoutes] = useState<{key: string; title: string}[]>([]);
+
+  const [totalPrice, setTotalPrice] = useState('0');
+
+  const renderScene = ({route}: any) => {
+    return (
+      <View style={styles.receiptSection}>
+        <ScrollView>
+          {receiptsInfo.map((item: any) => {
+            if (item != null) {
+              return (
+                <ReceiptCard
+                  key={item.id}
+                  item={item}
+                  route={navigation}
+                  category={route.key}
+                  navigation={navigation}
+                />
+              );
+            }
+          })}
+        </ScrollView>
+      </View>
+    );
+  };
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = useState(0);
+
   const getScheduleInfo = async () => {
     try {
       const headers = {
@@ -74,10 +108,15 @@ function ExpenseHistoryPage(route: any) {
         setOwnerFlag(true);
       }
 
-      if (totalPrice == null) {
-        setTotalPrice(0);
+      if (response.data.total_pay != null) {
+        setTotalPrice(
+          response.data.total_pay
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+        );
       }
     } catch (err: AxiosError | any) {
+      console.log(err.response.data.msg);
       console.log(err);
     }
   };
@@ -128,100 +167,107 @@ function ExpenseHistoryPage(route: any) {
     }
   };
 
+  const renderTabBar = (props: any) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{backgroundColor: '#21B8CD'}}
+      pressColor={'#21B8CD'}
+      scrollEnabled={true}
+      style={{backgroundColor: 'white'}}
+      //tabStyle={route.title.length > 4 ? {width: 90} : {width: 140}}
+      tabStyle={{width: 90}}
+      renderLabel={({route, focused, color}) => (
+        <Text style={[focused ? {color: '#21B8CD'} : {color: '#7C7C7C'}]}>
+          {route.title}
+        </Text>
+      )}
+    />
+  );
+
   useEffect(() => {
+    getScheduleInfo();
     getReceiptsInfo('전체')
       .then(receipts => {
+        var stores: string[] = [];
         receipts.map((item: {category: string}) => {
           if (!categoryList.includes(item.category)) {
             categoryList.push(item.category);
           }
         });
-        categoryList.sort();
+        categoryList.map((item: string) => {
+          routes.push({key: item, title: item});
+        });
       })
       .catch(err => {
         console.log(err);
       });
-    getScheduleInfo();
-  }, categoryList);
+  }, []);
 
   if (errFlag) {
     //등록된 영수증이 0개일 경우
     return (
-      <View>
-        <View style={styles.schedule}>
-          <View style={styles.scheduleHeader}>
-            <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+      <View style={styles.errScreen}>
+        <View style={styles.header}>
+          <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+        </View>
+        <ScrollView>
+          <View style={styles.errScreen2}>
+            <Image
+              style={styles.errImg}
+              source={require('../resources/icons/noReceipt.png')}
+            />
+            <Text style={styles.errMsg}>지출 내역이 없습니다.</Text>
+          </View>
+        </ScrollView>
+        <View style={styles.footer}>
+          <View>
+            <Text style={styles.scheduleTotalPrice}>
+              총 지출 금액 : {totalPrice} 원
+            </Text>
             <Text style={styles.scheduleDate}>
               {scheduleInfo.startAt.substring(0, 10)} ~{' '}
               {scheduleInfo.endAt.substring(0, 10)}
             </Text>
           </View>
-          <View style={styles.scheduleBody}>
-            <Text style={styles.scheduleTotalPrice}>
-              지출 금액 : {scheduleInfo.total_pay} 원
-            </Text>
-          </View>
-        </View>
-        <View style={styles.errScreen}>
-          <FontAwesomeIcon style={styles.errIcon} icon={faReceipt} size={80} />
-          <Text style={styles.errMsg}>{'\n'}지출 내역이 없으시네요</Text>
-          <Text style={styles.errMsg}>영수증을 등록해 보세요!</Text>
+          <Image
+            style={styles.footerImg}
+            source={require('../resources/icons/ExpenseHistory.png')}
+          />
         </View>
       </View>
     );
   } else {
     return (
-      <ScrollView>
-        <View style={styles.schedule}>
-          <View style={styles.scheduleHeader}>
-            <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+      <View style={{flex: 1}}>
+        <View style={styles.header}>
+          <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+        </View>
+        <TabView
+          navigationState={{
+            index: index,
+            routes: routes,
+          }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{width: layout.width}}
+          renderTabBar={renderTabBar}
+        />
+        <View style={styles.footer}>
+          <View>
+            <Text style={styles.scheduleTotalPrice}>
+              총 지출 금액 : {totalPrice} 원
+            </Text>
             <Text style={styles.scheduleDate}>
               {scheduleInfo.startAt.substring(0, 10)} ~{' '}
               {scheduleInfo.endAt.substring(0, 10)}
             </Text>
           </View>
-          <View style={styles.scheduleBody}>
-            <Text style={styles.scheduleTotalPrice}>
-              지출 금액 : {scheduleInfo.total_pay} 원
-            </Text>
-          </View>
+          <Image
+            style={styles.footerImg}
+            source={require('../resources/icons/ExpenseHistory.png')}
+          />
         </View>
-        <ScrollView horizontal={true}>
-          <Pressable
-            style={() => [{}, styles.categoryButton]}
-            onPress={() => {
-              getReceiptsInfo('전체');
-            }}>
-            <Text style={styles.categoryTitle}>
-              {'    '}전체{'    '}
-            </Text>
-          </Pressable>
-          {categoryList.map(function (result) {
-            let categoryName: any = result;
-            return (
-              <Pressable
-                key={categoryName}
-                style={() => [{}, styles.categoryButton]}
-                onPress={() => {
-                  getReceiptsInfo(categoryName);
-                }}>
-                <Text style={styles.categoryTitle}>
-                  {'    '}
-                  {categoryName}
-                  {'    '}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-        <View style={styles.receiptSection}>
-          {receiptsInfo.map((item: any) => {
-            if (item != null) {
-              return <ReceiptCard key={item.id} item={item} route={route} />;
-            }
-          })}
-        </View>
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -231,9 +277,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#4D483D',
     height: 100,
   },
-  scheduleHeader: {
+  header: {
+    width: Dimensions.get('window').width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#21B8CD',
+    height: 80,
+  },
+  footer: {
+    width: Dimensions.get('window').width,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#21B8CD',
+    height: 57,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  footerImg: {
+    width: 58,
+    height: 47,
   },
   scheduleBody: {
     flex: 1,
@@ -244,23 +307,21 @@ const styles = StyleSheet.create({
     color: '#4D483D',
   },
   scheduleName: {
-    fontSize: 17,
-    fontFamily: 'Jalnan',
+    fontSize: 16,
+    fontFamily: 'Roboto',
     color: '#FFFFFF',
-    marginTop: 10,
-    marginLeft: 10,
+    fontWeight: 'bold',
   },
   scheduleDate: {
-    fontSize: 15,
-    fontFamily: 'Jalnan',
+    fontSize: 12,
+    fontFamily: 'Roboto',
     color: '#FFFFFF',
-    marginTop: 10,
-    marginRight: 10,
   },
   scheduleTotalPrice: {
-    fontSize: 25,
-    fontFamily: 'Jalnan',
+    fontSize: 16,
+    fontFamily: 'Roboto',
     color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   categoryButton: {
     backgroundColor: '#E1E1E1',
@@ -282,20 +343,38 @@ const styles = StyleSheet.create({
     color: '#4D483D',
   },
   receiptSection: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   errScreen: {
     flex: 1,
-    justifyContent: 'center',
+  },
+
+  errScreen2: {
+    flex: 1,
     alignItems: 'center',
-    height: Dimensions.get('window').height * 0.6,
+    justifyContent: 'center',
+    height: Dimensions.get('window').height * 0.7,
+  },
+  errImg: {
+    height: 298,
+    width: 304,
   },
   errMsg: {
-    fontSize: 20,
-    fontFamily: 'Jalnan',
-    color: '#4D483D',
+    fontSize: 18,
+    fontFamily: 'Roboto',
+    color: '#B3B3B3',
+    marginTop: 20,
+  },
+  tabbar: {
+    backgroundColor: '#fff',
+  },
+  tab: {
+    opacity: 1,
+    width: 90,
+  },
+  indicator: {
+    backgroundColor: 'yellow', //'#21B8CD',
   },
 });
 export default ExpenseHistoryPage;

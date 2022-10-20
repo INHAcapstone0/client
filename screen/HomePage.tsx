@@ -13,6 +13,7 @@ import {
   Button,
   ScrollView,
   Dimensions,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -21,6 +22,7 @@ import BottomSheet, {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import Modal from 'react-native-modal';
 import ScheduleCard from '../components/ScheduleCard';
 import BottomComponent from '../components/BottomComponent';
 import {useSelector} from 'react-redux';
@@ -36,6 +38,7 @@ function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [info, setInfo] = useState([]);
+  const [infoNumber, setInfoNumber] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
@@ -48,8 +51,23 @@ function HomePage({navigation}: any) {
   const closeBottomModal = () => {
     bottomSheetModalRef.current?.close();
   };
-  const snapPoints = useMemo(() => ['70%'], []);
+  const snapPoints = useMemo(() => ['80%'], []);
+  const [isModalVisibleForHost, setModalVisibleForHost] = useState(false);
 
+  const openDeleteModalForHost = () => {
+    setModalVisibleForHost(true);
+  };
+  const closeDeleteModalForHost = () => {
+    setModalVisibleForHost(false);
+  };
+
+  const [isModalVisibleForMember, setModalVisibleForMember] = useState(false);
+  const openDeleteModalForMember = () => {
+    setModalVisibleForMember(true);
+  };
+  const closeDeleteModalForMember = () => {
+    setModalVisibleForMember(false);
+  };
   const getAllSchedules = async () => {
     try {
       const params = {
@@ -63,6 +81,7 @@ function HomePage({navigation}: any) {
         {params, headers},
       );
       setInfo(response.data);
+      console.log(info.length);
       setErrFlag(false);
     } catch (err: AxiosError | any) {
       console.log(err);
@@ -72,18 +91,58 @@ function HomePage({navigation}: any) {
     }
   };
 
+  const deleteSchedule = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.delete(
+        `http://146.56.188.32:8002/schedules/${selectedScheduleId}`,
+        {headers},
+      );
+      setInfoNumber(infoNumber - 1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteParticipant = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.delete(
+        `http://146.56.188.32:8002/participants/${userId}/${selectedScheduleId}`,
+        {headers},
+      );
+      setInfoNumber(infoNumber - 1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    console.log(navigation);
     getAllSchedules();
-  }, []);
+  }, [infoNumber]);
 
   if (errFlag) {
     //갖고있는 스케줄이 0개일 경우
     return (
       <View style={styles.errScreen}>
-        <FontAwesomeIcon style={styles.errIcon} icon={faSuitcase} size={80} />
+        <Image
+          style={styles.errImg}
+          source={require('../resources/icons/noSchedule.png')}
+        />
         <Text style={styles.errMsg}>{'\n'}보유하고 계신 일정이 없으시네요</Text>
-        <Text style={styles.errMsg}>여행 일정을 등록해 보세요!</Text>
+        <Text style={styles.errMsg}>여행 일정을 등록해 보세요!{'\n'}</Text>
+        <Pressable
+          onPress={() => {
+            navigation.navigate('CreateGroupPage');
+          }}>
+          <View style={styles.errButton}>
+            <Text style={styles.errButtonText}>여행 일정 등록하기</Text>
+          </View>
+        </Pressable>
       </View>
     );
   } else {
@@ -99,6 +158,8 @@ function HomePage({navigation}: any) {
                   setSelectedScheduleId={setSelectedScheduleId}
                   setBottomModalType={setBottomModalType}
                   openBottomModal={openBottomModal}
+                  openDeleteModalForHost={openDeleteModalForHost}
+                  openDeleteModalForMember={openDeleteModalForMember}
                   doRefresh={getAllSchedules}
                   navigation={navigation}
                 />
@@ -122,6 +183,83 @@ function HomePage({navigation}: any) {
                 />
               </BottomSheetScrollView>
             </BottomSheetModal>
+            <Modal
+              isVisible={isModalVisibleForHost}
+              animationIn={'slideInUp'}
+              animationOut={'slideOutDown'}
+              style={{
+                alignItems: 'center',
+              }}>
+              <View style={styles.modalContainerForHost}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
+                  <Text style={styles.modalComment}>
+                    당신이 만든 스케줄을 떠나시면
+                  </Text>
+                  <Text style={styles.modalComment}>
+                    스케줄이 영원히 삭제됩니다.
+                  </Text>
+                  <Text style={styles.modalComment}>정말 떠나시겠습니까?</Text>
+
+                  <View style={styles.modalButtonArea}>
+                    <Pressable
+                      style={styles.modalButton}
+                      onPress={closeDeleteModalForHost}>
+                      <Text style={styles.modalButtonText}>아니오</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.modalButton}
+                      onPress={() => {
+                        deleteSchedule();
+                        closeDeleteModalForHost();
+                        getAllSchedules();
+                      }}>
+                      <Text style={styles.modalButtonText}>예</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              isVisible={isModalVisibleForMember}
+              animationIn={'slideInUp'}
+              animationOut={'slideOutDown'}
+              style={{
+                alignItems: 'center',
+              }}>
+              <View style={styles.modalContainerForMember}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
+                  <Text style={styles.modalComment}>
+                    정말 스케줄을 떠나시겠습니까?
+                  </Text>
+                  <View style={styles.modalButtonArea}>
+                    <Pressable
+                      style={styles.modalButton}
+                      onPress={closeDeleteModalForMember}>
+                      <Text style={styles.modalButtonText}>아니오</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.modalButton}
+                      onPress={() => {
+                        deleteParticipant();
+                        closeDeleteModalForMember();
+                        getAllSchedules();
+                      }}>
+                      <Text style={styles.modalButtonText}>예</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
           </View>
         </ScrollView>
       </BottomSheetModalProvider>
@@ -132,8 +270,6 @@ function HomePage({navigation}: any) {
 const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
     backgroundColor: 'white',
   },
   label: {
@@ -162,21 +298,75 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 24,
   },
-  errIcon: {
-    color: '#4D483D',
+  errImg: {
+    height: 245,
+    width: 212,
   },
   errScreen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
     backgroundColor: 'white',
   },
   errMsg: {
     fontSize: 20,
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  errIcon: {
     color: '#4D483D',
+  },
+  errButton: {
+    backgroundColor: '#21B8CD',
+    width: Dimensions.get('window').width * 0.75,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+  },
+  errButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  modalContainerForMember: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 195,
+  },
+  modalContainerForHost: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 225,
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 20,
+    color: 'black',
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
   },
 });
 export default HomePage;

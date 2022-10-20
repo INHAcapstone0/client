@@ -25,7 +25,6 @@ import {useSelector} from 'react-redux';
 import {RootState, useAppDispatch} from '../store/Store';
 import FormButton from '../components/FormButton';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import DatePicker from 'react-native-date-picker';
 import {scheduleAction} from '../slices/Schedule';
 import {
   ALERT_TYPE,

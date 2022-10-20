@@ -40,7 +40,7 @@ function SelectReceiptPage({navigation}: any) {
   );
 
   const moveToNextStep = () => {
-    console.log(1);
+    navigation.navigate('ReceiptUploadPage');
   };
 
   const requestCameraPermission = async () => {
