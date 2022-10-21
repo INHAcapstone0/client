@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontSize: 14,
     fontWeight: '400',
-    color: '#000000',
+    color: 'black',
     flexShrink: 1,
     fontFamily: 'Roboto',
   },
