@@ -136,6 +136,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
           headers,
         });
 
+        console.log(response.data);
         setReceiptsInfo(response.data);
 
         return response.data;
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#21B8CD',
-    height: 80,
+    height: 60,
   },
   footer: {
     width: Dimensions.get('window').width,
