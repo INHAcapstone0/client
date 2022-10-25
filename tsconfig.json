@@ -6,6 +6,11 @@
 
     /* Completeness */
     "skipLibCheck": true      ,                           /* Skip type checking all .d.ts files. */
-    "typeRoots": ["./types","./node_modules/@types"]
+    "typeRoots": ["./types","./node_modules/@types"],
+    "rootDirs": ["src", "stories"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["app/*"]
+    }
   }
 }
