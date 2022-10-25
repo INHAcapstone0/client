@@ -67,7 +67,6 @@ function SelectReceiptPage({navigation}: any) {
   };
 
   const onLaunchCamera = () => {
-    console.log(1);
     const options: any = {
       storageOptions: {
         path: 'images',
@@ -87,12 +86,11 @@ function SelectReceiptPage({navigation}: any) {
       } else if (response.error) {
         console.log('ImagePicker Error', response.error);
       } else {
-        // console.log(response.assets[0].base64);
-        const source = {
-          uri: 'data:image/jpeg;base64' + response.assets[0].base64,
-        };
+        // const source = {
+        //   uri: 'data:image/jpeg;base64' + response.assets[0].base64,
+        // };
         // console.log(source);
-        setSelectImg({uri: response.assets[0].uri});
+        // setSelectImg({uri: response.assets[0].uri});
 
         sendCameraScreenShot(response.assets[0].uri);
       }
@@ -101,14 +99,18 @@ function SelectReceiptPage({navigation}: any) {
 
   const sendCameraScreenShot = async (screenShot: string) => {
     try {
-      const formData = new FormData();
-      formData.append('file', screenShot);
-      console.log('screenShot', screenShot);
-      console.log('formData', formData);
+      console.log(1);
+      const data = new FormData();
+
+      data.append('file', {
+        uri: screenShot,
+        name: 'upload.jpg',
+        type: 'image/jpg',
+      });
 
       const response = await axios.post(
-        `http://146.56.188.32:8002/receipts/test`,
-        formData,
+        'http://146.56.188.32:8002/receipts/test',
+        data,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -116,9 +118,10 @@ function SelectReceiptPage({navigation}: any) {
           },
         },
       );
-      console.log('', response.data);
-    } catch (err: AxiosError | any) {
-      console.log(err.response);
+      console.log('response', response.data);
+    } catch (err: any) {
+      console.log(2);
+      console.log('err', err);
     }
   };
 
@@ -144,6 +147,7 @@ function SelectReceiptPage({navigation}: any) {
           style={styles.imageWrapper}
           onPress={requestCameraPermission}>
           <Image
+            // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
             source={require('../resources/icons/camera.png')}
             style={styles.imageIcon}
           />

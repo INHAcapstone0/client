@@ -18,7 +18,7 @@ import Modal from 'react-native-modal';
 import PurchaseItem from '../components/PurchaseItem';
 import KakaoMap from '../components/KakaoMap';
 
-function ReceiptUploadPage() {
+function ReceiptResultPage() {
   //액세스토큰
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -761,4 +761,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-export default ReceiptUploadPage;
+export default ReceiptResultPage;
