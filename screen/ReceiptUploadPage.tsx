@@ -540,7 +540,6 @@ function ReceiptUploadPage() {
         <View style={styles.borderLine} />
         <View style={styles.itemSection}>
           <Text style={styles.itemTitle}>메모</Text>
-          <KakaoMap />
           <View style={styles.memoContainer}>
             <TextInput
               onChangeText={text => {
