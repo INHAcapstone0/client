@@ -44,7 +44,7 @@ function SettingPage({navigation}: any) {
     console.log('accessToken:', accessToken);
     try {
       const result = await axios.post(
-        'http://146.56.188.32:8002/auth/logout',
+        'http://146.56.190.78:8002/auth/logout',
         null,
         {
           headers: {

@@ -163,7 +163,7 @@ function CalculatePage({navigation}: any) {
   const getSettlements = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.188.32:8002/settlements`,
+        `http://146.56.190.78:8002/settlements`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -181,7 +181,7 @@ function CalculatePage({navigation}: any) {
     try {
       console.log(1);
       const response = await axios.patch(
-        `http://146.56.188.32:8002/settlements/${calculate.giver_id}`,
+        `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
         {is_paid: true},
         {
           headers: {

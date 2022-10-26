@@ -77,7 +77,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        'http://146.56.188.32:8002/schedules/status',
+        'http://146.56.190.78:8002/schedules/status',
         {params, headers},
       );
       setInfo(response.data);
@@ -97,7 +97,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.delete(
-        `http://146.56.188.32:8002/schedules/${selectedScheduleId}`,
+        `http://146.56.190.78:8002/schedules/${selectedScheduleId}`,
         {headers},
       );
       setInfoNumber(infoNumber - 1);
@@ -112,7 +112,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.delete(
-        `http://146.56.188.32:8002/participants/${userId}/${selectedScheduleId}`,
+        `http://146.56.190.78:8002/participants/${userId}/${selectedScheduleId}`,
         {headers},
       );
       setInfoNumber(infoNumber - 1);

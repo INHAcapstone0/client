@@ -95,7 +95,7 @@ function CreateGroupFinalPage({navigation}: any) {
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
-        'http://146.56.188.32:8002/users?exceptMe=true',
+        'http://146.56.190.78:8002/users?exceptMe=true',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -137,7 +137,7 @@ function CreateGroupFinalPage({navigation}: any) {
       console.log(accessToken);
 
       const result = await axios.post(
-        'http://146.56.188.32:8002/schedules',
+        'http://146.56.190.78:8002/schedules',
         {
           name: groupName,
           owner_id: ownerId,
