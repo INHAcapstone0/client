@@ -109,7 +109,7 @@ function SelectReceiptPage({navigation}: any) {
       });
 
       const response = await axios.post(
-        'http://146.56.188.32:8002/receipts/test',
+        'http://146.56.190.78:8002/receipts/test',
         data,
         {
           headers: {
@@ -135,8 +135,7 @@ function SelectReceiptPage({navigation}: any) {
     };
 
     launchImageLibrary(options, (response: any) => {
-      const source = {uri: 'data:image/jpeg;base64' + response.base64};
-      console.log(source);
+      sendCameraScreenShot(response.assets[0].uri);
     });
   };
   return (
