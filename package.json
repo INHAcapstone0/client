@@ -53,6 +53,7 @@
     "react-native-image-picker": "^4.10.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
+    "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-login-screen": "^4.1.0",
     "react-native-material-menu": "^2.0.0",
     "react-native-modal": "^13.0.1",

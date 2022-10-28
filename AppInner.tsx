@@ -22,6 +22,7 @@ import CreateGroupSecondPage from './screen/CreateGroupSecondPage';
 import CreateGroupFinalPage from './screen/CreateGroupFinalPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
+import ReceiptResultPage from './screen/ReceiptResultPage';
 
 const Stack = createStackNavigator();
 
@@ -99,6 +100,7 @@ function AppInner() {
         <Stack.Screen name="ReceiptInfoPage" component={ReceiptInfoPage} />
         <Stack.Screen name="SelectReceiptPage" component={SelectReceiptPage} />
         <Stack.Screen name="ReceiptUploadPage" component={ReceiptUploadPage} />
+        <Stack.Screen name="ReceiptResultPage" component={ReceiptResultPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
