@@ -10,6 +10,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -554,11 +555,11 @@ function ReceiptUploadPage() {
           </View>
         </View>
         <View style={styles.itemSection}>
-          <Pressable
+          <TouchableOpacity
             style={styles.uploadButton}
             onPress={() => console.log('등록하기')}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
