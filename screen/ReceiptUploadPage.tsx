@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
@@ -9,6 +10,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -17,6 +19,7 @@ import Modal from 'react-native-modal';
 import PurchaseItem from '../components/PurchaseItem';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import KakaoMap from '../components/KakaoMap';
 
 function ReceiptUploadPage() {
   //액세스토큰
@@ -704,11 +707,12 @@ function ReceiptUploadPage() {
           </View>
         </View>
         <View style={styles.itemSection}>
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.8}
             style={styles.uploadButton}
             onPress={() => console.log('등록하기')}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

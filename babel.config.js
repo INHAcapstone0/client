@@ -9,5 +9,14 @@ module.exports = {
         path: '.env',
       },
     ],
+    [
+      require.resolve('babel-plugin-module-resolver'),
+      {
+        root: ['./src/'],
+        alias: {
+          '@assets': './assets',
+        },
+      },
+    ],
   ],
 };

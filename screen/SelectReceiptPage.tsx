@@ -16,8 +16,16 @@ import {
   Image,
   PermissionsAndroid,
   Button,
+  TouchableOpacity,
 } from 'react-native';
-// import ImagePicker from 'react-native-image-picker';
+import {
+  ALERT_TYPE,
+  Dialog,
+  AlertNotificationRoot,
+  Toast,
+  IConfigDialog,
+  IConfigToast,
+} from 'react-native-alert-notification';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -34,7 +42,8 @@ interface userType {
 }
 
 function SelectReceiptPage({navigation}: any) {
-  const [selectImg, setSelectImg] = useState({uri: 'aa'});
+  const [selectImg, setSelectImg] = useState({uri: ''});
+  const [showSpinner, setShowSpinner] = useState(false);
   const accessToken = useSelector(
     (state: any) => state.persist.user.accessToken,
   );
@@ -66,8 +75,60 @@ function SelectReceiptPage({navigation}: any) {
     }
   };
 
+  const sendCameraScreenShot = async (screenShot: any) => {
+    try {
+      console.log(1);
+      const data = new FormData();
+      console.log(`Bearer ${accessToken}`);
+      console.log('uri', screenShot.uri);
+      console.log('name', screenShot.fileName);
+      console.log('type', screenShot.type);
+
+      // data.append('file', screenShot.uri);
+
+      data.append('file', {
+        uri: screenShot.uri,
+        name: screenShot.fileName,
+        type: screenShot.type,
+      });
+
+      console.log('data', data);
+
+      setShowSpinner(true);
+      const response = await axios.post(
+        'http://146.56.190.78:8002/receipts/test',
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log('response.data.data', response.data.data);
+      navigation.navigate('ReceiptResultPage', {data: response.data.data});
+      // navigation.reset({
+      //   routes: [
+      //     {
+      //       name: 'ReceiptResultPage',
+      //       params: {data: response.data.data},
+      //     },
+      //   ],
+      // });
+      setShowSpinner(false);
+    } catch (err: any) {
+      setShowSpinner(false);
+      setTimeout(() => {
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          textBody: '영수증 이미지를 업로드해주세요',
+        });
+      }, 1000);
+      console.log('err', err);
+    }
+  };
+
   const onLaunchCamera = () => {
-    console.log(1);
     const options: any = {
       storageOptions: {
         path: 'images',
@@ -77,49 +138,27 @@ function SelectReceiptPage({navigation}: any) {
     };
 
     launchCamera(options, (response: any) => {
-      console.log(response.assets[0]);
-      console.log('Response =', response.assets[0].fileName);
-      console.log('Response =', response.assets[0].fileSize);
-      console.log('Response =', response.assets[0].fileHeight);
-      console.log('Response =', response.assets[0].uri);
+      // console.log(response);
+      // console.log(response.assets[0]);
+      // console.log('Response =', response.assets[0].fileName);
+      // console.log('Response =', response.assets[0].fileSize);
+      // console.log('Response =', response.assets[0].fileHeight);
+      // console.log('Response =', response.assets[0].uri);
       if (response.didCancle) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error', response.error);
       } else {
-        // console.log(response.assets[0].base64);
-        const source = {
-          uri: 'data:image/jpeg;base64' + response.assets[0].base64,
-        };
+        // const source = {
+        //   uri: 'data:image/jpeg;base64' + response.assets[0].base64,
+        // };
         // console.log(source);
-        setSelectImg({uri: response.assets[0].uri});
+        // setSelectImg({uri: response.assets[0].uri});
 
-        sendCameraScreenShot(response.assets[0].uri);
+        sendCameraScreenShot(response.assets[0]);
+        setSelectImg({uri: response.assets[0].uri});
       }
     });
-  };
-
-  const sendCameraScreenShot = async (screenShot: string) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', screenShot);
-      console.log('screenShot', screenShot);
-      console.log('formData', formData);
-
-      const response = await axios.post(
-        `http://146.56.190.78:8002/receipts/test`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'content-type': `multipart/form-data`,
-          },
-        },
-      );
-      console.log('', response.data);
-    } catch (err: AxiosError | any) {
-      console.log(err.response);
-    }
   };
 
   const onLaunchImageLibrary = () => {
@@ -132,18 +171,45 @@ function SelectReceiptPage({navigation}: any) {
     };
 
     launchImageLibrary(options, (response: any) => {
-      const source = {uri: 'data:image/jpeg;base64' + response.base64};
-      console.log(source);
+      sendCameraScreenShot(response.assets[0]);
     });
   };
+
+  if (showSpinner) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#21B8CD" />
+      </View>
+    );
+  }
   return (
     <View style={styles.receiptPage}>
+      {/* <AlertNotificationRoot
+        colors={[
+          {
+            label: '',
+            card: '#e5e8e8',
+            overlay: '',
+            success: '',
+            danger: '',
+            warning: '',
+          },
+          {
+            label: 'gray',
+            card: 'gray',
+            overlay: 'gray',
+            success: 'gray',
+            danger: 'gray',
+            warning: 'gray',
+          },
+        ]}> */}
       <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
       <View style={styles.imageContainer}>
         <Pressable
           style={styles.imageWrapper}
           onPress={requestCameraPermission}>
           <Image
+            // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
             source={require('../resources/icons/camera.png')}
             style={styles.imageIcon}
           />
@@ -160,9 +226,10 @@ function SelectReceiptPage({navigation}: any) {
       </Text>
       <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text>
       {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
-      <View style={styles.nextButton}>
+      <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
         <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
-      </View>
+      </TouchableOpacity>
+      {/* </AlertNotificationRoot> */}
     </View>
   );
 }
@@ -171,6 +238,13 @@ const styles = StyleSheet.create({
   receiptPage: {
     backgroundColor: 'white',
     height: Dimensions.get('window').height,
+  },
+  loading: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   text: {
     padding: 60,

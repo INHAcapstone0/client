@@ -26,6 +26,7 @@ import MyPage from './screen/MyPage';
 
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
+import ReceiptResultPage from './screen/ReceiptResultPage';
 
 const Stack = createStackNavigator();
 
@@ -109,6 +110,7 @@ function AppInner() {
         />
         <Stack.Screen name="PreMyPage" component={PreMyPage} />
         <Stack.Screen name="MyPage" component={MyPage} />
+        <Stack.Screen name="ReceiptResultPage" component={ReceiptResultPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
