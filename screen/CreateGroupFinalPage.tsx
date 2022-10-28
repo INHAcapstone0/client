@@ -168,21 +168,6 @@ function CreateGroupFinalPage({navigation}: any) {
           ],
         });
       }, 1000);
-
-      // Alert.alert('알림', '그룹생성이 완료되었습니다', [
-      //   {
-      //     text: '확인',
-      //     onPress: () => {
-      //       navigation.reset({
-      //         routes: [
-      //           {
-      //             name: 'HomePage',
-      //           },
-      //         ],
-      //       });
-      //     },
-      //   },
-      // ]);
     } catch (err: any) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
