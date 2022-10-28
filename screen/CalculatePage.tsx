@@ -158,7 +158,6 @@ function CalculatePage({navigation}: any) {
 
   useEffect(() => {
     getSettlements();
-    getFcm();
   }, []);
 
   const getSettlements = async () => {
@@ -178,27 +177,19 @@ function CalculatePage({navigation}: any) {
     }
   };
 
-  const getFcm = async () => {
-    console.log(accessToken);
+  const updateSettlement = (calculate: any) => async (event: any) => {
     try {
-      const response = await axios.post(
-        `http://146.56.190.78:8002/users/test`,
-        {
-          notification: {
-            title: '테스트메세지',
-            body: '메세지 전문',
-          },
-          data: {
-            type: 'message',
-          },
-        },
+      const response = await axios.patch(
+        `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
+        {is_paid: true},
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         },
       );
-      console.log('fcm', response.data);
+      getSettlements();
+      console.log(response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -284,7 +275,9 @@ function CalculatePage({navigation}: any) {
                           </Text>
                         </TouchableOpacity>
                       ) : (
-                        <TouchableOpacity style={styles.calculateButton}>
+                        <TouchableOpacity
+                          style={styles.calculateButton}
+                          onPress={updateSettlement(calculate)}>
                           <Text style={styles.calculateButtonText}>
                             입금 확인
                           </Text>

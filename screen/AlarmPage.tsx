@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
+import Modal from 'react-native-modal';
 import {RootState} from '../store/Store';
 
 interface alarmType {
@@ -32,6 +33,9 @@ interface alarmType {
 
 function AlarmPage({navigation}: any) {
   const [allAlarms, setAllAlarms] = useState<Array<alarmType>>([]);
+  const [alarmId, setAlarmId] = useState('');
+  const [isInvitaionModalVisible, setInvitationModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -57,16 +61,51 @@ function AlarmPage({navigation}: any) {
     }
   };
 
+  const deleteAlarm = async () => {
+    try {
+      const response = await axios.delete(
+        `http://146.56.190.78:8002/alarms/restore/${alarmId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      getAllAlarms();
+      console.log(response);
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+    }
+  };
+
+  const openInvitaionModal = (id: string) => (event: any) => {
+    setInvitationModalVisible(true);
+    setAlarmId(id);
+  };
+
+  const closeInvitationModal = () => {
+    setInvitationModalVisible(false);
+  };
+
+  const openModal = (id: string) => (event: any) => {
+    setModalVisible(true);
+    setAlarmId(id);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.alarmPage}>
       <ScrollView>
         {allAlarms.length > 0 ? (
-          allAlarms.slice(0, -2).map((alarm: alarmType) => {
+          allAlarms.map((alarm: alarmType) => {
             if (alarm.alarm_type === '초대') {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openInvitaionModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/Invitation.png')}
@@ -81,7 +120,7 @@ function AlarmPage({navigation}: any) {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/AlarmReceipt.png')}
@@ -97,7 +136,7 @@ function AlarmPage({navigation}: any) {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/DateStart.png')}
@@ -112,7 +151,7 @@ function AlarmPage({navigation}: any) {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/DateEnd.png')}
@@ -127,7 +166,7 @@ function AlarmPage({navigation}: any) {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/CalculateRequestCheck.png')}
@@ -142,7 +181,7 @@ function AlarmPage({navigation}: any) {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  // onPress={removeToGroupMember(user)}
+                  onPress={openModal(alarm.id)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/CalculateCheck.png')}
@@ -161,6 +200,72 @@ function AlarmPage({navigation}: any) {
           </View>
         )}
       </ScrollView>
+      <Modal
+        isVisible={isInvitaionModalVisible}
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        style={{
+          alignItems: 'center',
+        }}>
+        <View style={styles.modalContainerForMember}>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+            }}>
+            <Text style={styles.modalComment}>
+              해당 스케줄에 참여하시겠습니까?
+            </Text>
+            <View style={styles.modalButtonArea}>
+              <Pressable
+                style={styles.modalButton}
+                onPress={() => {
+                  closeInvitationModal();
+                  deleteAlarm();
+                }}>
+                <Text style={styles.modalButtonText}>예</Text>
+              </Pressable>
+              <Pressable
+                style={styles.modalButton}
+                onPress={closeInvitationModal}>
+                <Text style={styles.modalButtonText}>아니오</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        isVisible={isModalVisible}
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        style={{
+          alignItems: 'center',
+        }}>
+        <View style={styles.modalContainerForMember}>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+            }}>
+            <Text style={styles.modalComment}>확인하셨습니까?</Text>
+            <View style={styles.modalButtonArea}>
+              <Pressable
+                style={styles.modalButton}
+                onPress={() => {
+                  closeModal();
+                  deleteAlarm();
+                }}>
+                <Text style={styles.modalButtonText}>예</Text>
+              </Pressable>
+              <Pressable style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>아니오</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -168,6 +273,7 @@ const styles = StyleSheet.create({
   alarmPage: {
     padding: 20,
     paddingTop: 30,
+    paddingBottom: 100,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     backgroundColor: 'white',
@@ -191,7 +297,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontSize: 14,
     fontWeight: '400',
-    color: '#000000',
+    color: 'black',
     flexShrink: 1,
     fontFamily: 'Roboto',
   },
@@ -204,6 +310,37 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalContainerForMember: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 195,
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 20,
+    color: 'black',
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
   },
 });
 export default AlarmPage;
