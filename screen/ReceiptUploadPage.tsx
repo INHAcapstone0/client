@@ -556,6 +556,7 @@ function ReceiptUploadPage() {
         </View>
         <View style={styles.itemSection}>
           <TouchableOpacity
+            activeOpacity={0.8}
             style={styles.uploadButton}
             onPress={() => console.log('등록하기')}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
