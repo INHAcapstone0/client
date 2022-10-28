@@ -426,14 +426,6 @@ const styles = StyleSheet.create({
   bottomSheetView: {
     backgroundColor: 'red',
   },
-  // magnifyingGlass: {
-  //   position: 'absolute',
-  //   top: 55,
-  //   right: 30,
-  // },
-  // userContainer: {
-  //   height: 300,
-  // },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',

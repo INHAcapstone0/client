@@ -131,7 +131,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.188.32:8002/receipts', {
+        const response = await axios.get('http://146.56.190.78:8002/receipts', {
           params,
           headers,
         });
@@ -154,7 +154,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.188.32:8002/receipts', {
+        const response = await axios.get('http://146.56.190.78:8002/receipts', {
           params,
           headers,
         });

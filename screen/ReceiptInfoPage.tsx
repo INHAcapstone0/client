@@ -118,7 +118,6 @@ function ReceiptInfoPage(route: any) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.modalHeader}>
-              <Text> </Text>
               <Pressable onPress={() => setModalVisible(false)}>
                 <FontAwesomeIcon
                   style={styles.modalCloseButton}
@@ -281,9 +280,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalHeader: {
-    width: Dimensions.get('window').width * 0.7,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: Dimensions.get('window').width * 0.725,
+    flexDirection: 'row-reverse',
   },
   modalCloseButton: {
     color: '#21B8CD',
