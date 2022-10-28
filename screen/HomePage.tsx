@@ -77,7 +77,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        'http://146.56.188.32:8002/schedules/status',
+        'http://146.56.190.78:8002/schedules/status',
         {params, headers},
       );
       setInfo(response.data);
@@ -97,7 +97,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.delete(
-        `http://146.56.188.32:8002/schedules/${selectedScheduleId}`,
+        `http://146.56.190.78:8002/schedules/${selectedScheduleId}`,
         {headers},
       );
       setInfoNumber(infoNumber - 1);
@@ -112,7 +112,7 @@ function HomePage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.delete(
-        `http://146.56.188.32:8002/participants/${userId}/${selectedScheduleId}`,
+        `http://146.56.190.78:8002/participants/${userId}/${selectedScheduleId}`,
         {headers},
       );
       setInfoNumber(infoNumber - 1);
@@ -187,16 +187,9 @@ function HomePage({navigation}: any) {
               isVisible={isModalVisibleForHost}
               animationIn={'slideInUp'}
               animationOut={'slideOutDown'}
-              style={{
-                alignItems: 'center',
-              }}>
+              style={styles.modalContainer}>
               <View style={styles.modalContainerForHost}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 1,
-                  }}>
+                <View style={styles.modalInnerContainer}>
                   <Text style={styles.modalComment}>
                     당신이 만든 스케줄을 떠나시면
                   </Text>
@@ -228,16 +221,9 @@ function HomePage({navigation}: any) {
               isVisible={isModalVisibleForMember}
               animationIn={'slideInUp'}
               animationOut={'slideOutDown'}
-              style={{
-                alignItems: 'center',
-              }}>
+              style={styles.modalContainer}>
               <View style={styles.modalContainerForMember}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 1,
-                  }}>
+                <View style={styles.modalInnerContainer}>
                   <Text style={styles.modalComment}>
                     정말 스케줄을 떠나시겠습니까?
                   </Text>
@@ -329,13 +315,21 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  modalContainer: {
+    alignItems: 'center',
+  },
+  modalInnerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
   modalContainerForMember: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     backgroundColor: 'white',
     width: 325,
-    height: 195,
+    height: 145,
   },
   modalContainerForHost: {
     alignItems: 'center',
@@ -343,11 +337,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'white',
     width: 325,
-    height: 225,
+    height: 175,
   },
   modalComment: {
     fontFamily: 'Roboto',
-    fontSize: 20,
+    fontSize: 15,
     color: 'black',
   },
   modalButton: {
@@ -362,7 +356,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 15,
   },
   modalButtonArea: {
     marginTop: 20,

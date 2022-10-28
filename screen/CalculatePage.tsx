@@ -164,7 +164,7 @@ function CalculatePage({navigation}: any) {
   const getSettlements = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.188.32:8002/settlements`,
+        `http://146.56.190.78:8002/settlements`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -182,7 +182,7 @@ function CalculatePage({navigation}: any) {
     console.log(accessToken);
     try {
       const response = await axios.post(
-        `http://146.56.188.32:8002/users/test`,
+        `http://146.56.190.78:8002/users/test`,
         {
           notification: {
             title: '테스트메세지',

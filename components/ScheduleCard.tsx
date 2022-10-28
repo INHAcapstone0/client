@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faCrown, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
+import {Menu, MenuItem} from 'react-native-material-menu';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';

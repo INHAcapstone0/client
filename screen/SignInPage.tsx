@@ -22,6 +22,7 @@ import {
   requestUserPermission,
   notificationListner,
 } from '../utils/push_notification_helper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 
@@ -56,19 +57,23 @@ function SignInPage({navigation}: any) {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://146.56.188.32:8002/auth/login',
+        'http://146.56.190.78:8002/auth/login',
         {
           email: email,
           password: password,
         },
       );
 
-      console.log(response);
+      //console.log(response);
 
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       requestUserPermission();
       notificationListner();
+
+      AsyncStorage.setItem('PushNotification', 'true');
+      AsyncStorage.setItem('SoundNotification', 'true');
+      AsyncStorage.setItem('VibrationNotification', 'true');
 
       dispatch(
         userActions.setUser({
@@ -127,7 +132,7 @@ function SignInPage({navigation}: any) {
         <Text style={styles.navButtonText}>비밀번호를 잊으셨나요?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={toSignUpPage}>
-        <Text style={styles.navButtonText}>회원가입하로가기</Text>
+        <Text style={styles.navButtonText}>회원가입 하러가기</Text>
       </TouchableOpacity>
     </ScrollView>
   );

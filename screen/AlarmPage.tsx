@@ -43,7 +43,7 @@ function AlarmPage({navigation}: any) {
   const getAllAlarms = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.188.32:8002/alarms?user_id=${userId}`,
+        `http://146.56.190.78:8002/alarms?user_id=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

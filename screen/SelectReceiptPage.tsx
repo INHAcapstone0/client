@@ -107,7 +107,7 @@ function SelectReceiptPage({navigation}: any) {
       console.log('formData', formData);
 
       const response = await axios.post(
-        `http://146.56.188.32:8002/receipts/test`,
+        `http://146.56.190.78:8002/receipts/test`,
         formData,
         {
           headers: {

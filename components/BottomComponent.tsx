@@ -96,7 +96,7 @@ function BottomComponent({
       console.log(selectedUsersId);
 
       await axios.post(
-        'http://146.56.188.32:8002/participants',
+        'http://146.56.190.78:8002/participants',
         {
           participant_ids: selectedUsersId,
           schedule_id: selectedScheduleId,
@@ -128,7 +128,7 @@ function BottomComponent({
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get('http://146.56.188.32:8002/receipts', {
+      const response = await axios.get('http://146.56.190.78:8002/receipts', {
         params,
         headers,
       });
@@ -150,7 +150,7 @@ function BottomComponent({
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        'http://146.56.188.32:8002/participants',
+        'http://146.56.190.78:8002/participants',
         {
           params,
           headers,
@@ -169,7 +169,7 @@ function BottomComponent({
     try {
       console.log(111);
       const response = await axios.get(
-        `http://146.56.188.32:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
+        `http://146.56.190.78:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -236,7 +236,7 @@ function BottomComponent({
     }, []);
     return (
       <View style={styles.memberInvitation}>
-      <Text style={styles.modalTitle}>그룹원 초대</Text>
+        <Text style={styles.modalTitle}>그룹원 초대</Text>
         <TextInput
           style={styles.serchTextInput}
           placeholder="그룹원 검색"
@@ -425,16 +425,6 @@ const styles = StyleSheet.create({
   },
   bottomSheetView: {
     backgroundColor: 'red',
-  },
-
-  magnifyingGlass: {
-    position: 'absolute',
-    top: 55,
-    right: 30,
-  },
-
-  userContainer: {
-    height: 300,
   },
   textStyle: {
     color: 'white',
