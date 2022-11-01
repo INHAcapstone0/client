@@ -49,7 +49,9 @@ function SelectReceiptPage({navigation, route}: any) {
   );
 
   const moveToNextStep = () => {
-    navigation.navigate('ReceiptUploadPage');
+    navigation.navigate('ReceiptUploadPage', {
+      scheduleId: route.parms.scheduleId,
+    });
   };
 
   const requestCameraPermission = async () => {
