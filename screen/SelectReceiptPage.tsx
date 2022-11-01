@@ -41,7 +41,7 @@ interface userType {
   uri: string;
 }
 
-function SelectReceiptPage({navigation}: any) {
+function SelectReceiptPage({navigation, route}: any) {
   const [selectImg, setSelectImg] = useState({uri: ''});
   const [showSpinner, setShowSpinner] = useState(false);
   const accessToken = useSelector(
@@ -106,7 +106,10 @@ function SelectReceiptPage({navigation}: any) {
         },
       );
       console.log('response.data.data', response.data.data);
-      navigation.navigate('ReceiptResultPage', {data: response.data.data});
+      navigation.navigate('ReceiptResultPage', {
+        data: response.data.data,
+        scheduleId: route.parms.scheduleId,
+      });
       // navigation.reset({
       //   routes: [
       //     {

@@ -63,8 +63,51 @@ function AlarmPage({navigation}: any) {
 
   const deleteAlarm = async () => {
     try {
+      console.log(alarmId);
       const response = await axios.delete(
-        `http://146.56.190.78:8002/alarms/restore/${alarmId}`,
+        `http://146.56.190.78:8002/alarms/${alarmId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      getAllAlarms();
+      console.log(response);
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+    }
+  };
+
+  const joinSchedule = async () => {
+    try {
+      console.log(alarmId);
+      const response = await axios.patch(
+        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+        {
+          status: '승인',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      getAllAlarms();
+      console.log(response);
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+    }
+  };
+
+  const rejectSchedule = async () => {
+    try {
+      console.log(alarmId);
+      const response = await axios.patch(
+        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+        {
+          status: '거절',
+        },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -221,14 +264,19 @@ function AlarmPage({navigation}: any) {
               <Pressable
                 style={styles.modalButton}
                 onPress={() => {
-                  closeInvitationModal();
+                  joinSchedule();
                   deleteAlarm();
+                  closeInvitationModal();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
               </Pressable>
               <Pressable
                 style={styles.modalButton}
-                onPress={closeInvitationModal}>
+                onPress={() => {
+                  rejectSchedule();
+                  deleteAlarm();
+                  closeInvitationModal();
+                }}>
                 <Text style={styles.modalButtonText}>아니오</Text>
               </Pressable>
             </View>
@@ -254,8 +302,8 @@ function AlarmPage({navigation}: any) {
               <Pressable
                 style={styles.modalButton}
                 onPress={() => {
-                  closeModal();
                   deleteAlarm();
+                  closeModal();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
               </Pressable>

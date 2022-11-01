@@ -71,10 +71,13 @@ function ScheduleCard({
   };
 
   const pressReceiptUpload = () => {
-    navigate('SelectReceiptPage');
+    navigate('SelectReceiptPage', {
+      scheduleId: item.id,
+    });
   };
 
   useEffect(() => {
+    console.log('item.id', item.id);
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
