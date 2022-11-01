@@ -196,7 +196,6 @@ function CalculatePage({navigation}: any) {
 
   const updateSettlement = (calculate: any) => async (event: any) => {
     try {
-      console.log(1);
       const response = await axios.patch(
         `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
         {is_paid: true},

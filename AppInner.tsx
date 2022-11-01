@@ -20,6 +20,10 @@ import ReceiptInfoPage from './screen/ReceiptInfoPage';
 import ReceiptUploadPage from './screen/ReceiptUploadPage';
 import CreateGroupSecondPage from './screen/CreateGroupSecondPage';
 import CreateGroupFinalPage from './screen/CreateGroupFinalPage';
+import NotificationSettingPage from './screen/NotificationSettingPage';
+import PreMyPage from './screen/PreMyPage';
+import MyPage from './screen/MyPage';
+
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import ReceiptResultPage from './screen/ReceiptResultPage';
@@ -51,7 +55,7 @@ function AppInner() {
   //         const refreshToken = await EncryptedStorage.getItem('refreshToken');
   //         // token refresh 요청
   //         const {data} = await axios.post(
-  //           'http://146.56.188.32:8002/users/auth/refresh', // token refresh api
+  //           'http://146.56.190.78:8002/users/auth/refresh', // token refresh api
   //           {},
   //           {
   //             headers: {
@@ -100,6 +104,12 @@ function AppInner() {
         <Stack.Screen name="ReceiptInfoPage" component={ReceiptInfoPage} />
         <Stack.Screen name="SelectReceiptPage" component={SelectReceiptPage} />
         <Stack.Screen name="ReceiptUploadPage" component={ReceiptUploadPage} />
+        <Stack.Screen
+          name="NotificationSettingPage"
+          component={NotificationSettingPage}
+        />
+        <Stack.Screen name="PreMyPage" component={PreMyPage} />
+        <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="ReceiptResultPage" component={ReceiptResultPage} />
       </Stack.Navigator>
     </NavigationContainer>
