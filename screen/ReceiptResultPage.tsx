@@ -26,6 +26,7 @@ import {
   AlertNotificationRoot,
   Toast,
 } from 'react-native-alert-notification';
+import axios, {AxiosError} from 'axios';
 
 function ReceiptResultPage({navigation, route}: any) {
   //액세스토큰
@@ -35,6 +36,7 @@ function ReceiptResultPage({navigation, route}: any) {
 
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
+  const userId = useSelector((state: RootState) => state.persist.user.id);
 
   //카테고리 모달 visible변수
   const [modalVisible, setModalVisible] = useState(false);
@@ -84,6 +86,51 @@ function ReceiptResultPage({navigation, route}: any) {
     console.log('route.params.data', route.params.data);
     console.log('route.params.data', route.params.data.items);
   }, [data]);
+
+  const uploadReceipt = async () => {
+    try {
+      const response = await axios.post(
+        `http://146.56.190.78:8002/receipts`,
+        {
+          schedule_id: route.params.scheduleId,
+          poster_id: userId,
+          payDate:
+            route.params.data.payDate.year +
+            route.params.data.payDate.month +
+            route.params.data.payDate.day +
+            route.params.data.payDate.hour +
+            route.params.data.payDate.minute,
+          total_price: route.params.data.totalPrice,
+          memo: memo,
+          place: route.params.data.store.name,
+          address: route.params.data.store.addresses,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        textBody: '지출정보 등록이 완료되었습니다',
+      });
+      moveToHomePage();
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '지출정보 등록이 실패하였습니다',
+      });
+    }
+  };
+
+  const moveToHomePage = () => {
+    setTimeout(() => {
+      navigation.navigate('HomePage');
+    }, 3000);
+  };
 
   //결제항목과 결제금액 유효성 검사 함수
   const checkValidation = () => {
@@ -146,14 +193,6 @@ function ReceiptResultPage({navigation, route}: any) {
     setData([]);
     setItemFlag(false);
     setTotalPriceValidationFlag(true);
-  };
-
-  const moveToHomePage = () => {
-    console.log(1);
-    Toast.show({
-      type: ALERT_TYPE.SUCCESS,
-      textBody: '지출정보 등록이 완료되었습니다',
-    });
   };
 
   return (
@@ -308,7 +347,7 @@ function ReceiptResultPage({navigation, route}: any) {
               </KeyboardAvoidingView>
             </View>
             <View style={styles.itemSection}>
-              <TouchableOpacity activeOpacity={0.8} onPress={moveToHomePage}>
+              <TouchableOpacity activeOpacity={0.8} onPress={uploadReceipt}>
                 <Text style={styles.uploadButtonText}>등록하기</Text>
               </TouchableOpacity>
             </View>

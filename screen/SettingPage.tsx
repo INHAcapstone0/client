@@ -29,17 +29,6 @@ function SettingPage({navigation}: any) {
   );
   const id = useSelector((state: RootState) => state.persist.user.id);
 
-  console.log('id', id);
-
-  useEffect(() => {
-    asd();
-  }, []);
-
-  const asd = async () => {
-    const fcmToken = await AsyncStorage.getItem('fcmToken');
-    console.log(fcmToken);
-  };
-
   const signOut = async () => {
     console.log('accessToken:', accessToken);
     try {

@@ -163,7 +163,7 @@ function CalculatePage({navigation}: any) {
   const getSettlements = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.190.78:8002/settlements`,
+        `http://146.56.190.78:8002/settlements/bySchedule/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -171,11 +171,28 @@ function CalculatePage({navigation}: any) {
         },
       );
       setAllSettlements(response.data);
-      // console.log(response.data);
+      console.log(response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
   };
+
+  // const getSettlements = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://146.56.190.78:8002/settlements`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       },
+  //     );
+  //     setAllSettlements(response.data);
+  //     // console.log(response.data);
+  //   } catch (err: AxiosError | any) {
+  //     console.log(err.response);
+  //   }
+  // };
 
   const updateSettlement = (calculate: any) => async (event: any) => {
     try {
