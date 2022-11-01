@@ -17,7 +17,22 @@ function SettingPage({navigation}: any) {
   );
   const id = useSelector((state: RootState) => state.persist.user.id);
 
+  useEffect(() => {
+    asd();
+  }, []);
 
+  const asd = async () => {
+    const fcmToken = await AsyncStorage.getItem('fcmToken');
+    console.log(fcmToken);
+  };
+
+  const pressNotificationSetting = () => {
+    navigation.navigate('NotificationSettingPage');
+  };
+  const pressMyPage = () => {
+    navigation.navigate('PreMyPage');
+  };
+  const [modalVisible, setModalVisible] = useState(false);
   const signOut = async () => {
     console.log('accessToken:', accessToken);
     try {
