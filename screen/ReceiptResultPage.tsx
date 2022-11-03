@@ -90,7 +90,7 @@ function ReceiptResultPage({navigation, route}: any) {
   const uploadReceipt = async () => {
     try {
       const response = await axios.post(
-        `http://146.56.190.78:8002/receipts`,
+        `http://146.56.190.78/receipts`,
         {
           schedule_id: route.params.scheduleId,
           poster_id: userId,

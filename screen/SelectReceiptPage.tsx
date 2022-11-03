@@ -98,7 +98,7 @@ function SelectReceiptPage({navigation, route}: any) {
 
       setShowSpinner(true);
       const response = await axios.post(
-        'http://146.56.190.78:8002/receipts/test',
+        'http://146.56.190.78/receipts/test',
         data,
         {
           headers: {

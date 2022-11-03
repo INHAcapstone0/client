@@ -22,6 +22,11 @@ import axios from 'axios';
 import {RootState} from '../store/Store';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  notificationListner,
+  requestUserPermission,
+  notificationOff,
+} from '../utils/push_notification_helper';
 
 function NotificationSettingPage() {
   const dispatch = useAppDispatch();
@@ -29,77 +34,135 @@ function NotificationSettingPage() {
     (state: RootState) => state.persist.user.accessToken,
   );
 
-  const [enabledPushNotification, setEnabledPushNotification] =
-    useState(Boolean);
-  const [enabledSoundNotification, setEnabledSoundNotification] =
-    useState(Boolean);
-  const [enabledVibrationNotification, setEnabledVibrationNotification] =
-    useState(Boolean);
-
-  const togglePushSwitch = () => {
-    if (enabledPushNotification) {
-      setEnabledSoundNotification(false);
-      setEnabledVibrationNotification(false);
-      setEnabledPushNotification(false);
-
-      AsyncStorage.setItem('PushNotification', 'false');
-      AsyncStorage.setItem('SoundNotification', 'false');
-      AsyncStorage.setItem('VibrationNotification', 'false');
-    } else {
-      setEnabledPushNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
-    }
-  };
-  const toggleSoundSwitch = () => {
-    if (enabledSoundNotification) {
-      setEnabledSoundNotification(false);
-      AsyncStorage.setItem('SoundNotification', 'false');
-    } else {
-      setEnabledPushNotification(true);
-      setEnabledSoundNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('SoundNotification', 'true');
-    }
-  };
-  const toggleVibrationSwitch = () => {
-    if (enabledVibrationNotification) {
-      setEnabledVibrationNotification(false);
-      AsyncStorage.setItem('VibrationNotification', 'false');
-    } else {
-      setEnabledPushNotification(true);
-      setEnabledVibrationNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('VibrationNotification', 'true');
-    }
-  };
-
-  const loadNotifiCationData = async () => {
-    const push = await AsyncStorage.getItem('PushNotification');
-    const sound = await AsyncStorage.getItem('SoundNotification');
-    const vibration = await AsyncStorage.getItem('VibrationNotification');
-
-    if (push === 'true') {
-      setEnabledPushNotification(true);
-    } else if (push === 'false') {
-      setEnabledPushNotification(false);
-    }
-
-    if (sound === 'true') {
-      setEnabledSoundNotification(true);
-    } else if (sound === 'false') {
-      setEnabledSoundNotification(false);
-    }
-
-    if (vibration === 'true') {
-      setEnabledVibrationNotification(true);
-    } else if (vibration === 'false') {
-      setEnabledVibrationNotification(false);
-    }
-  };
+  const [enabledPushNotification, setEnabledPushNotification] = useState(true);
+  const [enabledInviteNotification, setEnabledInviteNotification] =
+    useState(true);
+  const [enabledReceiptNotification, setEnabledReceiptNotification] =
+    useState(true);
+  const [enabledScheduleNotification, setEnabledScheduleNotification] =
+    useState(true);
+  const [enabledCalculateNotification, setEnabledCalculateNotification] =
+    useState(true);
 
   useEffect(() => {
     loadNotifiCationData();
   }, []);
+
+  // useEffect(() => {
+  //   // requestUserPermission();
+  //   notificationListner();
+  // }, [
+  //   enabledPushNotification,
+  //   enabledInviteNotification,
+  //   enabledReceiptNotification,
+  //   enabledScheduleNotification,
+  //   enabledCalculateNotification,
+  // ]);
+
+  const loadNotifiCationData = async () => {
+    const push = await AsyncStorage.getItem('PushNotification');
+    const invite = await AsyncStorage.getItem('InviteNotification');
+    const receipt = await AsyncStorage.getItem('ReceiptNotification');
+    const schedule = await AsyncStorage.getItem('ScheduleNotification');
+    const calculate = await AsyncStorage.getItem('CalculateNotification');
+
+    console.log('push', push);
+
+    if (push === 'false') {
+      setEnabledPushNotification(false);
+    }
+
+    if (invite === 'false') {
+      setEnabledInviteNotification(false);
+    }
+
+    if (receipt === 'false') {
+      setEnabledReceiptNotification(false);
+    }
+
+    if (schedule === 'false') {
+      setEnabledScheduleNotification(false);
+    }
+
+    if (calculate === 'false') {
+      setEnabledCalculateNotification(false);
+    }
+  };
+
+  const togglePushSwitch = () => {
+    if (enabledPushNotification) {
+      notificationOff();
+      setEnabledPushNotification(false);
+      setEnabledInviteNotification(false);
+      setEnabledReceiptNotification(false);
+      setEnabledScheduleNotification(false);
+      setEnabledCalculateNotification(false);
+      AsyncStorage.setItem('PushNotification', 'false');
+      AsyncStorage.setItem('InviteNotification', 'false');
+      AsyncStorage.setItem('ReceiptNotification', 'false');
+      AsyncStorage.setItem('ScheduleNotification', 'false');
+      AsyncStorage.setItem('CalculateNotification', 'false');
+    } else {
+      requestUserPermission();
+      notificationListner();
+      setEnabledPushNotification(true);
+      setEnabledInviteNotification(true);
+      setEnabledReceiptNotification(true);
+      setEnabledScheduleNotification(true);
+      setEnabledCalculateNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('InviteNotification');
+      AsyncStorage.removeItem('ReceiptNotification');
+      AsyncStorage.removeItem('ScheduleNotification');
+      AsyncStorage.removeItem('CalculateNotification');
+    }
+  };
+  const toggleInviteSwitch = () => {
+    if (enabledInviteNotification) {
+      setEnabledInviteNotification(false);
+      AsyncStorage.setItem('InviteNotification', 'false');
+    } else {
+      setEnabledPushNotification(true);
+      setEnabledInviteNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('InviteNotification');
+    }
+  };
+  const toggleReceiptSwitch = () => {
+    if (enabledReceiptNotification) {
+      setEnabledReceiptNotification(false);
+      AsyncStorage.setItem('ReceiptNotification', 'false');
+    } else {
+      setEnabledPushNotification(true);
+      setEnabledReceiptNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('ReceiptNotification');
+    }
+  };
+
+  const toggleScheduleSwitch = () => {
+    if (enabledScheduleNotification) {
+      setEnabledScheduleNotification(false);
+      AsyncStorage.setItem('ScheduleNotification', 'false');
+    } else {
+      setEnabledPushNotification(true);
+      setEnabledScheduleNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('ScheduleNotification');
+    }
+  };
+
+  const toggleCalculateSwitch = () => {
+    if (enabledCalculateNotification) {
+      setEnabledCalculateNotification(false);
+      AsyncStorage.setItem('CalculateNotification', 'false');
+    } else {
+      setEnabledPushNotification(true);
+      setEnabledCalculateNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('CalculateNotification');
+    }
+  };
 
   return (
     <View style={styles.windowContainer}>
@@ -107,7 +170,7 @@ function NotificationSettingPage() {
         <Text style={styles.notificationSettingHeaderTitle}>알림 설정</Text>
       </View>
       <View style={styles.notificationItemSection}>
-        <Text style={styles.notificationItemTitle}>푸쉬 설정</Text>
+        <Text style={styles.notificationItemTitle}>푸쉬알람 설정</Text>
         <Switch
           trackColor={{false: '#767577', true: '#21B8CD'}}
           thumbColor={'#f4f3f4'}
@@ -118,24 +181,48 @@ function NotificationSettingPage() {
       </View>
       <View style={styles.borderLine} />
       <View style={styles.notificationItemSection}>
-        <Text style={styles.notificationItemTitle}>소리 설정</Text>
+        <Text style={styles.notificationItemTitle}>초대 알람</Text>
         <Switch
           trackColor={{false: '#767577', true: '#21B8CD'}}
           thumbColor={'#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSoundSwitch}
-          value={enabledSoundNotification}
+          onValueChange={toggleInviteSwitch}
+          value={enabledInviteNotification}
         />
       </View>
       <View style={styles.borderLine} />
       <View style={styles.notificationItemSection}>
-        <Text style={styles.notificationItemTitle}>진동 설정</Text>
+        <Text style={styles.notificationItemTitle}>영수증 업로드 알람</Text>
         <Switch
           trackColor={{false: '#767577', true: '#21B8CD'}}
           thumbColor={'#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleVibrationSwitch}
-          value={enabledVibrationNotification}
+          onValueChange={toggleReceiptSwitch}
+          value={enabledReceiptNotification}
+        />
+      </View>
+      <View style={styles.borderLine} />
+      <View style={styles.notificationItemSection}>
+        <Text style={styles.notificationItemTitle}>일정 시작/종료 알람</Text>
+        <Switch
+          trackColor={{false: '#767577', true: '#21B8CD'}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleScheduleSwitch}
+          value={enabledScheduleNotification}
+        />
+      </View>
+      <View style={styles.borderLine} />
+      <View style={styles.notificationItemSection}>
+        <Text style={styles.notificationItemTitle}>
+          정산 요청/확인 요청 알람
+        </Text>
+        <Switch
+          trackColor={{false: '#767577', true: '#21B8CD'}}
+          thumbColor={'#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleCalculateSwitch}
+          value={enabledCalculateNotification}
         />
       </View>
     </View>
