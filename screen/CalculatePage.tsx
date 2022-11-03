@@ -19,6 +19,8 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
+import axiosInstance from '../utils/interceptor';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const dummyData1 = [
   {
@@ -149,20 +151,27 @@ interface alarmType {
 }
 
 function CalculatePage({navigation}: any) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [allSettlements, setAllSettlements] = useState<Array<any>>([]);
   const [currentTab, setCurrentTab] = useState(0);
+  const [accessToken, setAccessToken] = useState<string | null>('');
 
   useEffect(() => {
     getSettlements();
+  }, [accessToken]);
+
+  useEffect(() => {
+    loadAccessToken();
   }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const getSettlements = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://146.56.190.78/settlements/bySchedule/${userId}`,
         {
           headers: {
@@ -177,26 +186,9 @@ function CalculatePage({navigation}: any) {
     }
   };
 
-  // const getSettlements = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://146.56.190.78:8002/settlements`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       },
-  //     );
-  //     setAllSettlements(response.data);
-  //     // console.log(response.data);
-  //   } catch (err: AxiosError | any) {
-  //     console.log(err.response);
-  //   }
-  // };
-
   const updateSettlement = (calculate: any) => async (event: any) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
         {is_paid: true},
         {

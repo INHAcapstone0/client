@@ -27,13 +27,11 @@ import {
   Toast,
 } from 'react-native-alert-notification';
 import axios, {AxiosError} from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 function ReceiptResultPage({navigation, route}: any) {
-  //액세스토큰
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-
+  const [accessToken, setAccessToken] = useState<string | null>('');
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
   const userId = useSelector((state: RootState) => state.persist.user.id);
@@ -72,6 +70,15 @@ function ReceiptResultPage({navigation, route}: any) {
   const [memo, setMemo] = useState('');
 
   useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
+
+  useEffect(() => {
     if (data.length === 0 && itemFlag) {
       addEmptyInput();
     }
@@ -89,7 +96,7 @@ function ReceiptResultPage({navigation, route}: any) {
 
   const uploadReceipt = async () => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://146.56.190.78/receipts`,
         {
           schedule_id: route.params.scheduleId,
