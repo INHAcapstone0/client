@@ -40,7 +40,8 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
-
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
@@ -62,10 +63,7 @@ function CreateGroupFinalPage({navigation}: any) {
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
   const [allUsers, setAllUsers] = useState<Array<userType>>([]);
   const [isMemberModalVisible, setIsMemberModalVisible] = useState(false);
-
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const ownerId = useSelector((state: RootState) => state.persist.user.id);
   const {groupName, startAt, endAt} = useSelector(
     (state: RootState) => state.persist.schedule,
@@ -90,11 +88,20 @@ function CreateGroupFinalPage({navigation}: any) {
 
   useEffect(() => {
     getAllUsers();
+  }, [accessToken]);
+
+  useEffect(() => {
+    loadAccessToken();
   }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const getAllUsers = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://146.56.190.78/users?exceptMe=${true}`,
         {
           headers: {
@@ -136,7 +143,7 @@ function CreateGroupFinalPage({navigation}: any) {
       console.log(selectedUsersId);
       console.log(accessToken);
 
-      const result = await axios.post(
+      const result = await axiosInstance.post(
         'http://146.56.190.78/schedules',
         {
           name: groupName,

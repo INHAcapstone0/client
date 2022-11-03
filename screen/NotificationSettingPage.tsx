@@ -29,11 +29,6 @@ import {
 } from '../utils/push_notification_helper';
 
 function NotificationSettingPage() {
-  const dispatch = useAppDispatch();
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-
   const [enabledPushNotification, setEnabledPushNotification] = useState(true);
   const [enabledInviteNotification, setEnabledInviteNotification] =
     useState(true);

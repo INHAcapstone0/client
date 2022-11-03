@@ -30,11 +30,10 @@ import {RootState} from '../store/Store';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 function HomePage({navigation}: any) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [info, setInfo] = useState([]);
@@ -44,6 +43,20 @@ function HomePage({navigation}: any) {
   const [errFlag, setErrFlag] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [accessToken, setAccessToken] = useState<string | null>('');
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  useEffect(() => {
+    getAllSchedules();
+  }, [infoNumber, accessToken]);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -76,7 +89,7 @@ function HomePage({navigation}: any) {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         'http://146.56.190.78/schedules/status',
         {params, headers},
       );
@@ -97,7 +110,7 @@ function HomePage({navigation}: any) {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `http://146.56.190.78/schedules/${selectedScheduleId}`,
         {headers},
       );
@@ -112,7 +125,7 @@ function HomePage({navigation}: any) {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `http://146.56.190.78/participants/${userId}/${selectedScheduleId}`,
         {headers},
       );
@@ -121,10 +134,6 @@ function HomePage({navigation}: any) {
       console.log(err);
     }
   };
-
-  useEffect(() => {
-    getAllSchedules();
-  }, [infoNumber]);
 
   if (errFlag) {
     //갖고있는 스케줄이 0개일 경우

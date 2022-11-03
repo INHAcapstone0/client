@@ -21,16 +21,14 @@ import {
 } from 'react-native-alert-notification';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {any} from 'prop-types';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 function MyPage() {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
-
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const [myInfo, setMyInfo] = useState<{
     email: string;
     name: string;
@@ -40,6 +38,20 @@ function MyPage() {
     name: '',
     img_url: '',
   });
+
+  useEffect(() => {
+    getMyInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myInfo, accessToken]);
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const getMyInfo = async () => {
     try {
@@ -152,11 +164,6 @@ function MyPage() {
       }
     }
   };
-
-  useEffect(() => {
-    getMyInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myInfo]);
 
   return (
     <View style={styles.windowContainer}>

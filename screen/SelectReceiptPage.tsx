@@ -29,6 +29,8 @@ import {
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 const imagePickerOption: any = {
   mediaType: 'photo',
@@ -44,9 +46,16 @@ interface userType {
 function SelectReceiptPage({navigation, route}: any) {
   const [selectImg, setSelectImg] = useState({uri: ''});
   const [showSpinner, setShowSpinner] = useState(false);
-  const accessToken = useSelector(
-    (state: any) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const moveToNextStep = () => {
     navigation.navigate('ReceiptUploadPage', {
@@ -97,7 +106,7 @@ function SelectReceiptPage({navigation, route}: any) {
       console.log('data', data);
 
       setShowSpinner(true);
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         'http://146.56.190.78/receipts/test',
         data,
         {

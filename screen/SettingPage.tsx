@@ -9,22 +9,24 @@ import {RootState} from '../store/Store';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal/dist/modal';
+import axiosInstance from '../utils/interceptor';
 
 function SettingPage({navigation}: any) {
   const dispatch = useAppDispatch();
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const id = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
     console.log('id', id);
-    asd();
   }, [id]);
 
-  const asd = async () => {
-    const fcmToken = await AsyncStorage.getItem('fcmToken');
-    console.log(fcmToken);
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
   };
 
   const pressNotificationSetting = () => {
@@ -37,7 +39,7 @@ function SettingPage({navigation}: any) {
   const signOut = async () => {
     console.log('accessToken:', accessToken);
     try {
-      const result = await axios.post(
+      const result = await axiosInstance.post(
         'http://146.56.190.78/auth/logout',
         null,
         {
@@ -50,6 +52,11 @@ function SettingPage({navigation}: any) {
       EncryptedStorage.removeItem('refreshToken');
       EncryptedStorage.removeItem('accessToken');
       AsyncStorage.removeItem('fcmToken');
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('InviteNotification');
+      AsyncStorage.removeItem('ReceiptNotification');
+      AsyncStorage.removeItem('ScheduleNotification');
+      AsyncStorage.removeItem('CalculateNotification');
       dispatch(userActions.signout());
     } catch (err: any) {
       console.log('logout error:', err.response.data.msg);
