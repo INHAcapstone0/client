@@ -163,7 +163,7 @@ function CalculatePage({navigation}: any) {
   const getSettlements = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.190.78:8002/settlements/bySchedule/${userId}`,
+        `http://146.56.190.78/settlements/bySchedule/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -103,7 +103,7 @@ function MyPage() {
       var body = new FormData();
       body.append('user-profile', image);
 
-      await axios.patch('http://146.56.190.78:8002/users/img/upload', body, {
+      await axios.patch('http://146.56.190.78/users/img/upload', body, {
         headers: headers,
       });
     } catch (err: AxiosError | any) {
@@ -136,7 +136,7 @@ function MyPage() {
             password: newPassword,
           };
           const response = await axios.patch(
-            `http://146.56.190.78:8002/users/${userId}`,
+            `http://146.56.190.78/users/${userId}`,
             body,
             {headers},
           );

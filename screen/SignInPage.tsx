@@ -56,13 +56,10 @@ function SignInPage({navigation}: any) {
     }
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://146.56.190.78:8002/auth/login',
-        {
-          email: email,
-          password: password,
-        },
-      );
+      const response = await axios.post('http://146.56.190.78/auth/login', {
+        email: email,
+        password: password,
+      });
 
       //console.log(response);
 
@@ -70,10 +67,6 @@ function SignInPage({navigation}: any) {
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       requestUserPermission();
       notificationListner();
-
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('SoundNotification', 'true');
-      AsyncStorage.setItem('VibrationNotification', 'true');
 
       dispatch(
         userActions.setUser({

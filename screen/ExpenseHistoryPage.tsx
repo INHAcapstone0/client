@@ -100,7 +100,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        `http://146.56.190.78:8002/schedules/${scheduleId}`,
+        `http://146.56.190.78/schedules/${scheduleId}`,
         {headers},
       );
       setScheduleInfo(response.data);
@@ -131,7 +131,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.190.78:8002/receipts', {
+        const response = await axios.get('http://146.56.190.78/receipts', {
           params,
           headers,
         });
@@ -151,7 +151,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.190.78:8002/receipts', {
+        const response = await axios.get('http://146.56.190.78/receipts', {
           params,
           headers,
         });

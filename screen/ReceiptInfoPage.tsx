@@ -71,7 +71,7 @@ function ReceiptInfoPage(route: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.get(
-        `http://146.56.190.78:8002/receipts/${receiptId}`,
+        `http://146.56.190.78/receipts/${receiptId}`,
         {
           headers,
         },

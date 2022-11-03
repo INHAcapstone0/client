@@ -52,7 +52,7 @@ function PreMyPage({navigation}: any) {
         password: password,
       };
       const response = await axios.post(
-        'http://146.56.190.78:8002/users/password/check',
+        'http://146.56.190.78/users/password/check',
         body,
         {headers},
       );

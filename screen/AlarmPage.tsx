@@ -41,13 +41,14 @@ function AlarmPage({navigation}: any) {
     (state: RootState) => state.persist.user.accessToken,
   );
   useEffect(() => {
+    console.log(accessToken);
     getAllAlarms();
   }, []);
 
   const getAllAlarms = async () => {
     try {
       const response = await axios.get(
-        `http://146.56.190.78:8002/alarms?user_id=${userId}`,
+        `http://146.56.190.78/alarms?user_id=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -65,7 +66,7 @@ function AlarmPage({navigation}: any) {
     try {
       console.log(alarmId);
       const response = await axios.delete(
-        `http://146.56.190.78:8002/alarms/${alarmId}`,
+        `http://146.56.190.78/alarms/${alarmId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -83,7 +84,7 @@ function AlarmPage({navigation}: any) {
     try {
       console.log(alarmId);
       const response = await axios.patch(
-        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+        `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
           status: '승인',
         },
@@ -104,7 +105,7 @@ function AlarmPage({navigation}: any) {
     try {
       console.log(alarmId);
       const response = await axios.patch(
-        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+        `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
           status: '거절',
         },

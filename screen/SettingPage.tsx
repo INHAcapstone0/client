@@ -18,8 +18,9 @@ function SettingPage({navigation}: any) {
   const id = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
+    console.log('id', id);
     asd();
-  }, []);
+  }, [id]);
 
   const asd = async () => {
     const fcmToken = await AsyncStorage.getItem('fcmToken');
@@ -37,7 +38,7 @@ function SettingPage({navigation}: any) {
     console.log('accessToken:', accessToken);
     try {
       const result = await axios.post(
-        'http://146.56.190.78:8002/auth/logout',
+        'http://146.56.190.78/auth/logout',
         null,
         {
           headers: {
