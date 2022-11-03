@@ -44,7 +44,8 @@ axiosInstance.interceptors.response.use(
       EncryptedStorage.setItem('accessToken', newAccessToken);
       EncryptedStorage.setItem('refreshToken', newRefreshToken);
 
-      originalRequest.headers.authorization_access = newAccessToken;
+      // originalRequest.headers.authorization_access = newAccessToken;
+      originalRequest.headers.Authorization = newAccessToken;
 
       return axiosInstance(originalRequest);
     }
