@@ -135,10 +135,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
           params,
           headers,
         });
-
-        console.log(response.data);
         setReceiptsInfo(response.data);
-
         return response.data;
       } catch (err: AxiosError | any) {
         console.log(err);

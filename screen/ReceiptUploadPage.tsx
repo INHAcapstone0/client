@@ -11,6 +11,7 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -20,6 +21,7 @@ import PurchaseItem from '../components/PurchaseItem';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import KakaoMap from '../components/KakaoMap';
+import axios, {AxiosError} from 'axios';
 
 function ReceiptUploadPage() {
   //액세스토큰
@@ -90,52 +92,7 @@ function ReceiptUploadPage() {
       price: '6000',
     },
   ]);
-
-  const [searchedPlaces, setSearchedPlaces] = useState([
-    {
-      place_name: '스타벅스 인하대점',
-      road_address_name: '인천 미추홀구 인하로 59',
-      address_name: '용현동 199-18',
-      phone: '1522-3232',
-    },
-    {
-      place_name: '스타벅스 인하대역점',
-      road_address_name: '인천 미추홀구 독배로 309',
-      address_name: '용현동 665-15',
-      phone: '',
-    },
-    {
-      place_name: '스타벅스 인천학익DT점',
-      road_address_name: '인천 미추홀구 매소홀로 368',
-      address_name: '학익동 690-2',
-      phone: '1522-3232',
-    },
-    {
-      place_name: '스타벅스 인천용일사거리DT점',
-      road_address_name: '인천 미추홀구 한나루로 525',
-      address_name: '주안동 684-3',
-      phone: '1522-3232',
-    },
-    {
-      place_name: '스타벅스 인천용현DT점',
-      road_address_name: '인천 미추홀구 아암대로 107',
-      address_name: '용현동 630-9',
-      phone: '1522-3232',
-    },
-    {
-      place_name: '스타벅스 제물포역DT점',
-      road_address_name: '인천 미추홀구 경인로 103',
-      address_name: '숭의동 78-2',
-      phone: '1522-3232',
-    },
-    {
-      place_name: '스타벅스 인천도화DT점',
-      road_address_name: '인천 미추홀구 장고개로 28',
-      address_name: '도화동 116-2',
-      phone: '1522-3232',
-    },
-  ]);
-
+  const [searchedPlaces, setSearchedPlaces] = useState([]);
   //결제항목의 이름, 수량, 가격 유효성 변수 / 빈칸이거나 (수량, 가격의 경우)숫자가 아니면 false
   const [itemValidation, setItemValidation] = useState(true);
 
@@ -207,6 +164,29 @@ function ReceiptUploadPage() {
     setItemFlag(false);
     setTotalPriceValidationFlag(true);
   };
+
+  const searchPlace = async (keyword: string) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.get(
+        `http://146.56.190.78:8002/extra/kakao?query=${keyword}`,
+        {
+          headers,
+        },
+      );
+      setSearchedPlaces(response.data.documents);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+    }
+  };
+
+  const mapViewRef = useRef<WebView>(null);
+  const drawMap = (address: string) => {
+    mapViewRef.current?.postMessage(address);
+  };
+
   useEffect(() => {
     if (data.length === 0 && itemFlag) {
       addEmptyInput();
@@ -305,6 +285,21 @@ function ReceiptUploadPage() {
           <View style={styles.itemContainer}>
             <Text style={styles.itemContent}>{place}</Text>
           </View>
+          <View
+            style={{
+              borderWidth: 2,
+              borderRadius: 3,
+              borderColor: '#21B8CD',
+              width: Dimensions.get('window').width * 0.9,
+              height: 195,
+              marginTop: 30,
+            }}>
+            <WebView
+              ref={mapViewRef}
+              source={{uri: 'http://10.10.237.160:3000/'}}
+              style={styles.webview}
+            />
+          </View>
         </View>
         <Modal isVisible={placeModalVisible}>
           <View style={styles.centeredView}>
@@ -328,14 +323,14 @@ function ReceiptUploadPage() {
                       setPlaceKeyword(text);
                     }}
                     onSubmitEditing={() => {
-                      console.log('검색1');
+                      searchPlace(placeKeyword);
                     }}
                     placeholder="가게 이름을 입력해주세요"
                     value={placeKeyword}
                   />
                   <Pressable
                     onPress={() => {
-                      console.log('검색2');
+                      searchPlace(placeKeyword);
                     }}>
                     <FontAwesomeIcon
                       icon={faMagnifyingGlass}
@@ -349,7 +344,7 @@ function ReceiptUploadPage() {
                 <ScrollView style={{}}>
                   {searchedPlaces.map((item: any) => {
                     return (
-                      <View key={item.road_address_name}>
+                      <View key={item.id}>
                         <View style={{marginTop: 20, marginBottom: 20}}>
                           <View
                             style={{
@@ -363,6 +358,7 @@ function ReceiptUploadPage() {
                               style={styles.placeSelectButton}
                               onPress={() => {
                                 setPlace(item.place_name);
+                                drawMap(item.road_address_name);
                                 setPlaceModalVisible(false);
                               }}>
                               <Text style={styles.placeSelectButtonText}>
@@ -721,8 +717,9 @@ function ReceiptUploadPage() {
 
 const styles = StyleSheet.create({
   webview: {
-    height: 300,
-    width: 300,
+    width: Dimensions.get('window').width * 0.9,
+    height: 195,
+    opacity: 0.99,
   },
   window: {
     backgroundColor: 'white',

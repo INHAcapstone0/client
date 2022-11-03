@@ -66,7 +66,6 @@ function ReceiptInfoPage(route: any) {
   const [totalPrice, setTotalPrice] = useState('0');
 
   const getReceiptInfo = async () => {
-    console.log('receiptId : ', receiptId);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -83,15 +82,22 @@ function ReceiptInfoPage(route: any) {
           .toString()
           .replace(/\B(?=(\d{3})+(?!\d))/g, ','),
       );
+      drawMap(response.data.address);
     } catch (err: AxiosError | any) {
       console.log('receipt error');
       console.log(err);
     }
   };
 
+  const mapViewRef = useRef<WebView>(null);
+  const drawMap = (address: string) => {
+    mapViewRef.current?.postMessage(address);
+  };
+
   useEffect(() => {
     getReceiptInfo();
-  }, []);
+    setTimeout(() => drawMap(receiptInfo.address), 500);
+  }, [receiptInfo.address]);
 
   return (
     <View style={styles.window}>
@@ -178,10 +184,23 @@ function ReceiptInfoPage(route: any) {
           </View>
         </View>
       </View>
-
-      <View style={styles.borderLine} />
-      <View style={styles.webview}>
-        <WebView source={{uri: 'http://192.168.43.2:3000/'}} />
+      <View
+        style={{
+          borderWidth: 2,
+          borderRadius: 3,
+          borderColor: '#21B8CD',
+          width: Dimensions.get('window').width * 0.9,
+          height: 195,
+        }}>
+        <WebView
+          ref={mapViewRef}
+          source={{uri: 'http://10.10.237.160:3000/'}}
+          style={{
+            width: Dimensions.get('window').width * 0.9,
+            height: 200,
+            opacity: 0.99,
+          }}
+        />
       </View>
     </View>
   );
@@ -228,8 +247,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 15,
+    marginBottom: 15,
   },
   item: {
     width: Dimensions.get('window').width * 0.6,
@@ -286,10 +305,6 @@ const styles = StyleSheet.create({
   modalCloseButton: {
     color: '#21B8CD',
   },
-  webview: {
-    marginTop: 20,
-    height: 200,
-    width: Dimensions.get('window').width * 0.8,
-  },
+  webview: {},
 });
 export default ReceiptInfoPage;
