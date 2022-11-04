@@ -2,6 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from './interceptor';
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -18,12 +19,11 @@ async function requestUserPermission() {
 async function getFCMToken() {
   const fcmToken = await AsyncStorage.getItem('fcmToken');
   const accessToken = await EncryptedStorage.getItem('accessToken');
-  console.log('fcmToken is : ', fcmToken);
   if (!fcmToken) {
     try {
       const fcmToken = await messaging().getToken();
       console.log('fcmToken is : ', fcmToken);
-      const response = await axios.patch(
+      const response = await axiosInstance.patch(
         'http://146.56.190.78/users/device/token',
         {
           device_token: fcmToken,
@@ -51,15 +51,8 @@ const notificationOff = async () => {
 
 const notificationListner = async () => {
   const push = await AsyncStorage.getItem('PushNotification');
-  const invite = await AsyncStorage.getItem('InviteNotification');
-  const receipt = await AsyncStorage.getItem('ReceiptNotification');
-  const schedule = await AsyncStorage.getItem('ScheduleNotification');
-  const calculate = await AsyncStorage.getItem('CalculateNotification');
 
-  console.log('push', push);
-  console.log('12345', push === 'false');
-
-  if (push === null) {
+  if (push === 'true') {
     console.log('fcm background 수신');
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
@@ -84,9 +77,9 @@ const notificationListner = async () => {
       console.log('notification on background state', remoteMessage);
     });
 
-    messaging().onMessage(async remoteMessage => {
-      console.log('notification on froground state', remoteMessage);
-    });
+    // messaging().onMessage(async remoteMessage => {
+    //   console.log('notification on froground state', remoteMessage);
+    // });
   }
 };
 

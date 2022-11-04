@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
       console.log('refreshToken', refreshToken);
       console.log('accessToken', accessToken);
 
-      const response = await axios.get(
+      const {data} = await axios.post(
         `http://146.56.190.78/users/auth/refresh`,
         {
           headers: {
@@ -33,10 +33,10 @@ axiosInstance.interceptors.response.use(
         },
       );
 
-      console.log('response', response);
+      console.log('refresh response data', data);
       const originalRequest = config;
-      const newAccessToken = response.headers.authorization_access;
-      const newRefreshToken = response.headers.authorization_refresh;
+      const newAccessToken = data.data.accessToken;
+      const newRefreshToken = data.data.refreshToken;
 
       console.log('newAccessToken : ', newAccessToken);
       console.log('newRefreshToken : ', newRefreshToken);

@@ -22,7 +22,7 @@ import {
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {any} from 'prop-types';
 import EncryptedStorage from 'react-native-encrypted-storage';
-
+import axiosInstance from '../utils/interceptor';
 function MyPage() {
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
@@ -58,7 +58,7 @@ function MyPage() {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://146.56.190.78:8002/users/${userId}`,
         {headers},
       );
@@ -115,7 +115,7 @@ function MyPage() {
       var body = new FormData();
       body.append('user-profile', image);
 
-      await axios.patch('http://146.56.190.78/users/img/upload', body, {
+      await axiosInstance.patch('http://146.56.190.78/users/img/upload', body, {
         headers: headers,
       });
     } catch (err: AxiosError | any) {
@@ -147,7 +147,7 @@ function MyPage() {
           const body = {
             password: newPassword,
           };
-          const response = await axios.patch(
+          const response = await axiosInstance.patch(
             `http://146.56.190.78/users/${userId}`,
             body,
             {headers},
