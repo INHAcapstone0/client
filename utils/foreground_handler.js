@@ -9,18 +9,19 @@ export default ForegroundHandler = () => {
   useEffect(() => {
     const unSubscribe = messaging().onMessage(async remoteMessage => {
       console.log('foreground test');
+      const sound = await AsyncStorage.getItem('SoundNotification');
+      const vibration = await AsyncStorage.getItem('VibrationNotification');
       AsyncStorage.getItem('PushNotification', (err, result) => {
         console.log('result', result);
         if (result === null) {
           console.log('fcm foreground 수신');
           PushNotification.localNotification({
-            /* Android Only Properties */
-            channelId: 'your-channel-id', // (required) channelId, if the channel doesn't exist, notification will not trigger.
+            channelId: 'your-channel-id',
             title: 'Android App',
             body: 'Test Body',
             soundName: 'default',
-            vibrate: true,
-            playSound: true,
+            vibrate: sound ? true : false,
+            playSound: vibration ? true : false,
           });
         }
       });

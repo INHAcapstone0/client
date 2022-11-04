@@ -68,6 +68,10 @@ function SignInPage({navigation}: any) {
       requestUserPermission();
       notificationListner();
 
+      AsyncStorage.setItem('PushNotification', 'true');
+      AsyncStorage.setItem('SoundNotification', 'true');
+      AsyncStorage.setItem('VibrationNotification', 'true');
+
       dispatch(
         userActions.setUser({
           name: response.data.user,

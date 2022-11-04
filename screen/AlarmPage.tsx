@@ -52,6 +52,7 @@ function AlarmPage({navigation}: any) {
   const loadAccessToken = async () => {
     const accessTokenData = await EncryptedStorage.getItem('accessToken');
     setAccessToken(accessTokenData);
+    console.log(accessTokenData);
   };
 
   const getAllAlarms = async () => {
@@ -65,7 +66,6 @@ function AlarmPage({navigation}: any) {
         },
       );
       setAllAlarms(response.data);
-      console.log(response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
