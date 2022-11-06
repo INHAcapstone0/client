@@ -32,6 +32,10 @@ function SettingPage({navigation}: any) {
   const pressMyPage = () => {
     navigation.navigate('PreMyPage');
   };
+
+  const pressAccountPage = () => {
+    navigation.navigate('RegisterAccountPage');
+  };
   const [modalVisible, setModalVisible] = useState(false);
   const signOut = async () => {
     console.log('accessToken:', accessToken);
@@ -75,6 +79,16 @@ function SettingPage({navigation}: any) {
             pressNotificationSetting();
           }}>
           <Text style={styles.titleText}>알림 설정</Text>
+        </Pressable>
+      </View>
+      <View style={styles.borderLine} />
+      <View style={styles.titleSection}>
+        <Pressable
+          onPress={() => {
+            //계좌 등록하는 페이지로 이동
+            pressAccountPage();
+          }}>
+          <Text style={styles.titleText}>계좌 관리하기</Text>
         </Pressable>
       </View>
       <View style={styles.borderLine} />

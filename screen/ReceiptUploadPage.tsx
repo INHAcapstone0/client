@@ -285,18 +285,10 @@ function ReceiptUploadPage() {
           <View style={styles.itemContainer}>
             <Text style={styles.itemContent}>{place}</Text>
           </View>
-          <View
-            style={{
-              borderWidth: 2,
-              borderRadius: 3,
-              borderColor: '#21B8CD',
-              width: Dimensions.get('window').width * 0.9,
-              height: 195,
-              marginTop: 30,
-            }}>
+          <View style={styles.webviewContainer}>
             <WebView
               ref={mapViewRef}
-              source={{uri: 'http://10.10.237.160:3000/'}}
+              source={{uri: 'http://192.168.35.192:3000/'}}
               style={styles.webview}
             />
           </View>
@@ -963,6 +955,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  webviewContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: '#21B8CD',
+    width: Dimensions.get('window').width * 0.9,
+    height: 195,
+    marginTop: 30,
   },
 });
 export default ReceiptUploadPage;
