@@ -94,8 +94,6 @@ function HomePage({navigation}: any) {
         {params, headers},
       );
       setInfo(response.data);
-      console.log(response.data);
-      console.log(info.length);
       setErrFlag(false);
     } catch (err: AxiosError | any) {
       console.log(err);

@@ -59,7 +59,7 @@ function SelectReceiptPage({navigation, route}: any) {
 
   const moveToNextStep = () => {
     navigation.navigate('ReceiptUploadPage', {
-      scheduleId: route.parms.scheduleId,
+      scheduleId: route.params.scheduleId,
     });
   };
 
