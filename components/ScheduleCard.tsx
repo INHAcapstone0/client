@@ -265,7 +265,7 @@ function ScheduleCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'white',
     width: Dimensions.get('window').width * 0.9,
     height: 210,
     marginBottom: 20,

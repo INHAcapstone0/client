@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,
@@ -26,9 +26,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 
-function SignInPage({navigation}: any) {
+function FindPassWordPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [emailChecked, setEmailChecked] = useState(false);
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
@@ -44,6 +45,22 @@ function SignInPage({navigation}: any) {
   const onChangePassword = useCallback((text: string) => {
     setPassword(text.trim());
   }, []);
+
+  const sendTempPassword = async () => {
+    try {
+      const response = await axios.post(
+        `http://146.56.190.78/auth/mail/password`,
+        {
+          email: email,
+        },
+      );
+      Alert.alert('알림', '이메일로 임시 비밀번호가 발송되었습니다.');
+      setEmailChecked(true);
+    } catch (err: any) {
+      console.log(err.response);
+    }
+  };
+
   const onSubmit = async () => {
     if (loading) {
       return;
@@ -61,7 +78,7 @@ function SignInPage({navigation}: any) {
         password: password,
       });
 
-      //console.log(response);
+      console.log(response);
 
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
@@ -112,22 +129,24 @@ function SignInPage({navigation}: any) {
         onSubmitEditing={() => passwordRef.current?.focus()}
         inputType="login"
       />
-      <FormInput
-        labelValue={password}
-        onChangeText={onChangePassword}
-        placeholderText="비밀번호"
-        iconType="lock"
-        secureTextEntry={true}
-        inputType="login"
-      />
-
-      <FormButton buttonTitle="로그인" onPress={onSubmit} />
-
-      <TouchableOpacity
-        style={styles.forgotButton}
-        onPress={() => navigation.navigate('FindPassWordPage')}>
-        <Text style={styles.navButtonText}>비밀번호를 잊으셨나요?</Text>
-      </TouchableOpacity>
+      {emailChecked ? (
+        <FormInput
+          labelValue={password}
+          onChangeText={onChangePassword}
+          placeholderText="비밀번호"
+          iconType="lock"
+          secureTextEntry={true}
+          inputType="login"
+        />
+      ) : null}
+      {emailChecked ? (
+        <FormButton buttonTitle="로그인" onPress={onSubmit} />
+      ) : (
+        <FormButton
+          buttonTitle="임시 비밀번호 발송"
+          onPress={sendTempPassword}
+        />
+      )}
       <TouchableOpacity onPress={toSignUpPage}>
         <Text style={styles.navButtonText}>회원가입 하러가기</Text>
       </TouchableOpacity>
@@ -162,7 +181,7 @@ const styles = StyleSheet.create({
   forgotButton: {
     // marginTop: 40,
     // marginBottom: 10,
-    // marginVertical: 15,
+    marginVertical: 35,
   },
   navButtonText: {
     marginTop: 20,
@@ -173,4 +192,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInPage;
+export default FindPassWordPage;

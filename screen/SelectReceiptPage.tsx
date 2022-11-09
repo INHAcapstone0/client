@@ -63,6 +63,12 @@ function SelectReceiptPage({navigation, route}: any) {
     });
   };
 
+  const moveToyMyAccountPage = () => {
+    navigation.navigate('MyAccountPage', {
+      scheduleId: route.params.scheduleId,
+    });
+  };
+
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -107,7 +113,7 @@ function SelectReceiptPage({navigation, route}: any) {
 
       setShowSpinner(true);
       const response = await axiosInstance.post(
-        'http://146.56.190.78/receipts/test',
+        'http://146.56.190.78/receipts/parse',
         data,
         {
           headers: {
@@ -135,10 +141,10 @@ function SelectReceiptPage({navigation, route}: any) {
       setTimeout(() => {
         Toast.show({
           type: ALERT_TYPE.WARNING,
-          textBody: '영수증 이미지를 업로드해주세요',
+          textBody: err.response.data.msg,
         });
       }, 1000);
-      console.log('err', err);
+      console.log('err', err.response.data.msg);
     }
   };
 
@@ -152,25 +158,17 @@ function SelectReceiptPage({navigation, route}: any) {
     };
 
     launchCamera(options, (response: any) => {
-      // console.log(response);
-      // console.log(response.assets[0]);
-      // console.log('Response =', response.assets[0].fileName);
-      // console.log('Response =', response.assets[0].fileSize);
-      // console.log('Response =', response.assets[0].fileHeight);
-      // console.log('Response =', response.assets[0].uri);
       if (response.didCancle) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error', response.error);
       } else {
-        // const source = {
-        //   uri: 'data:image/jpeg;base64' + response.assets[0].base64,
-        // };
-        // console.log(source);
-        // setSelectImg({uri: response.assets[0].uri});
-
-        sendCameraScreenShot(response.assets[0]);
-        setSelectImg({uri: response.assets[0].uri});
+        console.log(1);
+        if (response?.assets[0] !== undefined) {
+          console.log(2);
+          sendCameraScreenShot(response?.assets[0]);
+          setSelectImg({uri: response?.assets[0]?.uri});
+        }
       }
     });
   };
@@ -185,7 +183,15 @@ function SelectReceiptPage({navigation, route}: any) {
     };
 
     launchImageLibrary(options, (response: any) => {
-      sendCameraScreenShot(response.assets[0]);
+      if (response.didCancle) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error', response.error);
+      } else {
+        if (response?.assets[0]) {
+          sendCameraScreenShot(response?.assets[0]);
+        }
+      }
     });
   };
 
@@ -198,7 +204,7 @@ function SelectReceiptPage({navigation, route}: any) {
   }
   return (
     <View style={styles.receiptPage}>
-      {/* <AlertNotificationRoot
+      <AlertNotificationRoot
         colors={[
           {
             label: '',
@@ -216,34 +222,46 @@ function SelectReceiptPage({navigation, route}: any) {
             danger: 'gray',
             warning: 'gray',
           },
-        ]}> */}
-      <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
-      <View style={styles.imageContainer}>
-        <Pressable
-          style={styles.imageWrapper}
-          onPress={requestCameraPermission}>
-          <Image
-            // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
-            source={require('../resources/icons/camera.png')}
-            style={styles.imageIcon}
-          />
-        </Pressable>
-        <Pressable style={styles.imageWrapper} onPress={onLaunchImageLibrary}>
-          <Image
-            source={require('../resources/icons/gallery.png')}
-            style={styles.imageIcon}
-          />
-        </Pressable>
-      </View>
-      <Text style={styles.manualFirstText}>
+        ]}>
+        <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
+        <View style={styles.imageContainer}>
+          <Pressable
+            style={styles.imageWrapper}
+            onPress={requestCameraPermission}>
+            <Image
+              // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
+              source={require('../resources/icons/camera.png')}
+              style={styles.imageIcon}
+            />
+          </Pressable>
+          <Pressable style={styles.imageWrapper} onPress={onLaunchImageLibrary}>
+            <Image
+              source={require('../resources/icons/gallery.png')}
+              style={styles.imageIcon}
+            />
+          </Pressable>
+        </View>
+        <View style={styles.borderLine} />
+        {/* <Text style={styles.manualFirstText}>
         영수증이 없다면 [다음]을 누르신 후
       </Text>
-      <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text>
-      {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
-      <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
-        <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
-      </TouchableOpacity>
-      {/* </AlertNotificationRoot> */}
+      <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text> */}
+        {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
+        <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
+          <Button
+            color="#21B8CD"
+            title="계좌에서 가져오기"
+            onPress={moveToyMyAccountPage}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
+          <Button
+            color="#21B8CD"
+            title="영수증 수동입력"
+            onPress={moveToNextStep}
+          />
+        </TouchableOpacity>
+      </AlertNotificationRoot>
     </View>
   );
 }
@@ -301,7 +319,16 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     // justifyContent: 'center',
     margin: 20,
-    marginTop: 60,
+    marginTop: 20,
+  },
+  borderLine: {
+    height: 1,
+    backgroundColor: '#21B8CD',
+    marginTop: 100,
+    marginBottom: 20,
+    width: Dimensions.get('window').width * 0.9,
+    marginLeft: 17,
+    marginRight: 17,
   },
 });
 export default SelectReceiptPage;

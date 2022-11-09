@@ -161,6 +161,7 @@ function CalculatePage({navigation}: any) {
   }, [accessToken]);
 
   useEffect(() => {
+    console.log(444);
     loadAccessToken();
   }, []);
 
@@ -171,8 +172,9 @@ function CalculatePage({navigation}: any) {
 
   const getSettlements = async () => {
     try {
+      console.log(33);
       const response = await axiosInstance.get(
-        `http://146.56.190.78/settlements/bySchedule/${userId}`,
+        `http://146.56.190.78/settlements/custom/mine`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -180,9 +182,10 @@ function CalculatePage({navigation}: any) {
         },
       );
       setAllSettlements(response.data);
-      console.log(response.data);
+      console.log('response.data', response.data);
+      console.log('response.data.Settlements', response.data.Settlements);
     } catch (err: AxiosError | any) {
-      console.log(err.response);
+      // console.log(err.response);
     }
   };
 

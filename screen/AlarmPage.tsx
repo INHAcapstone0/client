@@ -66,6 +66,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       setAllAlarms(response.data);
+      console.log('getAllAlarms', response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -83,7 +84,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       getAllAlarms();
-      console.log(response);
+      console.log('deleteAlarm response', response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -104,7 +105,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       getAllAlarms();
-      console.log(response);
+      console.log('joinSchedule response', response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -275,7 +276,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   joinSchedule();
-                  deleteAlarm();
+                  // deleteAlarm();
                   closeInvitationModal();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
@@ -284,7 +285,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   rejectSchedule();
-                  deleteAlarm();
+                  // deleteAlarm();
                   closeInvitationModal();
                 }}>
                 <Text style={styles.modalButtonText}>아니오</Text>
