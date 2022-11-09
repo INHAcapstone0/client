@@ -329,7 +329,7 @@ function CreateGroupSecondPage({navigation}: any) {
               <DatePicker
                 modal
                 title={null}
-                mode={'time'}
+                mode={'date'}
                 open={isEndTimeModalVisible}
                 date={selectedEndTime}
                 confirmText={'선택'}
