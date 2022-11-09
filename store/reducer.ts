@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 import {persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import userSlice from '../slices/user';
+import userSlice from '../slices/User';
 import errorSlice from '../slices/Error';
 import scheduleSlice from '../slices/Schedule';
 

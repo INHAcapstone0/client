@@ -23,9 +23,13 @@ import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 
 function SignUpPage({navigation}: any) {
+  const [authNum, setAuthNum] = useState('');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [emailChecked, setEmailChecked] = useState(false);
+  const [emailCode, setEmailCode] = useState('');
+  const [emailCodeChecked, setEmailCodeChecked] = useState(false);
+  const [emailCodeFinalChecked, setEmailCodeFinalChecked] = useState(false);
   const [name, setName] = useState('');
   const [nameChecked, setNameChecked] = useState(false);
   const [password, setPassword] = useState('');
@@ -43,17 +47,39 @@ function SignUpPage({navigation}: any) {
     emailCheck(email, (response: AxiosResponse) => {
       if (response.data.duplicated === false) {
         setEmailChecked(true);
-        Alert.alert('알림', '사용 가능한 이메일 입니다');
+        Alert.alert('알림', '사용 가능한 이메일 입니다.');
       } else {
         Alert.alert('알림', '이미 존재하는 이메일 입니다');
       }
     });
   }, [email]);
+
+  const sendEmailCode = async () => {
+    try {
+      const response = await axios.post(`http://146.56.190.78/auth/mail`, {
+        email: email,
+      });
+      setAuthNum(response.data.authNum.toString());
+      setEmailCodeChecked(true);
+    } catch (err: any) {
+      console.log(err.response);
+    }
+  };
+
+  const mathEmailCode = () => {
+    if (authNum === emailCode) {
+      Alert.alert('알림', '인증 완료 되었습니다.');
+      setEmailCodeFinalChecked(true);
+    } else {
+      Alert.alert('알림', '인증코드가 일치하지 않습니다.');
+    }
+  };
+
   const nameDuplicateCheck = useCallback(async () => {
     nickNameCheck(name, (response: AxiosResponse) => {
       if (response.data.duplicated === false) {
         setNameChecked(true);
-        Alert.alert('알림', '사용 가능한 닉네임 입니다');
+        Alert.alert('알림', '사용 가능한 닉네임 입니다.');
       } else {
         Alert.alert('알림', '이미 존재하는 닉네임 입니다');
       }
@@ -63,6 +89,10 @@ function SignUpPage({navigation}: any) {
     setEmail(text.trim());
     setEmailChecked(false);
   }, []);
+  const onChangeEmailCode = useCallback((text: string) => {
+    setEmailCode(text.trim());
+  }, []);
+
   const onChangeName = useCallback((text: string) => {
     setName(text.trim());
     setNameChecked(false);
@@ -83,6 +113,9 @@ function SignUpPage({navigation}: any) {
     }
     if (!nameChecked) {
       return Alert.alert('알림', '닉네임을 입력해주세요.');
+    }
+    if (!emailCodeFinalChecked) {
+      return Alert.alert('알림', '이메일 인증을 완료해주세요');
     }
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
@@ -122,7 +155,6 @@ function SignUpPage({navigation}: any) {
         source={require('../resources/icons/LoginImage.png')}
         style={styles.logo}
       />
-      {/* <Text style={styles.text}>회원가입</Text> */}
       <View style={styles.formWrapper}>
         <FormInput
           labelValue={email}
@@ -150,6 +182,45 @@ function SignUpPage({navigation}: any) {
           <Text style={styles.duplicateButtonText}>중복확인</Text>
         </Pressable>
       </View>
+      {emailChecked && (
+        <View style={styles.formWrapper}>
+          <Pressable
+            style={styles.emailSendButton}
+            disabled={email.length === 0 || loading}
+            onPress={sendEmailCode}>
+            <Text style={styles.emailSendButtonText}>인증코드 발송</Text>
+          </Pressable>
+        </View>
+      )}
+      {emailCodeChecked && (
+        <View style={styles.formWrapper}>
+          <FormInput
+            labelValue={emailCode}
+            onChangeText={onChangeEmailCode}
+            placeholderText="이메일 인증코드"
+            iconType="user"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            inputType="register"
+          />
+          <Pressable
+            style={
+              !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+                email,
+              ) === false
+                ? StyleSheet.compose(
+                    styles.duplicateButton,
+                    styles.duplicateButtonActive,
+                  )
+                : styles.duplicateButton
+            }
+            disabled={email.length === 0 || loading}
+            onPress={mathEmailCode}>
+            <Text style={styles.duplicateButtonText}>인증</Text>
+          </Pressable>
+        </View>
+      )}
       <View style={styles.formWrapper}>
         <FormInput
           labelValue={name}
@@ -193,6 +264,11 @@ function SignUpPage({navigation}: any) {
         inputType="login"
       />
       <FormButton buttonTitle="회원가입" onPress={onSubmit} />
+      <TouchableOpacity
+        style={styles.forgotButton}
+        onPress={() => navigation.navigate('FindPassWordPage')}>
+        <Text style={styles.navButtonText}>비밀번호를 잊으셨나요?</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.navButton} onPress={toSignInPage}>
         <Text style={styles.navButtonText}>로그인 하러가기</Text>
       </TouchableOpacity>
@@ -230,6 +306,16 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginLeft: 10,
   },
+  emailSendButton: {
+    backgroundColor: '#21B8CD',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    width: Dimensions.get('window').width * 0.9,
+    borderRadius: 3,
+    marginBottom: 4,
+    // marginLeft: 35,
+    // marginRight: 35,
+  },
   duplicateButtonActive: {
     backgroundColor: '#21B8CD',
   },
@@ -237,6 +323,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     paddingTop: 5,
+    width: 44,
+    textAlign: 'center',
+  },
+  emailSendButtonText: {
+    color: 'white',
+    fontSize: 12,
+    paddingTop: 5,
+    textAlign: 'center',
   },
   container: {
     backgroundColor: 'white',
@@ -278,6 +372,9 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Lato-Regular',
     color: 'grey',
+  },
+  forgotButton: {
+    marginTop: 20,
   },
 });
 
