@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useEffect, useState} from 'react';
-import {Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Linking,
+  Button,
+  Alert,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {userActions} from '../slices/user';
 import {useAppDispatch} from '../store/Store';
@@ -9,33 +18,92 @@ import {RootState} from '../store/Store';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal/dist/modal';
-import DatePicker from 'react-native-date-picker';
+import Hyperlink from 'react-native-hyperlink';
+import axiosInstance from '../utils/interceptor';
 
 function RegisterAccountPage({navigation}: any) {
   const dispatch = useAppDispatch();
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  //액세스토큰
+  const [accessToken, setAccessToken] = useState<string | null>('');
+  const [accessTokenToBank, setAccessTokenToBank] = useState<string | null>('');
   const id = useSelector((state: RootState) => state.persist.user.id);
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-  useEffect(() => {}, []);
+  const OPENBANK_CALLBACK_URL_1 = 'http://146.56.190.78/extra/send';
+  const OPENBANK_CLIENT_ID = '141f9981-d313-400a-991d-bd7e8fa5392c';
+  const OPENBANK_STATE_RANDSTR = 'nananananananananananananananana';
+
+  const redirect_uri =
+    `https://testapi.openbanking.or.kr/oauth/2.0/authorize?` +
+    `response_type=code&client_id=${OPENBANK_CLIENT_ID}&` +
+    `scope=login inquiry transfer&auth_type=0&redirect_uri=${OPENBANK_CALLBACK_URL_1}&` +
+    `state=${OPENBANK_STATE_RANDSTR}` +
+    `&client_info=${id}`;
+
+  const redirectToOpenbanking = async () => {
+    await Linking.openURL(redirect_uri);
+  };
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
+
+  const getTokenForOpenbanking = async () => {};
+
+  const getToken = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/extra/token`,
+        {headers},
+      );
+      const accessTokenData = await EncryptedStorage.setItem(
+        'accessTokenToBank',
+        response.data.access_token,
+      );
+
+      const refreshTokenData = await EncryptedStorage.setItem(
+        'refreshTokenToBank',
+        response.data.refresh_token,
+      );
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
 
   return (
     <View>
       <Pressable
         onPress={() => {
           //리다이렉션 시키기
+          redirectToOpenbanking();
         }}>
         <Text>새 계좌 등록하기</Text>
       </Pressable>
-      <Pressable onPress={() => setOpen(true)}>
-        <Text>open</Text>
+      <Pressable
+        onPress={() => {
+          //리다이렉션 시키기
+          getToken();
+        }}>
+        <Text>인증 완료 후 토큰 발급받기</Text>
       </Pressable>
-      <DatePicker date={date} onDateChange={setDate} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  hyperlinkStyle: {
+    fontSize: 16,
+    color: '#505050',
+  },
+  contentStyle: {
+    fontSize: 18,
+    color: '#111111',
+  },
+});
 export default RegisterAccountPage;

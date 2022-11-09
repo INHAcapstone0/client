@@ -25,6 +25,11 @@ import axios, {AxiosError} from 'axios';
 import DatePicker from 'react-native-date-picker';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
+import {Calendar} from 'react-native-calendars';
+
+interface selectDateType {
+  [key: string]: {[key: string]: boolean};
+}
 
 function ReceiptUploadPage() {
   //액세스토큰
@@ -92,6 +97,8 @@ function ReceiptUploadPage() {
   const [payTime, setPayTime] = useState(new Date());
 
   const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
+
+  const [selectedDate, setSelectedDate] = useState<selectDateType>({});
 
   const togglePayTimeModal = () => {
     setIsPayTimeModalVisible(!isPayTimeModalVisible);
@@ -276,6 +283,19 @@ function ReceiptUploadPage() {
           )}
         </View>
         <View style={styles.borderLine} />
+        <Calendar
+          style={styles.calendar}
+          markedDates={selectedDate}
+          theme={{
+            selectedDayBackgroundColor: '#21B8CD',
+            arrowColor: '#21B8CD',
+            dotColor: '#21B8CD',
+            todayTextColor: 'black',
+          }}
+          onDayPress={day => {
+            console.log(day.dateString);
+          }}
+        />
         <View style={{margin: 10}}>
           <Button
             color="#21B8CD"
@@ -1015,6 +1035,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 195,
     marginTop: 30,
+  },
+  calendar: {
+    width: '100%',
+    borderColor: 'white',
   },
 });
 export default ReceiptUploadPage;
