@@ -63,34 +63,12 @@ function ReceiptUploadPage() {
 
   //더미데이터
 
-  /*
   const [data, setData] = useState([
     {
       id: '1',
       name: '',
       quantity: '',
       price: '',
-    },
-  ]);
-  */
-  const [data, setData] = useState([
-    {
-      id: '1-1',
-      name: '아메리카노',
-      quantity: '3',
-      price: '4000',
-    },
-    {
-      id: '2-1',
-      name: '카페라떼',
-      quantity: '3',
-      price: '4500',
-    },
-    {
-      id: '3-1',
-      name: '플랫화이트',
-      quantity: '3',
-      price: '6000',
     },
   ]);
   const [searchedPlaces, setSearchedPlaces] = useState([]);

@@ -34,6 +34,7 @@ import {faXmark} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
 import Modal from 'react-native-modal';
 import WebView from 'react-native-webview';
+import AutoHeightImage from '../components/AutoHeightImage';
 
 function ReceiptInfoPage(route: any) {
   const accessToken = useSelector(
@@ -135,6 +136,7 @@ function ReceiptInfoPage(route: any) {
                 />
               </Pressable>
             </View>
+            <AutoHeightImage path={receiptInfo.img_url} />
           </View>
         </View>
       </Modal>
