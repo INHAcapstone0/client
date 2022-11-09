@@ -25,6 +25,11 @@ import axios, {AxiosError} from 'axios';
 import DatePicker from 'react-native-date-picker';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
+import {Calendar} from 'react-native-calendars';
+
+interface selectDateType {
+  [key: string]: {[key: string]: boolean};
+}
 
 function ReceiptUploadPage() {
   //액세스토큰
@@ -63,34 +68,12 @@ function ReceiptUploadPage() {
 
   //더미데이터
 
-  /*
   const [data, setData] = useState([
     {
       id: '1',
       name: '',
       quantity: '',
       price: '',
-    },
-  ]);
-  */
-  const [data, setData] = useState([
-    {
-      id: '1-1',
-      name: '아메리카노',
-      quantity: '3',
-      price: '4000',
-    },
-    {
-      id: '2-1',
-      name: '카페라떼',
-      quantity: '3',
-      price: '4500',
-    },
-    {
-      id: '3-1',
-      name: '플랫화이트',
-      quantity: '3',
-      price: '6000',
     },
   ]);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
@@ -102,7 +85,6 @@ function ReceiptUploadPage() {
 
   //메모
   const [memo, setMemo] = useState('');
-
 
   const [payDate, setPayDate] = useState(new Date());
 
@@ -116,8 +98,11 @@ function ReceiptUploadPage() {
 
   const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
 
+  const [selectedDate, setSelectedDate] = useState<selectDateType>({});
+
   const togglePayTimeModal = () => {
     setIsPayTimeModalVisible(!isPayTimeModalVisible);
+  };
 
   useEffect(() => {
     loadAccessToken();
@@ -218,6 +203,7 @@ function ReceiptUploadPage() {
       addEmptyInput();
     }
   }, [data]);
+
   return (
     <View style={styles.window}>
       <View style={styles.header}>
@@ -297,6 +283,19 @@ function ReceiptUploadPage() {
           )}
         </View>
         <View style={styles.borderLine} />
+        <Calendar
+          style={styles.calendar}
+          markedDates={selectedDate}
+          theme={{
+            selectedDayBackgroundColor: '#21B8CD',
+            arrowColor: '#21B8CD',
+            dotColor: '#21B8CD',
+            todayTextColor: 'black',
+          }}
+          onDayPress={day => {
+            console.log(day.dateString);
+          }}
+        />
         <View style={{margin: 10}}>
           <Button
             color="#21B8CD"
@@ -1036,6 +1035,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 195,
     marginTop: 30,
+  },
+  calendar: {
+    width: '100%',
+    borderColor: 'white',
   },
 });
 export default ReceiptUploadPage;
