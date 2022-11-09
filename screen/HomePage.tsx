@@ -46,11 +46,9 @@ function HomePage({navigation}: any) {
   const [accessToken, setAccessToken] = useState<string | null>('');
 
   useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  useEffect(() => {
-    getAllSchedules();
+    loadAccessToken().then(() => {
+      getAllSchedules();
+    });
   }, [infoNumber, accessToken]);
 
   const loadAccessToken = async () => {
@@ -83,6 +81,7 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
+      console.log('get all schedules access token is ', accessToken);
       const params = {
         status: '승인',
       };

@@ -17,7 +17,7 @@ import {
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {RNCamera} from 'react-native-camera';
 import {useCamera} from 'react-native-camera-hooks';
-import {userActions} from '../slices/User';
+import {userActions} from '../slices/user';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';

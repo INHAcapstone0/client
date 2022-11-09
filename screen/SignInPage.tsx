@@ -61,7 +61,8 @@ function SignInPage({navigation}: any) {
         password: password,
       });
 
-      //console.log(response);
+      console.log('log in - ', response.data.data.accessToken);
+      console.log('log in - ', response.data.data.refreshToken);
 
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
