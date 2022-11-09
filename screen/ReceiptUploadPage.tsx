@@ -12,6 +12,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Button,
+  AppState,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -31,18 +32,24 @@ interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
 
-function ReceiptUploadPage() {
+function ReceiptUploadPage({route, navigation}: any) {
   //액세스토큰
   const [accessToken, setAccessToken] = useState<string | null>('');
 
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
 
+  const userId = useSelector((state: RootState) => state.persist.user.id);
+
+  const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
+
   //장소 찾기 모달 visible
   const [placeModalVisible, setPlaceModalVisible] = useState(false);
 
   //장소 변수
   const [place, setPlace] = useState('찾아보기 버튼을 눌러주세요.');
+
+  const [placeAddress, setPlaceAddress] = useState('');
 
   //장소 검색어
   const [placeKeyword, setPlaceKeyword] = useState('');
@@ -86,7 +93,7 @@ function ReceiptUploadPage() {
   //메모
   const [memo, setMemo] = useState('');
 
-  const [payDate, setPayDate] = useState(new Date());
+  const [payDate, setPayDate] = useState('');
 
   const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
 
@@ -100,9 +107,11 @@ function ReceiptUploadPage() {
 
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
 
-  const togglePayTimeModal = () => {
-    setIsPayTimeModalVisible(!isPayTimeModalVisible);
+  const togglePayTimeModal = (state: boolean) => {
+    setIsPayTimeModalVisible(state);
   };
+
+  const [uploadValidation, setUploadValidation] = useState(false);
 
   useEffect(() => {
     loadAccessToken();
@@ -113,8 +122,26 @@ function ReceiptUploadPage() {
     setAccessToken(accessTokenData);
   };
 
-  //결제항목과 결제금액 유효성 검사 함수
   const checkValidation = () => {
+    /*schedule_id : ,
+        payDate,
+        total_price:totalPrice,*/
+
+    if (placeAddress === '') {
+      console.log('정보 다시 입력');
+    } else if (totalPrice === '') {
+    } else if (!totalPriceValidationFlag) {
+    } else if (payDate === '') {
+    } else {
+      console.log('check validation pay date is ', payDate);
+      console.log('check validation pay time is ', payTime);
+      setUploadValidation(true);
+    }
+    //주소 날짜시간 가격
+  };
+
+  //결제항목과 결제금액 유효성 검사 함수
+  const checkPriceValidation = () => {
     //결제항목을 입력한 경우에만 검사
     if (itemFlag) {
       data.map((item: any) => {
@@ -182,7 +209,7 @@ function ReceiptUploadPage() {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axiosInstance.get(
-        `http://146.56.190.78:8002/extra/kakao?query=${keyword}`,
+        `http://146.56.190.78/extra/kakao?query=${keyword}`,
         {
           headers,
         },
@@ -196,6 +223,67 @@ function ReceiptUploadPage() {
   const mapViewRef = useRef<WebView>(null);
   const drawMap = (address: string) => {
     mapViewRef.current?.postMessage(address);
+  };
+
+  const addSelectedDate = (date: string) => {
+    const newDate: any = {};
+    newDate[date] = {selected: true};
+    setSelectedDate({...newDate});
+
+    setPayDate(date);
+  };
+
+  const uploadReceipt = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const body = {
+        /*schedule_id : ,
+        poster_id : userId,
+        payDate,
+        total_price:totalPrice,
+        memo:memo,
+        place:place,
+        address:placeAddress,*/
+      };
+      const response = await axiosInstance.post(
+        `http://146.56.190.78/receipts`,
+        body,
+        {
+          headers,
+        },
+      );
+
+      console.log('upload receipt result : ', response.data);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+    }
+  };
+
+  const uploadItems = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const body = {};
+      /*{[receipt_id, quantity, 
+price,
+name]} */
+      const response = await axiosInstance.post(
+        `http://146.56.190.78/items/many`,
+        body,
+        {
+          headers,
+        },
+      );
+
+      console.log('upload receipt result : ', response.data);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -269,7 +357,7 @@ function ReceiptUploadPage() {
                 setTotalPrice(text);
               }}
               onBlur={() => {
-                checkValidation();
+                checkPriceValidation();
               }}
               placeholder="숫자만 입력해주세요."
               style={styles.itemContent}
@@ -294,36 +382,14 @@ function ReceiptUploadPage() {
           }}
           onDayPress={day => {
             console.log(day.dateString);
+            addSelectedDate(day.dateString);
           }}
         />
         <View style={{margin: 10}}>
           <Button
             color="#21B8CD"
-            title="결제날짜 선택하기"
-            onPress={togglePayDateModal}
-          />
-          <DatePicker
-            modal
-            title={null}
-            mode={'date'}
-            open={isPayDateModalVisible}
-            date={payDate}
-            confirmText={'선택'}
-            cancelText={'취소'}
-            onConfirm={date => {
-              setPayDate(date);
-              console.log('pay date is ', date);
-            }}
-            onCancel={() => {
-              togglePayDateModal;
-            }}
-          />
-        </View>
-        <View style={{margin: 10}}>
-          <Button
-            color="#21B8CD"
             title="결제시각 선택하기"
-            onPress={togglePayTimeModal}
+            onPress={() => togglePayTimeModal(true)}
           />
           <DatePicker
             modal
@@ -334,11 +400,11 @@ function ReceiptUploadPage() {
             confirmText={'선택'}
             cancelText={'취소'}
             onConfirm={date => {
+              togglePayTimeModal(false);
               setPayTime(date);
-              console.log('pay time is ', date);
             }}
             onCancel={() => {
-              togglePayTimeModal;
+              togglePayTimeModal(false);
             }}
           />
         </View>
@@ -422,6 +488,7 @@ function ReceiptUploadPage() {
                               style={styles.placeSelectButton}
                               onPress={() => {
                                 setPlace(item.place_name);
+                                setPlaceAddress(item.road_address_name);
                                 drawMap(item.road_address_name);
                                 setPlaceModalVisible(false);
                               }}>
@@ -767,12 +834,16 @@ function ReceiptUploadPage() {
           </View>
         </View>
         <View style={styles.itemSection}>
-          <TouchableOpacity
-            activeOpacity={0.8}
+          <Pressable
             style={styles.uploadButton}
-            onPress={() => console.log('등록하기')}>
+            onPress={() => {
+              console.log('등록하기');
+              console.log('pay date is ', payDate);
+              console.log('pay time is', payTime);
+              console.log('memo is ', memo);
+            }}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </ScrollView>
     </View>
