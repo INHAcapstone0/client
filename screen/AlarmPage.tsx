@@ -19,6 +19,8 @@ import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import Modal from 'react-native-modal';
 import {RootState} from '../store/Store';
+import axiosInstance from '../utils/interceptor';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface alarmType {
   alarm_type: string;
@@ -37,17 +39,26 @@ function AlarmPage({navigation}: any) {
   const [isInvitaionModalVisible, setInvitationModalVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
+
   useEffect(() => {
     getAllAlarms();
+  }, [accessToken]);
+
+  useEffect(() => {
+    loadAccessToken();
   }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+    console.log(accessTokenData);
+  };
 
   const getAllAlarms = async () => {
     try {
-      const response = await axios.get(
-        `http://146.56.190.78:8002/alarms?user_id=${userId}`,
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/alarms?user_id=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -55,7 +66,6 @@ function AlarmPage({navigation}: any) {
         },
       );
       setAllAlarms(response.data);
-      console.log(response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -64,8 +74,8 @@ function AlarmPage({navigation}: any) {
   const deleteAlarm = async () => {
     try {
       console.log(alarmId);
-      const response = await axios.delete(
-        `http://146.56.190.78:8002/alarms/${alarmId}`,
+      const response = await axiosInstance.delete(
+        `http://146.56.190.78/alarms/${alarmId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -82,8 +92,8 @@ function AlarmPage({navigation}: any) {
   const joinSchedule = async () => {
     try {
       console.log(alarmId);
-      const response = await axios.patch(
-        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+      const response = await axiosInstance.patch(
+        `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
           status: '승인',
         },
@@ -103,8 +113,8 @@ function AlarmPage({navigation}: any) {
   const rejectSchedule = async () => {
     try {
       console.log(alarmId);
-      const response = await axios.patch(
-        `http://146.56.190.78:8002/participants/${userId}/${alarmId}`,
+      const response = await axiosInstance.patch(
+        `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
           status: '거절',
         },

@@ -56,13 +56,10 @@ function SignInPage({navigation}: any) {
     }
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://146.56.190.78:8002/auth/login',
-        {
-          email: email,
-          password: password,
-        },
-      );
+      const response = await axios.post('http://146.56.190.78/auth/login', {
+        email: email,
+        password: password,
+      });
 
       //console.log(response);
 

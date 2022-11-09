@@ -21,16 +21,14 @@ import {
 } from 'react-native-alert-notification';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {any} from 'prop-types';
-
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 function MyPage() {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
-
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const [myInfo, setMyInfo] = useState<{
     email: string;
     name: string;
@@ -41,12 +39,26 @@ function MyPage() {
     img_url: '',
   });
 
+  useEffect(() => {
+    getMyInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myInfo, accessToken]);
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
+
   const getMyInfo = async () => {
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://146.56.190.78:8002/users/${userId}`,
         {headers},
       );
@@ -103,7 +115,7 @@ function MyPage() {
       var body = new FormData();
       body.append('user-profile', image);
 
-      await axios.patch('http://146.56.190.78:8002/users/img/upload', body, {
+      await axiosInstance.patch('http://146.56.190.78/users/img/upload', body, {
         headers: headers,
       });
     } catch (err: AxiosError | any) {
@@ -135,8 +147,8 @@ function MyPage() {
           const body = {
             password: newPassword,
           };
-          const response = await axios.patch(
-            `http://146.56.190.78:8002/users/${userId}`,
+          const response = await axiosInstance.patch(
+            `http://146.56.190.78/users/${userId}`,
             body,
             {headers},
           );
@@ -152,11 +164,6 @@ function MyPage() {
       }
     }
   };
-
-  useEffect(() => {
-    getMyInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myInfo]);
 
   return (
     <View style={styles.windowContainer}>

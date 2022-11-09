@@ -19,7 +19,9 @@ import {
   IConfigDialog,
   IConfigToast,
 } from 'react-native-alert-notification';
-//import Toast from 'react-native-toast-message';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
+
 type IProps = {
   dialogConfig?: Pick<IConfigDialog, 'closeOnOverlayTap' | 'autoClose'>;
   toastConfig?: Pick<
@@ -38,10 +40,17 @@ type IColors = {
   warning: string;
 };
 function PreMyPage({navigation}: any) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const [password, setPassword] = useState('');
+  const [accessToken, setAccessToken] = useState<string | null>('');
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
 
   const checkPassword = async () => {
     try {
@@ -51,8 +60,8 @@ function PreMyPage({navigation}: any) {
       const body = {
         password: password,
       };
-      const response = await axios.post(
-        'http://146.56.190.78:8002/users/password/check',
+      const response = await axiosInstance.post(
+        'http://146.56.190.78/users/password/check',
         body,
         {headers},
       );
@@ -69,8 +78,6 @@ function PreMyPage({navigation}: any) {
       console.log(err);
     }
   };
-
-  useEffect(() => {}, []);
 
   return (
     <View style={styles.windowContainer}>

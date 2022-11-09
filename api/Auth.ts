@@ -7,12 +7,9 @@ async function emailCheck(
 ) {
   try {
     console.log(REACT_APP_API_URL);
-    const response = await axios.get(
-      `http://146.56.190.78:8002/auth/check/email`,
-      {
-        params: {email: email},
-      },
-    );
+    const response = await axios.get(`http://146.56.190.78/auth/check/email`, {
+      params: {email: email},
+    });
     success(response);
   } catch (err) {
     console.log(err);
@@ -25,12 +22,9 @@ async function nickNameCheck(
 ) {
   try {
     console.log(1);
-    const response = await axios.get(
-      `http://146.56.190.78:8002/auth/check/name`,
-      {
-        params: {name: name},
-      },
-    );
+    const response = await axios.get(`http://146.56.190.78/auth/check/name`, {
+      params: {name: name},
+    });
     success(response);
   } catch (err) {
     console.log(err);
@@ -44,14 +38,11 @@ async function signUp(
   success: (data: AxiosResponse) => void,
 ) {
   try {
-    const response = await axios.post(
-      `http://146.56.190.78:8002/auth/register`,
-      {
-        email: email,
-        name: name,
-        password: password,
-      },
-    );
+    const response = await axios.post(`http://146.56.190.78/auth/register`, {
+      email: email,
+      name: name,
+      password: password,
+    });
     console.log(response);
     success(response);
   } catch (err: any) {
@@ -65,7 +56,7 @@ async function signIn(
   success: (data: AxiosResponse) => void,
 ) {
   try {
-    const response = await axios.post(`http://146.56.190.78:8002/auth/login`, {
+    const response = await axios.post(`http://146.56.190.78/auth/login`, {
       email: email,
       password: password,
     });
