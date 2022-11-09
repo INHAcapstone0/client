@@ -22,6 +22,7 @@ import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import KakaoMap from '../components/KakaoMap';
 import axios, {AxiosError} from 'axios';
+import DatePicker from 'react-native-date-picker';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 
@@ -101,6 +102,22 @@ function ReceiptUploadPage() {
 
   //메모
   const [memo, setMemo] = useState('');
+
+
+  const [payDate, setPayDate] = useState(new Date());
+
+  const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
+
+  const togglePayDateModal = () => {
+    setIsPayDateModalVisible(!isPayDateModalVisible);
+  };
+
+  const [payTime, setPayTime] = useState(new Date());
+
+  const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
+
+  const togglePayTimeModal = () => {
+    setIsPayTimeModalVisible(!isPayTimeModalVisible);
 
   useEffect(() => {
     loadAccessToken();
@@ -280,6 +297,53 @@ function ReceiptUploadPage() {
           )}
         </View>
         <View style={styles.borderLine} />
+        <View style={{margin: 10}}>
+          <Button
+            color="#21B8CD"
+            title="결제날짜 선택하기"
+            onPress={togglePayDateModal}
+          />
+          <DatePicker
+            modal
+            title={null}
+            mode={'date'}
+            open={isPayDateModalVisible}
+            date={payDate}
+            confirmText={'선택'}
+            cancelText={'취소'}
+            onConfirm={date => {
+              setPayDate(date);
+              console.log('pay date is ', date);
+            }}
+            onCancel={() => {
+              togglePayDateModal;
+            }}
+          />
+        </View>
+        <View style={{margin: 10}}>
+          <Button
+            color="#21B8CD"
+            title="결제시각 선택하기"
+            onPress={togglePayTimeModal}
+          />
+          <DatePicker
+            modal
+            title={null}
+            mode={'time'}
+            open={isPayTimeModalVisible}
+            date={payTime}
+            confirmText={'선택'}
+            cancelText={'취소'}
+            onConfirm={date => {
+              setPayTime(date);
+              console.log('pay time is ', date);
+            }}
+            onCancel={() => {
+              togglePayTimeModal;
+            }}
+          />
+        </View>
+        <View style={styles.borderLine} />
         <View style={styles.itemSection}>
           <View style={styles.itemTitleWithButton}>
             <Text style={styles.itemTitle}>
@@ -297,7 +361,7 @@ function ReceiptUploadPage() {
           <View style={styles.webviewContainer}>
             <WebView
               ref={mapViewRef}
-              source={{uri: 'http://192.168.35.192:3000/'}}
+              source={{uri: 'http://146.56.190.78/webview/'}}
               style={styles.webview}
             />
           </View>

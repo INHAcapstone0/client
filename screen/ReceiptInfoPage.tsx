@@ -32,7 +32,6 @@ import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 import ReceiptCard from '../components/ReceiptCard';
 import {faXmark} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
-import AutoHeightImage from 'react-native-auto-height-image';
 import Modal from 'react-native-modal';
 import WebView from 'react-native-webview';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -102,7 +101,11 @@ function ReceiptInfoPage(route: any) {
       console.log(err);
     }
   };
-
+  /*
+            <AutoHeightImage
+              width={Dimensions.get('window').width * 0.7}
+              source={{uri: receiptInfo.img_url}}
+            /> */
   const mapViewRef = useRef<WebView>(null);
   const drawMap = (address: string) => {
     mapViewRef.current?.postMessage(address);
@@ -141,10 +144,6 @@ function ReceiptInfoPage(route: any) {
                 />
               </Pressable>
             </View>
-            <AutoHeightImage
-              width={Dimensions.get('window').width * 0.7}
-              source={{uri: receiptInfo.img_url}}
-            />
           </View>
         </View>
       </Modal>
@@ -203,7 +202,7 @@ function ReceiptInfoPage(route: any) {
         }}>
         <WebView
           ref={mapViewRef}
-          source={{uri: 'http://10.10.237.160:3000/'}}
+          source={{uri: 'http://146.56.190.78/webview/'}}
           style={{
             width: Dimensions.get('window').width * 0.9,
             height: 200,
