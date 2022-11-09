@@ -81,7 +81,6 @@ function ReceiptUploadPage() {
   //메모
   const [memo, setMemo] = useState('');
 
-
   const [payDate, setPayDate] = useState(new Date());
 
   const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
@@ -96,6 +95,7 @@ function ReceiptUploadPage() {
 
   const togglePayTimeModal = () => {
     setIsPayTimeModalVisible(!isPayTimeModalVisible);
+  };
 
   useEffect(() => {
     loadAccessToken();
@@ -196,6 +196,7 @@ function ReceiptUploadPage() {
       addEmptyInput();
     }
   }, [data]);
+
   return (
     <View style={styles.window}>
       <View style={styles.header}>
