@@ -23,12 +23,12 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import KakaoMap from '../components/KakaoMap';
 import axios, {AxiosError} from 'axios';
 import DatePicker from 'react-native-date-picker';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 function ReceiptUploadPage() {
   //액세스토큰
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
 
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
@@ -103,6 +103,7 @@ function ReceiptUploadPage() {
   //메모
   const [memo, setMemo] = useState('');
 
+
   const [payDate, setPayDate] = useState(new Date());
 
   const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
@@ -117,6 +118,14 @@ function ReceiptUploadPage() {
 
   const togglePayTimeModal = () => {
     setIsPayTimeModalVisible(!isPayTimeModalVisible);
+
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
   };
 
   //결제항목과 결제금액 유효성 검사 함수
@@ -187,7 +196,7 @@ function ReceiptUploadPage() {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://146.56.190.78:8002/extra/kakao?query=${keyword}`,
         {
           headers,

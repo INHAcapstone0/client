@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, useEffect, useRef} from 'react';
 import {
@@ -22,32 +23,60 @@ import axios from 'axios';
 import {RootState} from '../store/Store';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  notificationListner,
+  requestUserPermission,
+  notificationOff,
+} from '../utils/push_notification_helper';
 
 function NotificationSettingPage() {
-  const dispatch = useAppDispatch();
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
-
-  const [enabledPushNotification, setEnabledPushNotification] =
-    useState(Boolean);
+  const [enabledPushNotification, setEnabledPushNotification] = useState(true);
   const [enabledSoundNotification, setEnabledSoundNotification] =
-    useState(Boolean);
+    useState(true);
   const [enabledVibrationNotification, setEnabledVibrationNotification] =
-    useState(Boolean);
+    useState(true);
+
+  useEffect(() => {
+    loadNotifiCationData();
+  }, []);
+
+  const loadNotifiCationData = async () => {
+    const push = await AsyncStorage.getItem('PushNotification');
+    const sound = await AsyncStorage.getItem('SoundNotification');
+    const vibration = await AsyncStorage.getItem('VibrationNotification');
+
+    if (push === 'false') {
+      setEnabledPushNotification(false);
+    }
+
+    if (sound === 'false') {
+      setEnabledSoundNotification(false);
+    }
+
+    if (vibration === 'false') {
+      setEnabledVibrationNotification(false);
+    }
+  };
 
   const togglePushSwitch = () => {
     if (enabledPushNotification) {
+      notificationOff();
+      setEnabledPushNotification(false);
       setEnabledSoundNotification(false);
       setEnabledVibrationNotification(false);
-      setEnabledPushNotification(false);
 
       AsyncStorage.setItem('PushNotification', 'false');
       AsyncStorage.setItem('SoundNotification', 'false');
       AsyncStorage.setItem('VibrationNotification', 'false');
     } else {
+      requestUserPermission();
+      notificationListner();
       setEnabledPushNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
+      setEnabledSoundNotification(true);
+      setEnabledVibrationNotification(true);
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('SoundNotification');
+      AsyncStorage.removeItem('VibrationNotification');
     }
   };
   const toggleSoundSwitch = () => {
@@ -57,8 +86,8 @@ function NotificationSettingPage() {
     } else {
       setEnabledPushNotification(true);
       setEnabledSoundNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('SoundNotification', 'true');
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('SoundNotification');
     }
   };
   const toggleVibrationSwitch = () => {
@@ -68,38 +97,10 @@ function NotificationSettingPage() {
     } else {
       setEnabledPushNotification(true);
       setEnabledVibrationNotification(true);
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('VibrationNotification', 'true');
+      AsyncStorage.removeItem('PushNotification');
+      AsyncStorage.removeItem('VibrationNotification');
     }
   };
-
-  const loadNotifiCationData = async () => {
-    const push = await AsyncStorage.getItem('PushNotification');
-    const sound = await AsyncStorage.getItem('SoundNotification');
-    const vibration = await AsyncStorage.getItem('VibrationNotification');
-
-    if (push === 'true') {
-      setEnabledPushNotification(true);
-    } else if (push === 'false') {
-      setEnabledPushNotification(false);
-    }
-
-    if (sound === 'true') {
-      setEnabledSoundNotification(true);
-    } else if (sound === 'false') {
-      setEnabledSoundNotification(false);
-    }
-
-    if (vibration === 'true') {
-      setEnabledVibrationNotification(true);
-    } else if (vibration === 'false') {
-      setEnabledVibrationNotification(false);
-    }
-  };
-
-  useEffect(() => {
-    loadNotifiCationData();
-  }, []);
 
   return (
     <View style={styles.windowContainer}>
@@ -107,7 +108,7 @@ function NotificationSettingPage() {
         <Text style={styles.notificationSettingHeaderTitle}>알림 설정</Text>
       </View>
       <View style={styles.notificationItemSection}>
-        <Text style={styles.notificationItemTitle}>푸쉬 설정</Text>
+        <Text style={styles.notificationItemTitle}>푸쉬알람 설정</Text>
         <Switch
           trackColor={{false: '#767577', true: '#21B8CD'}}
           thumbColor={'#f4f3f4'}

@@ -34,11 +34,11 @@ import {faXmark} from '@fortawesome/free-solid-svg-icons';
 import {configureStore} from '@reduxjs/toolkit';
 import Modal from 'react-native-modal';
 import WebView from 'react-native-webview';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 function ReceiptInfoPage(route: any) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [modalVisible, setModalVisible] = useState(false);
   const [receiptId, setReceiptId] = useState(route.route.params.receiptId);
@@ -64,13 +64,27 @@ function ReceiptInfoPage(route: any) {
 
   const [totalPrice, setTotalPrice] = useState('0');
 
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
+
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
+  };
+
+  useEffect(() => {
+    getReceiptInfo();
+    setTimeout(() => drawMap(receiptInfo.address), 500);
+  }, [receiptInfo.address, accessToken]);
+
   const getReceiptInfo = async () => {
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
-        `http://146.56.190.78:8002/receipts/${receiptId}`,
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/receipts/${receiptId}`,
         {
           headers,
         },
@@ -96,11 +110,6 @@ function ReceiptInfoPage(route: any) {
   const drawMap = (address: string) => {
     mapViewRef.current?.postMessage(address);
   };
-
-  useEffect(() => {
-    getReceiptInfo();
-    setTimeout(() => drawMap(receiptInfo.address), 500);
-  }, [receiptInfo.address]);
 
   return (
     <View style={styles.window}>

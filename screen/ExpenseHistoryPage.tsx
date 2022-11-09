@@ -38,6 +38,8 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import Presenter from 'react-native-calendars/src/expandableCalendar/Context/Presenter';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {any, string} from 'prop-types';
+import axiosInstance from '../utils/interceptor';
+
 function ExpenseHistoryPage({route, navigation}: any) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -99,8 +101,8 @@ function ExpenseHistoryPage({route, navigation}: any) {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
-        `http://146.56.190.78:8002/schedules/${scheduleId}`,
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/schedules/${scheduleId}`,
         {headers},
       );
       setScheduleInfo(response.data);
@@ -131,10 +133,13 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.190.78:8002/receipts', {
-          params,
-          headers,
-        });
+        const response = await axiosInstance.get(
+          'http://146.56.190.78/receipts',
+          {
+            params,
+            headers,
+          },
+        );
         setReceiptsInfo(response.data);
         return response.data;
       } catch (err: AxiosError | any) {
@@ -151,10 +156,13 @@ function ExpenseHistoryPage({route, navigation}: any) {
       };
 
       try {
-        const response = await axios.get('http://146.56.190.78:8002/receipts', {
-          params,
-          headers,
-        });
+        const response = await axiosInstance.get(
+          'http://146.56.190.78/receipts',
+          {
+            params,
+            headers,
+          },
+        );
         setReceiptsInfo(response.data);
       } catch (err: AxiosError | any) {
         console.log(err);
