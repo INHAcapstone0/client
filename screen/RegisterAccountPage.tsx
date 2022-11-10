@@ -48,8 +48,6 @@ function RegisterAccountPage({navigation}: any) {
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
   };
-
-
   const getTokenForOpenbanking = async () => {};
 
   const getToken = async () => {
@@ -76,12 +74,6 @@ function RegisterAccountPage({navigation}: any) {
       console.log('err.response.msg', err.response);
     }
   };
-      console.log('token is ', response.data);
-    } catch (err: any) {
-      console.log('token error is ', err);
-    }
-  };
-
   const fn_handleAppStateChange = (nextAppState: any) => {
     if (
       (appState.current === USER_APP_STATE.inactive ||
