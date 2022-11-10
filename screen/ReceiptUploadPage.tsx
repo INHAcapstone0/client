@@ -10,9 +10,7 @@ import {
   View,
   ScrollView,
   Dimensions,
-  TouchableOpacity,
   Button,
-  AppState,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
