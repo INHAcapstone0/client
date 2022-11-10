@@ -13,15 +13,15 @@ export default ForegroundHandler = () => {
       const vibration = await AsyncStorage.getItem('VibrationNotification');
       AsyncStorage.getItem('PushNotification', (err, result) => {
         console.log('result', result);
-        if (result === null) {
+        if (result === 'true') {
           console.log('fcm foreground 수신');
           PushNotification.localNotification({
             channelId: 'your-channel-id',
             title: 'Android App',
             body: 'Test Body',
             soundName: 'default',
-            vibrate: sound ? true : false,
-            playSound: vibration ? true : false,
+            vibrate: sound === 'true' ? true : false,
+            playSound: vibration === 'true' ? true : false,
           });
         }
       });

@@ -41,19 +41,10 @@ type IColors = {
 };
 function PreMyPage({navigation}: any) {
   const [password, setPassword] = useState('');
-  const [accessToken, setAccessToken] = useState<string | null>('');
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const checkPassword = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };

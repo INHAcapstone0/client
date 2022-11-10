@@ -63,7 +63,6 @@ function CreateGroupFinalPage({navigation}: any) {
   const [selectedUsers, setSelectedUseres] = useState<Array<userType>>([]);
   const [allUsers, setAllUsers] = useState<Array<userType>>([]);
   const [isMemberModalVisible, setIsMemberModalVisible] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>('');
   const ownerId = useSelector((state: RootState) => state.persist.user.id);
   const {groupName, startAt, endAt} = useSelector(
     (state: RootState) => state.persist.schedule,
@@ -88,19 +87,11 @@ function CreateGroupFinalPage({navigation}: any) {
 
   useEffect(() => {
     getAllUsers();
-  }, [accessToken]);
-
-  useEffect(() => {
-    loadAccessToken();
   }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const getAllUsers = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.get(
         `http://146.56.190.78/users?exceptMe=${true}`,
         {
@@ -135,13 +126,12 @@ function CreateGroupFinalPage({navigation}: any) {
       const selectedUsersId: string[] = [];
 
       selectedUsers.filter(user => selectedUsersId.push(user.id));
-
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       console.log(groupName);
       console.log(ownerId);
       console.log(startAt);
       console.log(endAt);
       console.log(selectedUsersId);
-      console.log(accessToken);
 
       const result = await axiosInstance.post(
         'http://146.56.190.78/schedules',
@@ -498,7 +488,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     borderRadius: 10,
-    marginTop: Dimensions.get('window').height / 2 + 40,
+    marginTop: Dimensions.get('window').height / 5,
   },
   bottomModal: {
     // backgroundColor: 'white',

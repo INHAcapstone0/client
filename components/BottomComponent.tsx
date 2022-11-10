@@ -32,6 +32,8 @@ import ParticipantCard from './ParticipantCard';
 import ReceiptCard from './ReceiptCard';
 import {faReceipt} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
 
 interface BottomComponentProps {
   selectedScheduleId: any;
@@ -55,9 +57,6 @@ function BottomComponent({
   bottomModalType,
   closeBottomModal,
 }: BottomComponentProps) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const [approvedAllMembersInfo, setApprovedAllMembersInfo] = useState([]);
   const [allReceiptsInfo, setAllReceiptsInfo] = useState([]);
   const [errFlag, setErrFlag] = useState(false);
@@ -94,8 +93,9 @@ function BottomComponent({
       selectedUsers.filter(user => selectedUsersId.push(user.id));
 
       console.log(selectedUsersId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
 
-      await axios.post(
+      await axiosInstance.post(
         'http://146.56.190.78:8002/participants',
         {
           participant_ids: selectedUsersId,
@@ -122,16 +122,20 @@ function BottomComponent({
 
   const getAllReceipts = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         schedule_id: selectedScheduleId,
       };
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get('http://146.56.190.78:8002/receipts', {
-        params,
-        headers,
-      });
+      const response = await axiosInstance.get(
+        'http://146.56.190.78:8002/receipts',
+        {
+          params,
+          headers,
+        },
+      );
       setAllReceiptsInfo(response.data);
     } catch (err: AxiosError | any) {
       console.log(err);
@@ -143,13 +147,14 @@ function BottomComponent({
 
   const getApprovedAllMembersInfo = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         schedule_id: selectedScheduleId,
       };
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         'http://146.56.190.78:8002/participants',
         {
           params,
@@ -167,8 +172,8 @@ function BottomComponent({
 
   const getAllUsers = async () => {
     try {
-      console.log(111);
-      const response = await axios.get(
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const response = await axiosInstance.get(
         `http://146.56.190.78:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
         {
           headers: {

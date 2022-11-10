@@ -24,10 +24,13 @@ import NotificationSettingPage from './screen/NotificationSettingPage';
 import RegisterAccountPage from './screen/RegisterAccountPage';
 import PreMyPage from './screen/PreMyPage';
 import MyPage from './screen/MyPage';
-
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
 import ReceiptResultPage from './screen/ReceiptResultPage';
+import MyAccountPage from './screen/MyAccountPage';
+import AccountHistoryPage from './screen/AccountHistoryPage';
+import AccountReceiptUploadPage from './screen/AccountReceiptUploadPage';
+import FindPassWordPage from './screen/FindPassWordPage';
 
 const Stack = createStackNavigator();
 
@@ -116,6 +119,16 @@ function AppInner() {
           name="RegisterAccountPage"
           component={RegisterAccountPage}
         />
+        <Stack.Screen name="MyAccountPage" component={MyAccountPage} />
+        <Stack.Screen
+          name="AccountHistoryPage"
+          component={AccountHistoryPage}
+        />
+        <Stack.Screen
+          name="AccountReceiptUploadPage"
+          component={AccountReceiptUploadPage}
+        />
+        <Stack.Screen name="FindPassWordPage" component={FindPassWordPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

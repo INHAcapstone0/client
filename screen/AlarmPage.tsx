@@ -39,24 +39,18 @@ function AlarmPage({navigation}: any) {
   const [isInvitaionModalVisible, setInvitationModalVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
-  const [accessToken, setAccessToken] = useState<string | null>('');
 
   useEffect(() => {
     getAllAlarms();
-  }, [accessToken]);
-
-  useEffect(() => {
-    loadAccessToken();
   }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-    console.log(accessTokenData);
-  };
 
   const getAllAlarms = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      console.log('accessToken', accessToken);
+      console.log('refreshToken', refreshToken);
+
       const response = await axiosInstance.get(
         `http://146.56.190.78/alarms?user_id=${userId}`,
         {
@@ -66,6 +60,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       setAllAlarms(response.data);
+      console.log('getAllAlarms', response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -73,7 +68,8 @@ function AlarmPage({navigation}: any) {
 
   const deleteAlarm = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+
       const response = await axiosInstance.delete(
         `http://146.56.190.78/alarms/${alarmId}`,
         {
@@ -83,7 +79,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       getAllAlarms();
-      console.log(response);
+      console.log('deleteAlarm response', response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -91,7 +87,8 @@ function AlarmPage({navigation}: any) {
 
   const joinSchedule = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+
       const response = await axiosInstance.patch(
         `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
@@ -104,7 +101,7 @@ function AlarmPage({navigation}: any) {
         },
       );
       getAllAlarms();
-      console.log(response);
+      console.log('joinSchedule response', response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
@@ -112,7 +109,7 @@ function AlarmPage({navigation}: any) {
 
   const rejectSchedule = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
         `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
@@ -275,7 +272,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   joinSchedule();
-                  deleteAlarm();
+                  // deleteAlarm();
                   closeInvitationModal();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
@@ -284,7 +281,7 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   rejectSchedule();
-                  deleteAlarm();
+                  // deleteAlarm();
                   closeInvitationModal();
                 }}>
                 <Text style={styles.modalButtonText}>아니오</Text>

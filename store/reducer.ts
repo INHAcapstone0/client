@@ -1,9 +1,10 @@
 import {combineReducers} from 'redux';
 import {persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import userSlice from '../slices/user';
+import userSlice from '../slices/User';
 import errorSlice from '../slices/Error';
 import scheduleSlice from '../slices/Schedule';
+import accountSlice from '../slices/Account';
 
 //action: state를 바꾸는 행위
 //dispatch: 그 액션을 실행하는 함수
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   user: userSlice.reducer,
   error: errorSlice.reducer,
   schedule: scheduleSlice.reducer,
+  account: accountSlice.reducer,
 });
 
 export const persistedReducer = persistReducer(persistConfig, rootReducer);

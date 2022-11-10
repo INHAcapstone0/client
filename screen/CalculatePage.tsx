@@ -154,25 +154,16 @@ function CalculatePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [allSettlements, setAllSettlements] = useState<Array<any>>([]);
   const [currentTab, setCurrentTab] = useState(0);
-  const [accessToken, setAccessToken] = useState<string | null>('');
 
   useEffect(() => {
     getSettlements();
-  }, [accessToken]);
-
-  useEffect(() => {
-    loadAccessToken();
   }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const getSettlements = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.get(
-        `http://146.56.190.78/settlements/bySchedule/${userId}`,
+        `http://146.56.190.78/settlements/custom/mine`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -180,14 +171,16 @@ function CalculatePage({navigation}: any) {
         },
       );
       setAllSettlements(response.data);
-      console.log(response.data);
+      console.log('response.data', response.data);
+      console.log('response.data.Settlements', response.data.Settlements);
     } catch (err: AxiosError | any) {
-      console.log(err.response);
+      // console.log(err.response);
     }
   };
 
   const updateSettlement = (calculate: any) => async (event: any) => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
         `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
         {is_paid: true},

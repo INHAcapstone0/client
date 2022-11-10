@@ -45,9 +45,6 @@ function ScheduleCard({
   openDeleteModalForMember,
   navigation: {navigate},
 }: ScheduleCardProps) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const [isModalVisible, setModalVisible] = useState(false);
 
   const userId = useSelector((state: RootState) => state.persist.user.id);
@@ -73,6 +70,8 @@ function ScheduleCard({
   const pressReceiptUpload = () => {
     navigate('SelectReceiptPage', {
       scheduleId: item.id,
+      dateStart: item.startAt.substring(0, 10),
+      dateEnd: item.endAt.substring(0, 10),
     });
   };
 
@@ -265,7 +264,7 @@ function ScheduleCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'white',
     width: Dimensions.get('window').width * 0.9,
     height: 210,
     marginBottom: 20,

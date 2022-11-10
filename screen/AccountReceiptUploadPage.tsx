@@ -10,9 +10,9 @@ import {
   View,
   ScrollView,
   Dimensions,
+  SafeAreaView,
+  KeyboardAvoidingView,
   TouchableOpacity,
-  Button,
-  AppState,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -20,40 +20,28 @@ import {WebView} from 'react-native-webview';
 import Modal from 'react-native-modal';
 import PurchaseItem from '../components/PurchaseItem';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import KakaoMap from '../components/KakaoMap';
+import {
+  ALERT_TYPE,
+  Dialog,
+  AlertNotificationRoot,
+  Toast,
+} from 'react-native-alert-notification';
 import axios, {AxiosError} from 'axios';
-import DatePicker from 'react-native-date-picker';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
-import {Calendar} from 'react-native-calendars';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
-interface selectDateType {
-  [key: string]: {[key: string]: boolean};
-}
-interface itemData {
-  receipt_id: string;
-  quantity: string;
-  price: string;
-  name: string;
-}
+function AccountReceiptUploadPage({navigation, route}: any) {
+  const [accessToken, setAccessToken] = useState<string | null>('');
 
-function ReceiptUploadPage({route, navigation}: any) {
+  //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
-
-  const userId = useSelector((state: RootState) => state.persist.user.id);
-
-  const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
 
   //장소 찾기 모달 visible
   const [placeModalVisible, setPlaceModalVisible] = useState(false);
 
   //장소 변수
   const [place, setPlace] = useState('찾아보기 버튼을 눌러주세요.');
-
-  const [placeAddress, setPlaceAddress] = useState('');
-
-  const [placeTel, setPlaceTel] = useState('');
 
   //장소 검색어
   const [placeKeyword, setPlaceKeyword] = useState('');
@@ -77,22 +65,36 @@ function ReceiptUploadPage({route, navigation}: any) {
   const [totalPriceValidationFlag, setTotalPriceValidationFlag] =
     useState(true);
 
-  const [itemData, setItemData] = useState([
-    {
-      receipt_id: '',
-      name: '',
-      quantity: '',
-      price: '',
-    },
-  ]);
+  //더미데이터
 
-  //아이템데이터
+  /*
   const [data, setData] = useState([
     {
       id: '1',
       name: '',
       quantity: '',
       price: '',
+    },
+  ]);
+  */
+  const [data, setData] = useState([
+    {
+      id: '1-1',
+      name: '아메리카노',
+      quantity: '3',
+      price: '4000',
+    },
+    {
+      id: '2-1',
+      name: '카페라떼',
+      quantity: '3',
+      price: '4500',
+    },
+    {
+      id: '3-1',
+      name: '플랫화이트',
+      quantity: '3',
+      price: '6000',
     },
   ]);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
@@ -105,75 +107,17 @@ function ReceiptUploadPage({route, navigation}: any) {
   //메모
   const [memo, setMemo] = useState('');
 
-  const [payDate, setPayDate] = useState('');
+  useEffect(() => {
+    loadAccessToken();
+  }, []);
 
-  const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
-
-  const togglePayDateModal = () => {
-    setIsPayDateModalVisible(!isPayDateModalVisible);
-  };
-
-  const [payTime, setPayTime] = useState(new Date());
-
-  const [payDateForRequest, setPayDateForRequest] = useState('');
-
-  const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
-
-  const [selectedDate, setSelectedDate] = useState<selectDateType>({});
-
-  const togglePayTimeModal = (state: boolean) => {
-    setIsPayTimeModalVisible(state);
-  };
-
-  const [uploadValidation, setUploadValidation] = useState(false);
-  const checkValidation = () => {
-    /*
-        payDate,
-        total_price:totalPrice,*/
-
-    if (placeAddress === '') {
-      console.log('정보 다시 입력');
-    } else if (totalPrice === '') {
-      console.log('정보 다시 입력');
-    } else if (!totalPriceValidationFlag) {
-      console.log('정보 다시 입력');
-    } else if (payDate === '') {
-      console.log('정보 다시 입력');
-    } else if (category.length > 10) {
-      console.log('정보 다시 입력');
-    } else {
-      console.log('check validation pay date is ', payDate);
-      console.log('check validation pay time is ', payTime);
-
-      uploadReceipt(
-        payDate.substring(0, payDate.indexOf('-')) +
-          payDate.substring(
-            payDate.indexOf('-') + 1,
-            payDate.indexOf('-') + 3,
-          ) +
-          payDate.substring(
-            payDate.lastIndexOf('-') + 1,
-            payDate.lastIndexOf('-') + 3,
-          ) +
-          payTime
-            .toISOString()
-            .substring(
-              payTime.toISOString().indexOf('T') + 1,
-              payTime.toISOString().indexOf('T') + 3,
-            ) +
-          payTime
-            .toISOString()
-            .substring(
-              payTime.toISOString().indexOf(':') + 1,
-              payTime.toISOString().indexOf(':') + 3,
-            ),
-      );
-    }
-    //주소 날짜시간 가격
+  const loadAccessToken = async () => {
+    const accessTokenData = await EncryptedStorage.getItem('accessToken');
+    setAccessToken(accessTokenData);
   };
 
   //결제항목과 결제금액 유효성 검사 함수
-  const checkPriceValidation = () => {
+  const checkValidation = () => {
     //결제항목을 입력한 경우에만 검사
     if (itemFlag) {
       data.map((item: any) => {
@@ -214,38 +158,34 @@ function ReceiptUploadPage({route, navigation}: any) {
     setTotalPriceValidationFlag(false);
     setData([
       {
-        id: (emptyInputNumber + 1).toString(),
+        id: emptyInputNumber.toString(),
         name: '',
         quantity: '',
         price: '',
       },
       ...data,
     ]);
-    setItemData([]);
   };
 
   //결제항목 삭제 함수
   const deleteItem = (id: string) => {
     setData(data.filter(item => item.id !== id));
-    setItemData([]);
   };
 
   //결제항목 생략 함수
   const passFillingItem = () => {
     setData([]);
-    setItemData([]);
     setItemFlag(false);
     setTotalPriceValidationFlag(true);
   };
 
   const searchPlace = async (keyword: string) => {
     try {
-      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/kakao?query=${keyword}`,
+        `http://146.56.190.78:8002/extra/kakao?query=${keyword}`,
         {
           headers,
         },
@@ -261,92 +201,11 @@ function ReceiptUploadPage({route, navigation}: any) {
     mapViewRef.current?.postMessage(address);
   };
 
-  const addSelectedDate = (date: string) => {
-    const newDate: any = {};
-    newDate[date] = {selected: true};
-    setSelectedDate({...newDate});
-
-    setPayDate(date);
-  };
-
-  const uploadReceipt = async (payDateParam: string) => {
-    const accessToken = await EncryptedStorage.getItem('accessToken');
-    try {
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      const body = {
-        schedule_id: scheduleId,
-        poster_id: userId,
-        payDate: payDateParam,
-        total_price: totalPrice,
-        memo: memo,
-        place: place,
-        address: placeAddress,
-        category: category,
-        tel: placeTel,
-      };
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/receipts`,
-        body,
-        {
-          headers,
-        },
-      );
-
-      console.log('upload receipt result : ', response.data);
-      if (itemFlag) {
-        uploadItems(response.data.id);
-      } else {
-        navigation.navigate('HomePage');
-      }
-    } catch (err: AxiosError | any) {
-      console.log(err);
-    }
-  };
-
-  const uploadItems = async (receiptId: string) => {
-    const accessToken = await EncryptedStorage.getItem('accessToken');
-    try {
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      const items: itemData[] = [];
-
-      data.filter(item =>
-        itemData.push({
-          receipt_id: receiptId,
-          quantity: item.quantity,
-          price: item.price,
-          name: item.name,
-        }),
-      );
-
-      console.log('upload item is ', itemData);
-
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/items/many`,
-        itemData,
-        {
-          headers,
-        },
-      );
-
-      console.log('upload receipt items result : ', response.data);
-      navigation.navigate('HomePage');
-    } catch (err: AxiosError | any) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     if (data.length === 0 && itemFlag) {
       addEmptyInput();
     }
   }, [data]);
-
   return (
     <View style={styles.window}>
       <View style={styles.header}>
@@ -412,7 +271,7 @@ function ReceiptUploadPage({route, navigation}: any) {
                 setTotalPrice(text);
               }}
               onBlur={() => {
-                checkPriceValidation();
+                checkValidation();
               }}
               placeholder="숫자만 입력해주세요."
               style={styles.itemContent}
@@ -424,44 +283,6 @@ function ReceiptUploadPage({route, navigation}: any) {
               결제한 금액과 결제 항목들이 일치하지 않습니다.
             </Text>
           )}
-        </View>
-        <View style={styles.borderLine} />
-        <Calendar
-          style={styles.calendar}
-          markedDates={selectedDate}
-          theme={{
-            selectedDayBackgroundColor: '#21B8CD',
-            arrowColor: '#21B8CD',
-            dotColor: '#21B8CD',
-            todayTextColor: 'black',
-          }}
-          onDayPress={day => {
-            console.log(day.dateString);
-            addSelectedDate(day.dateString);
-          }}
-        />
-        <View style={{margin: 10}}>
-          <Button
-            color="#21B8CD"
-            title="결제시각 선택하기"
-            onPress={() => togglePayTimeModal(true)}
-          />
-          <DatePicker
-            modal
-            title={null}
-            mode={'time'}
-            open={isPayTimeModalVisible}
-            date={payTime}
-            confirmText={'선택'}
-            cancelText={'취소'}
-            onConfirm={date => {
-              togglePayTimeModal(false);
-              setPayTime(date);
-            }}
-            onCancel={() => {
-              togglePayTimeModal(false);
-            }}
-          />
         </View>
         <View style={styles.borderLine} />
         <View style={styles.itemSection}>
@@ -481,7 +302,7 @@ function ReceiptUploadPage({route, navigation}: any) {
           <View style={styles.webviewContainer}>
             <WebView
               ref={mapViewRef}
-              source={{uri: 'http://146.56.190.78/webview/'}}
+              source={{uri: 'http://192.168.35.192:3000/'}}
               style={styles.webview}
             />
           </View>
@@ -543,9 +364,6 @@ function ReceiptUploadPage({route, navigation}: any) {
                               style={styles.placeSelectButton}
                               onPress={() => {
                                 setPlace(item.place_name);
-                                setPlaceAddress(item.road_address_name);
-                                setCategory(item.category_group_name);
-                                setPlaceTel(item.phone);
                                 drawMap(item.road_address_name);
                                 setPlaceModalVisible(false);
                               }}>
@@ -891,17 +709,12 @@ function ReceiptUploadPage({route, navigation}: any) {
           </View>
         </View>
         <View style={styles.itemSection}>
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.8}
             style={styles.uploadButton}
-            onPress={() => {
-              console.log('등록하기');
-              console.log('pay date is ', payDate);
-              console.log('pay time is', payTime);
-              console.log('memo is ', memo);
-              checkValidation();
-            }}>
+            onPress={() => console.log('등록하기')}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -1165,9 +978,5 @@ const styles = StyleSheet.create({
     height: 195,
     marginTop: 30,
   },
-  calendar: {
-    width: '100%',
-    borderColor: 'white',
-  },
 });
-export default ReceiptUploadPage;
+export default AccountReceiptUploadPage;
