@@ -32,9 +32,6 @@ interface selectDateType {
 }
 
 function ReceiptUploadPage() {
-  //액세스토큰
-  const [accessToken, setAccessToken] = useState<string | null>('');
-
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
 
@@ -104,15 +101,6 @@ function ReceiptUploadPage() {
     setIsPayTimeModalVisible(!isPayTimeModalVisible);
   };
 
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
-
   //결제항목과 결제금액 유효성 검사 함수
   const checkValidation = () => {
     //결제항목을 입력한 경우에만 검사
@@ -178,6 +166,7 @@ function ReceiptUploadPage() {
 
   const searchPlace = async (keyword: string) => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };

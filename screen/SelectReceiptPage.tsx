@@ -46,16 +46,6 @@ interface userType {
 function SelectReceiptPage({navigation, route}: any) {
   const [selectImg, setSelectImg] = useState({uri: ''});
   const [showSpinner, setShowSpinner] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>('');
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const moveToNextStep = () => {
     navigation.navigate('ReceiptUploadPage', {
@@ -66,6 +56,8 @@ function SelectReceiptPage({navigation, route}: any) {
   const moveToyMyAccountPage = () => {
     navigation.navigate('MyAccountPage', {
       scheduleId: route.params.scheduleId,
+      dateStart: route.params.dateStart,
+      dateEnd: route.params.dateEnd,
     });
   };
 
@@ -94,6 +86,7 @@ function SelectReceiptPage({navigation, route}: any) {
 
   const sendCameraScreenShot = async (screenShot: any) => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       console.log(1);
       const data = new FormData();
       console.log(`Bearer ${accessToken}`);

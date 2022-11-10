@@ -43,20 +43,10 @@ function HomePage({navigation}: any) {
   const [errFlag, setErrFlag] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [accessToken, setAccessToken] = useState<string | null>('');
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
 
   useEffect(() => {
     getAllSchedules();
-  }, [infoNumber, accessToken]);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
+  }, [infoNumber]);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -83,6 +73,7 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
       };
@@ -105,6 +96,7 @@ function HomePage({navigation}: any) {
 
   const deleteSchedule = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -120,6 +112,7 @@ function HomePage({navigation}: any) {
 
   const deleteParticipant = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };

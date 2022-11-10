@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   nextButton: {
-    marginTop: Dimensions.get('window').height / 5,
+    marginTop: Dimensions.get('window').height / 15,
   },
   modalButtonWrapper: {
     display: 'flex',

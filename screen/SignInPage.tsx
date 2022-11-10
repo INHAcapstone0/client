@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,
@@ -100,7 +100,6 @@ function SignInPage({navigation}: any) {
         source={require('../resources/icons/LoginImage.png')}
         style={styles.logo}
       />
-      {/* <Text style={styles.text}>로그인</Text> */}
       <FormInput
         labelValue={email}
         onChangeText={onChangeEmail}

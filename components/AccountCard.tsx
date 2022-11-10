@@ -21,9 +21,11 @@ import axios from 'axios';
 import {Menu, MenuItem} from 'react-native-material-menu';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {useSelector} from 'react-redux';
-import {RootState} from '../store/Store';
+import {RootState, useAppDispatch} from '../store/Store';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {accountAction} from '../slices/Account';
+import axiosInstance from '../utils/interceptor';
 
 interface ScheduleCardProps {
   item: any;
@@ -31,9 +33,13 @@ interface ScheduleCardProps {
   setBottomModalType: (modalType: string) => void;
   openBottomModal: () => void;
   doRefresh: () => void;
-  openDeleteModalForHost: () => void;
-  openDeleteModalForMember: () => void;
+  openModal: () => void;
+  closeModal: () => void;
+  deleteAccount: () => void;
   navigation: any;
+  dateStart: any;
+  dateEnd: any;
+  setFinNum: (finNum: any) => void;
 }
 function AccountCard({
   item,
@@ -41,19 +47,22 @@ function AccountCard({
   setBottomModalType,
   openBottomModal,
   doRefresh,
-  openDeleteModalForHost,
-  openDeleteModalForMember,
+  openModal,
+  closeModal,
+  deleteAccount,
+  setFinNum,
   navigation: {navigate},
+  dateStart,
+  dateEnd,
 }: ScheduleCardProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
   );
   const [isModalVisible, setModalVisible] = useState(false);
-
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  // const [startDate, setStartDate] = useState('');
+  // const [endDate, setEndDate] = useState('');
   const [totalPrice, setTotalPrice] = useState('0');
 
   const openMenu = () => setVisible(true);
@@ -63,33 +72,58 @@ function AccountCard({
   const [ownerFlag, setOwnerFlag] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const dispatch = useAppDispatch();
 
   const moveToAccountHistoryPage = () => {
-    navigate('AccountHistoryPage', {
-      scheduleId: item.id,
-    });
+    console.log('dateStart', dateStart);
+    const startDate = dateStart.replace(/\-/g, '');
+    const endDate = dateEnd.replace(/\-/g, '');
+
+    console.log(startDate);
+    console.log(endDate);
+
+    dispatch(
+      accountAction.setAccount({
+        finNum: item.fintech_use_num,
+        start: startDate,
+        end: endDate,
+        name: item.bank_name,
+      }),
+    );
+    setTimeout(() => {
+      navigate('AccountHistoryPage');
+    }, 1000);
   };
 
-  const pressReceiptUpload = () => {
-    navigate('SelectReceiptPage', {
-      scheduleId: item.id,
-    });
-  };
+  // const deleteAccount = async () => {
+  //   try {
+  //     const response = await axiosInstance.post(
+  //       'http://146.56.190.78/extra/account/cancel',
+  //       {
+  //         fintech_use_num: item.fintech_use_num,
+  //       },
+  //     );
+  //     console.log('response', response);
+  //     return response.data;
+  //   } catch (err: any) {
+  //     console.log(err);
+  //   }
+  // };
 
-  useEffect(() => {
-    console.log('item.id', item.id);
-    if (userId === item.owner_id) {
-      setOwnerFlag(true);
-    }
+  // useEffect(() => {
+  //   console.log('item.id', item.id);
+  //   if (userId === item.owner_id) {
+  //     setOwnerFlag(true);
+  //   }
 
-    if (item.total_pay != null) {
-      setTotalPrice(
-        item.total_pay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-      );
-    }
-    setStartDate(item.startAt.substring(0, 10));
-    setEndDate(item.endAt.substring(0, 10));
-  }, []);
+  //   if (item.total_pay != null) {
+  //     setTotalPrice(
+  //       item.total_pay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+  //     );
+  //   }
+  //   setStartDate(item.startAt.substring(0, 10));
+  //   setEndDate(item.endAt.substring(0, 10));
+  // }, []);
 
   return (
     <View style={styles.card}>
@@ -98,12 +132,12 @@ function AccountCard({
           <View>
             <Text style={styles.cardTitleText}>
               <Image source={require('../resources/icons/KaKaoBank.png')} />
-              &nbsp; 카카오뱅크
+              &nbsp;{item.bank_name}
             </Text>
           </View>
           <View style={styles.cardDateArea}>
             <Text style={styles.cardDateText}>
-              {startDate} ~ {endDate}
+              {dateStart} ~ {dateEnd}
             </Text>
           </View>
         </View>
@@ -117,10 +151,12 @@ function AccountCard({
           onRequestClose={closeMenu}>
           <MenuItem
             onPress={() => {
-              closeMenu();
-              setSelectedScheduleId(item.id);
-              setBottomModalType('멤버목록_호스트');
-              openBottomModal();
+              setFinNum(item.fintech_use_num);
+              openModal();
+              // closeMenu();
+              // setSelectedScheduleId(item.id);
+              // setBottomModalType('멤버목록_호스트');
+              // openBottomModal();
             }}>
             <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
           </MenuItem>
@@ -135,7 +171,7 @@ function AccountCard({
       <View style={styles.cardBody}>
         <View style={styles.cardTotalPriceArea}>
           <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-          <Text style={styles.cardTotalPrice}>{totalPrice}</Text>
+          <Text style={styles.cardTotalPrice}>0</Text>
           <Text style={styles.cardTotalPriceWon}> 원</Text>
         </View>
       </View>
@@ -144,6 +180,37 @@ function AccountCard({
 }
 
 const styles = StyleSheet.create({
+  modalContainerForMember: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 195,
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 20,
+    color: 'black',
+  },
   card: {
     borderRadius: 20,
     borderBottomLeftRadius: 20,

@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
@@ -24,8 +24,6 @@ import axiosInstance from '../utils/interceptor';
 function RegisterAccountPage({navigation}: any) {
   const dispatch = useAppDispatch();
   //액세스토큰
-  const [accessToken, setAccessToken] = useState<string | null>('');
-  const [accessTokenToBank, setAccessTokenToBank] = useState<string | null>('');
   const id = useSelector((state: RootState) => state.persist.user.id);
   const OPENBANK_CALLBACK_URL_1 = 'http://146.56.190.78/extra/send';
   const OPENBANK_CLIENT_ID = '141f9981-d313-400a-991d-bd7e8fa5392c';
@@ -41,22 +39,19 @@ function RegisterAccountPage({navigation}: any) {
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
   };
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const getTokenForOpenbanking = async () => {};
 
   const getToken = async () => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    console.log('accessToken', accessToken);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/token`,
-        {headers},
-      );
+      const response = await axios.get(`http://146.56.190.78/extra/token`, {
+        headers,
+      });
       const accessTokenData = await EncryptedStorage.setItem(
         'accessTokenToBank',
         response.data.access_token,
@@ -66,15 +61,11 @@ function RegisterAccountPage({navigation}: any) {
         'refreshTokenToBank',
         response.data.refresh_token,
       );
-      console.log(response.data);
-    } catch (err) {
-      console.log(err);
+      console.log('response.data', response.data);
+    } catch (err: any) {
+      console.log('err.response.msg', err.response);
     }
   };
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
 
   return (
     <View>

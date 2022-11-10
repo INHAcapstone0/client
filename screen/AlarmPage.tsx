@@ -39,24 +39,18 @@ function AlarmPage({navigation}: any) {
   const [isInvitaionModalVisible, setInvitationModalVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
-  const [accessToken, setAccessToken] = useState<string | null>('');
 
   useEffect(() => {
     getAllAlarms();
-  }, [accessToken]);
-
-  useEffect(() => {
-    loadAccessToken();
   }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-    console.log(accessTokenData);
-  };
 
   const getAllAlarms = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      console.log('accessToken', accessToken);
+      console.log('refreshToken', refreshToken);
+
       const response = await axiosInstance.get(
         `http://146.56.190.78/alarms?user_id=${userId}`,
         {
@@ -74,7 +68,8 @@ function AlarmPage({navigation}: any) {
 
   const deleteAlarm = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+
       const response = await axiosInstance.delete(
         `http://146.56.190.78/alarms/${alarmId}`,
         {
@@ -92,7 +87,8 @@ function AlarmPage({navigation}: any) {
 
   const joinSchedule = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+
       const response = await axiosInstance.patch(
         `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
@@ -113,7 +109,7 @@ function AlarmPage({navigation}: any) {
 
   const rejectSchedule = async () => {
     try {
-      console.log(alarmId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
         `http://146.56.190.78/participants/${userId}/${alarmId}`,
         {
