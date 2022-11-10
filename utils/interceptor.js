@@ -31,7 +31,7 @@ axiosInstance.interceptors.response.use(
             Refresh: `${refreshToken}`,
           },
         },
-      });
+      );
 
       console.log('refresh response data', data);
       const originalRequest = config;
