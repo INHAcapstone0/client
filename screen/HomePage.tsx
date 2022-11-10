@@ -41,14 +41,11 @@ function HomePage({navigation}: any) {
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
-
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
 
   useEffect(() => {
     getAllSchedules();
   }, [infoNumber]);
-
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -76,6 +73,7 @@ function HomePage({navigation}: any) {
   const getAllSchedules = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
+      console.log('accessToken', accessToken);
       const params = {
         status: '승인',
       };

@@ -60,7 +60,9 @@ function SignUpPage({navigation}: any) {
         email: email,
       });
       setAuthNum(response.data.authNum.toString());
+      setEmailChecked(false);
       setEmailCodeChecked(true);
+      Alert.alert('알림', '이메일로 인증코드 발송 되었습니다');
     } catch (err: any) {
       console.log(err.response);
     }
@@ -182,7 +184,7 @@ function SignUpPage({navigation}: any) {
           <Text style={styles.duplicateButtonText}>중복확인</Text>
         </Pressable>
       </View>
-      {emailChecked && (
+      {/* {emailChecked && (
         <View style={styles.formWrapper}>
           <Pressable
             style={styles.emailSendButton}
@@ -191,8 +193,37 @@ function SignUpPage({navigation}: any) {
             <Text style={styles.emailSendButtonText}>인증코드 발송</Text>
           </Pressable>
         </View>
-      )}
-      {emailCodeChecked && (
+      )} */}
+      {emailChecked ? (
+        <View style={styles.formWrapper}>
+          <FormInput
+            // labelValue={emailCode}
+            // onChangeText={onChangeEmailCode}
+            placeholderText="인증코드 발급받아주세요"
+            iconType="user"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            inputType="register"
+            editable={false}
+          />
+          <Pressable
+            style={
+              !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
+                email,
+              ) === false
+                ? StyleSheet.compose(
+                    styles.duplicateButton,
+                    styles.duplicateButtonActive,
+                  )
+                : styles.duplicateButton
+            }
+            disabled={email.length === 0 || loading}
+            onPress={sendEmailCode}>
+            <Text style={styles.duplicateButtonText}>발송</Text>
+          </Pressable>
+        </View>
+      ) : emailCodeChecked ? (
         <View style={styles.formWrapper}>
           <FormInput
             labelValue={emailCode}
@@ -220,7 +251,7 @@ function SignUpPage({navigation}: any) {
             <Text style={styles.duplicateButtonText}>인증</Text>
           </Pressable>
         </View>
-      )}
+      ) : null}
       <View style={styles.formWrapper}>
         <FormInput
           labelValue={name}
