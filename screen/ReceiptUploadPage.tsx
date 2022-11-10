@@ -32,11 +32,8 @@ interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
 
-function ReceiptUploadPage({route, navigation}: any) {
-  //액세스토큰
-  const [accessToken, setAccessToken] = useState<string | null>('');
 
-  //유저이름
+function ReceiptUploadPage({route, navigation}: any) {
   const userName = useSelector((state: RootState) => state.persist.user.name);
 
   const userId = useSelector((state: RootState) => state.persist.user.id);
@@ -112,16 +109,6 @@ function ReceiptUploadPage({route, navigation}: any) {
   };
 
   const [uploadValidation, setUploadValidation] = useState(false);
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
-
   const checkValidation = () => {
     /*schedule_id : ,
         payDate,
@@ -205,6 +192,7 @@ function ReceiptUploadPage({route, navigation}: any) {
 
   const searchPlace = async (keyword: string) => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };

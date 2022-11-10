@@ -10,7 +10,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async error => {
-    // console.log('error', error);
+    // console.log('error.response.status', error.response.status);
     const {
       config,
       response: {status},
@@ -23,10 +23,13 @@ axiosInstance.interceptors.response.use(
       console.log('refreshToken', refreshToken);
       console.log('accessToken', accessToken);
 
-      const {data} = await axios.get(`http://146.56.190.78/auth/refresh`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Refresh: `${refreshToken}`,
+      const {data} = await axios.get(
+        `http://146.56.190.78/users/auth/refresh`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Refresh: `${refreshToken}`,
+          },
         },
       });
 

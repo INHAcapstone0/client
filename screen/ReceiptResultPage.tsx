@@ -31,7 +31,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 
 function ReceiptResultPage({navigation, route}: any) {
-  const [accessToken, setAccessToken] = useState<string | null>('');
   //유저이름
   const userName = useSelector((state: RootState) => state.persist.user.name);
   const userId = useSelector((state: RootState) => state.persist.user.id);
@@ -70,12 +69,12 @@ function ReceiptResultPage({navigation, route}: any) {
   const [memo, setMemo] = useState('');
 
   useEffect(() => {
-    loadAccessToken();
+    drawMap(route.params.data.store.addresses);
   }, []);
 
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
+  const mapViewRef = useRef<WebView>(null);
+  const drawMap = (address: string) => {
+    mapViewRef.current?.postMessage(address);
   };
 
   useEffect(() => {
@@ -96,6 +95,7 @@ function ReceiptResultPage({navigation, route}: any) {
 
   const uploadReceipt = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.post(
         `http://146.56.190.78/receipts`,
         {
@@ -321,6 +321,13 @@ function ReceiptResultPage({navigation, route}: any) {
               <Text style={styles.itemContent}>
                 {route.params.data.store.name}
               </Text>
+            </View>
+            <View style={styles.webviewContainer}>
+              <WebView
+                ref={mapViewRef}
+                source={{uri: 'http://146.56.190.78/webview/'}}
+                style={styles.webview}
+              />
             </View>
             <View style={styles.itemSectionWithButton}>
               <Text style={styles.itemTitle}>
@@ -581,6 +588,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  webviewContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: '#21B8CD',
+    width: Dimensions.get('window').width * 0.9,
+    height: 195,
+    marginTop: 30,
   },
 });
 export default ReceiptResultPage;

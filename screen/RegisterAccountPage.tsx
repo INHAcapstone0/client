@@ -12,7 +12,7 @@ import {
   AppState,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
@@ -31,8 +31,6 @@ export const enum USER_APP_STATE {
 function RegisterAccountPage({navigation}: any) {
   const dispatch = useAppDispatch();
   //액세스토큰
-  const [accessToken, setAccessToken] = useState<string | null>('');
-  const [accessTokenToBank, setAccessTokenToBank] = useState<string | null>('');
   const id = useSelector((state: RootState) => state.persist.user.id);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -50,24 +48,20 @@ function RegisterAccountPage({navigation}: any) {
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
   };
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-    console.log('load token is ', accessTokenData);
-  };
+
 
   const getTokenForOpenbanking = async () => {};
 
   const getToken = async () => {
-    console.log('access token is ', accessToken);
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    console.log('accessToken', accessToken);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/token`,
-        {headers},
-      );
+      const response = await axios.get(`http://146.56.190.78/extra/token`, {
+        headers,
+      });
       const accessTokenData = await EncryptedStorage.setItem(
         'accessTokenToBank',
         response.data.access_token,
@@ -77,6 +71,11 @@ function RegisterAccountPage({navigation}: any) {
         'refreshTokenToBank',
         response.data.refresh_token,
       );
+      console.log('response.data', response.data);
+    } catch (err: any) {
+      console.log('err.response.msg', err.response);
+    }
+  };
       console.log('token is ', response.data);
     } catch (err: any) {
       console.log('token error is ', err);
@@ -95,13 +94,6 @@ function RegisterAccountPage({navigation}: any) {
     appState.current = nextAppState; // 변경된 상태를 바꿔줌.
     setAppStateVisible(appState.current);
   };
-
-  useEffect(() => {
-    loadAccessToken();
-
-    AppState.addEventListener('change', fn_handleAppStateChange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <View>

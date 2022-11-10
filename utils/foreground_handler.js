@@ -20,8 +20,8 @@ export default ForegroundHandler = () => {
             title: 'Android App',
             body: 'Test Body',
             soundName: 'default',
-            vibrate: sound ==='true' ? true : false,
-            playSound: vibration ==='true' ? true : false,
+            vibrate: sound === 'true' ? true : false,
+            playSound: vibration === 'true' ? true : false,
           });
         }
       });

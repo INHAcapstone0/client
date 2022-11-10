@@ -43,18 +43,12 @@ function HomePage({navigation}: any) {
   const [errFlag, setErrFlag] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [accessToken, setAccessToken] = useState<string | null>('');
+
 
   useEffect(() => {
-    loadAccessToken().then(() => {
-      getAllSchedules();
-    });
-  }, [infoNumber, accessToken]);
+    getAllSchedules();
+  }, [infoNumber]);
 
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -81,7 +75,7 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
-      console.log('get all schedules access token is ', accessToken);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
       };
@@ -104,6 +98,7 @@ function HomePage({navigation}: any) {
 
   const deleteSchedule = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -119,6 +114,7 @@ function HomePage({navigation}: any) {
 
   const deleteParticipant = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };

@@ -28,7 +28,6 @@ function MyPage() {
 
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
-  const [accessToken, setAccessToken] = useState<string | null>('');
   const [myInfo, setMyInfo] = useState<{
     email: string;
     name: string;
@@ -42,19 +41,11 @@ function MyPage() {
   useEffect(() => {
     getMyInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myInfo, accessToken]);
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
+  }, [myInfo]);
 
   const getMyInfo = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -108,6 +99,7 @@ function MyPage() {
 
   const uploadImage = async (image: {}) => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         'content-type': 'multipart/form-data',
@@ -141,6 +133,7 @@ function MyPage() {
         });
       } else {
         try {
+          const accessToken = await EncryptedStorage.getItem('accessToken');
           const headers = {
             Authorization: `Bearer ${accessToken}`,
           };

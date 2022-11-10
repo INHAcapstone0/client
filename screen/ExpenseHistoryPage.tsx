@@ -39,11 +39,9 @@ import Presenter from 'react-native-calendars/src/expandableCalendar/Context/Pre
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {any, string} from 'prop-types';
 import axiosInstance from '../utils/interceptor';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 function ExpenseHistoryPage({route, navigation}: any) {
-  const accessToken = useSelector(
-    (state: RootState) => state.persist.user.accessToken,
-  );
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const saveRoute = useState(route);
   const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
@@ -98,6 +96,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
 
   const getScheduleInfo = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -124,6 +123,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
   };
 
   const getReceiptsInfo = async (category: string) => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };

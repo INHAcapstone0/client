@@ -14,6 +14,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  InteractionManager,
 } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import BottomSheet, {
@@ -32,7 +33,7 @@ import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 
-function MyAccountPage({navigation}: any) {
+function MyAccountPage({navigation, route}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
   const [info, setInfo] = useState([]);
@@ -40,22 +41,14 @@ function MyAccountPage({navigation}: any) {
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
-
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [accessToken, setAccessToken] = useState<string | null>('');
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
+  const [bankAccount, setBankAccount] = useState<any>([]);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [finNum, setFinNum] = useState(0);
 
   useEffect(() => {
     getAllSchedules();
-  }, [infoNumber, accessToken]);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
+  }, [infoNumber]);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -80,8 +73,53 @@ function MyAccountPage({navigation}: any) {
   const closeDeleteModalForMember = () => {
     setModalVisibleForMember(false);
   };
+
+  const getAllAccount = async () => {
+    try {
+      const params = {
+        status: '승인',
+      };
+      // const headers = {
+      //   Authorization: `Bearer ${accessToken}`,
+      //   bank-authorization:`Bearer ${bankAccessToken}`
+      // };
+
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const bankAccessToken = await EncryptedStorage.getItem(
+        'accessTokenToBank',
+      );
+      const bankRefreshToken = await EncryptedStorage.getItem(
+        'refreshTokenToBank',
+      );
+
+      console.log('accessToken', accessToken);
+      console.log('bankAccessToken', bankAccessToken);
+
+      const response = await axiosInstance.get(
+        'http://146.56.190.78/extra/account/list',
+        {
+          headers: {
+            'bank-authorization': `Bearer ${bankAccessToken}`,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setBankAccount(response.data.res_list);
+
+      console.log('bank response', response.data.res_list);
+      // setInfo(response.data.res_list);
+      // setErrFlag(false);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+      if (err.response.status === 404) {
+        // setErrFlag(true);
+      }
+    }
+  };
+
   const getAllSchedules = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
       };
@@ -104,6 +142,7 @@ function MyAccountPage({navigation}: any) {
 
   const deleteSchedule = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -119,6 +158,7 @@ function MyAccountPage({navigation}: any) {
 
   const deleteParticipant = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -132,26 +172,59 @@ function MyAccountPage({navigation}: any) {
     }
   };
 
-  const moveToyMyAccountPage = () => {
-    navigation.navigate('MyAccountPage');
+  const deleteAccount = async () => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const bankAccessToken = await EncryptedStorage.getItem(
+        'accessTokenToBank',
+      );
+      const headers = {
+        'bank-authorization': `Bearer ${bankAccessToken}`,
+        Authorization: `Bearer ${accessToken}`,
+      };
+      console.log(finNum);
+      const response = await axiosInstance.post(
+        'http://146.56.190.78/extra/account/cancel',
+        {
+          fintech_use_num: finNum,
+        },
+        {headers},
+      );
+      console.log('delete response', response);
+      return response.data;
+    } catch (err: any) {
+      console.log('delete error', err.response);
+    }
+  };
+
+  const showModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
   };
 
   return (
     <BottomSheetModalProvider>
       <ScrollView style={styles.inputWrapper}>
-        {info.map((item: any) => {
+        {bankAccount.map((item: any) => {
           if (item != null) {
             return (
               <AccountCard
-                key={item.id}
+                key={item.fintech_use_num}
                 item={item}
                 setSelectedScheduleId={setSelectedScheduleId}
                 setBottomModalType={setBottomModalType}
                 openBottomModal={openBottomModal}
-                openDeleteModalForHost={openDeleteModalForHost}
-                openDeleteModalForMember={openDeleteModalForMember}
-                doRefresh={getAllSchedules}
+                openModal={showModal}
+                closeModal={closeModal}
+                deleteAccount={deleteAccount}
+                doRefresh={getAllAccount}
                 navigation={navigation}
+                dateStart={route.params.dateStart}
+                dateEnd={route.params.dateEnd}
+                setFinNum={setFinNum}
               />
             );
           }
@@ -197,6 +270,44 @@ function MyAccountPage({navigation}: any) {
                       getAllSchedules();
                     }}>
                     <Text style={styles.modalButtonText}>예</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            isVisible={isModalVisible}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            style={{
+              alignItems: 'center',
+            }}>
+            <View style={styles.modalContainerForMember}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
+                }}>
+                <Text style={styles.modalComment}>
+                  해당 계좌를 삭제 하시겠습니까?
+                </Text>
+                <View style={styles.modalButtonArea}>
+                  <Pressable
+                    style={styles.modalButton}
+                    onPress={() => {
+                      deleteAccount();
+                      getAllAccount();
+                      closeModal();
+                    }}>
+                    <Text style={styles.modalButtonText}>예</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.modalButton}
+                    onPress={() => {
+                      closeModal();
+                    }}>
+                    <Text style={styles.modalButtonText}>아니오</Text>
                   </Pressable>
                 </View>
               </View>
