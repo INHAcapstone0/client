@@ -32,7 +32,6 @@ interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
 
-
 function ReceiptUploadPage({route, navigation}: any) {
   const userName = useSelector((state: RootState) => state.persist.user.name);
 
@@ -222,6 +221,7 @@ function ReceiptUploadPage({route, navigation}: any) {
   };
 
   const uploadReceipt = async () => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -251,6 +251,7 @@ function ReceiptUploadPage({route, navigation}: any) {
   };
 
   const uploadItems = async () => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
