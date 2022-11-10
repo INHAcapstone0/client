@@ -118,7 +118,7 @@ function SelectReceiptPage({navigation, route}: any) {
       console.log('response.data.data', response.data.data);
       navigation.navigate('ReceiptResultPage', {
         data: response.data.data,
-        scheduleId: route.parms.scheduleId,
+        scheduleId: route.params.scheduleId,
       });
       // navigation.reset({
       //   routes: [

@@ -31,6 +31,12 @@ import {Calendar} from 'react-native-calendars';
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
 }
+interface itemData {
+  receipt_id: string;
+  quantity: string;
+  price: string;
+  name: string;
+}
 
 function ReceiptUploadPage({route, navigation}: any) {
   const userName = useSelector((state: RootState) => state.persist.user.name);
@@ -46,6 +52,8 @@ function ReceiptUploadPage({route, navigation}: any) {
   const [place, setPlace] = useState('찾아보기 버튼을 눌러주세요.');
 
   const [placeAddress, setPlaceAddress] = useState('');
+
+  const [placeTel, setPlaceTel] = useState('');
 
   //장소 검색어
   const [placeKeyword, setPlaceKeyword] = useState('');
@@ -69,8 +77,16 @@ function ReceiptUploadPage({route, navigation}: any) {
   const [totalPriceValidationFlag, setTotalPriceValidationFlag] =
     useState(true);
 
-  //더미데이터
+  const [itemData, setItemData] = useState([
+    {
+      receipt_id: '',
+      name: '',
+      quantity: '',
+      price: '',
+    },
+  ]);
 
+  //아이템데이터
   const [data, setData] = useState([
     {
       id: '1',
@@ -99,6 +115,8 @@ function ReceiptUploadPage({route, navigation}: any) {
 
   const [payTime, setPayTime] = useState(new Date());
 
+  const [payDateForRequest, setPayDateForRequest] = useState('');
+
   const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState<selectDateType>({});
@@ -109,19 +127,47 @@ function ReceiptUploadPage({route, navigation}: any) {
 
   const [uploadValidation, setUploadValidation] = useState(false);
   const checkValidation = () => {
-    /*schedule_id : ,
+    /*
         payDate,
         total_price:totalPrice,*/
 
     if (placeAddress === '') {
       console.log('정보 다시 입력');
     } else if (totalPrice === '') {
+      console.log('정보 다시 입력');
     } else if (!totalPriceValidationFlag) {
+      console.log('정보 다시 입력');
     } else if (payDate === '') {
+      console.log('정보 다시 입력');
+    } else if (category.length > 10) {
+      console.log('정보 다시 입력');
     } else {
       console.log('check validation pay date is ', payDate);
       console.log('check validation pay time is ', payTime);
-      setUploadValidation(true);
+
+      uploadReceipt(
+        payDate.substring(0, payDate.indexOf('-')) +
+          payDate.substring(
+            payDate.indexOf('-') + 1,
+            payDate.indexOf('-') + 3,
+          ) +
+          payDate.substring(
+            payDate.lastIndexOf('-') + 1,
+            payDate.lastIndexOf('-') + 3,
+          ) +
+          payTime
+            .toISOString()
+            .substring(
+              payTime.toISOString().indexOf('T') + 1,
+              payTime.toISOString().indexOf('T') + 3,
+            ) +
+          payTime
+            .toISOString()
+            .substring(
+              payTime.toISOString().indexOf(':') + 1,
+              payTime.toISOString().indexOf(':') + 3,
+            ),
+      );
     }
     //주소 날짜시간 가격
   };
@@ -168,23 +214,26 @@ function ReceiptUploadPage({route, navigation}: any) {
     setTotalPriceValidationFlag(false);
     setData([
       {
-        id: emptyInputNumber.toString(),
+        id: (emptyInputNumber + 1).toString(),
         name: '',
         quantity: '',
         price: '',
       },
       ...data,
     ]);
+    setItemData([]);
   };
 
   //결제항목 삭제 함수
   const deleteItem = (id: string) => {
     setData(data.filter(item => item.id !== id));
+    setItemData([]);
   };
 
   //결제항목 생략 함수
   const passFillingItem = () => {
     setData([]);
+    setItemData([]);
     setItemFlag(false);
     setTotalPriceValidationFlag(true);
   };
@@ -220,7 +269,7 @@ function ReceiptUploadPage({route, navigation}: any) {
     setPayDate(date);
   };
 
-  const uploadReceipt = async () => {
+  const uploadReceipt = async (payDateParam: string) => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
       const headers = {
@@ -228,13 +277,15 @@ function ReceiptUploadPage({route, navigation}: any) {
       };
 
       const body = {
-        /*schedule_id : ,
-        poster_id : userId,
-        payDate,
-        total_price:totalPrice,
-        memo:memo,
-        place:place,
-        address:placeAddress,*/
+        schedule_id: scheduleId,
+        poster_id: userId,
+        payDate: payDateParam,
+        total_price: totalPrice,
+        memo: memo,
+        place: place,
+        address: placeAddress,
+        category: category,
+        tel: placeTel,
       };
       const response = await axiosInstance.post(
         `http://146.56.190.78/receipts`,
@@ -245,31 +296,46 @@ function ReceiptUploadPage({route, navigation}: any) {
       );
 
       console.log('upload receipt result : ', response.data);
+      if (itemFlag) {
+        uploadItems(response.data.id);
+      } else {
+        navigation.navigate('HomePage');
+      }
     } catch (err: AxiosError | any) {
       console.log(err);
     }
   };
 
-  const uploadItems = async () => {
+  const uploadItems = async (receiptId: string) => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const body = {};
-      /*{[receipt_id, quantity, 
-price,
-name]} */
+      const items: itemData[] = [];
+
+      data.filter(item =>
+        itemData.push({
+          receipt_id: receiptId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+        }),
+      );
+
+      console.log('upload item is ', itemData);
+
       const response = await axiosInstance.post(
         `http://146.56.190.78/items/many`,
-        body,
+        itemData,
         {
           headers,
         },
       );
 
-      console.log('upload receipt result : ', response.data);
+      console.log('upload receipt items result : ', response.data);
+      navigation.navigate('HomePage');
     } catch (err: AxiosError | any) {
       console.log(err);
     }
@@ -478,6 +544,8 @@ name]} */
                               onPress={() => {
                                 setPlace(item.place_name);
                                 setPlaceAddress(item.road_address_name);
+                                setCategory(item.category_group_name);
+                                setPlaceTel(item.phone);
                                 drawMap(item.road_address_name);
                                 setPlaceModalVisible(false);
                               }}>
@@ -830,6 +898,7 @@ name]} */
               console.log('pay date is ', payDate);
               console.log('pay time is', payTime);
               console.log('memo is ', memo);
+              checkValidation();
             }}>
             <Text style={styles.uploadButtonText}>등록하기</Text>
           </Pressable>
