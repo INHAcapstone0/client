@@ -111,11 +111,11 @@ function RegisterAccountPage({navigation}: any) {
           //리다이렉션 시키기
           redirectToOpenbanking();
         }}>
-        <Text>새 계좌 등록하기</Text>
+        <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
       </Pressable>
       <Pressable
         onPress={() => {
-          //리다이렉션 시키기
+          //토큰 발급 받기
           getToken();
         }}>
         <Text>인증 완료 후 토큰 발급받기</Text>
@@ -132,6 +132,12 @@ const styles = StyleSheet.create({
     aligntems: 'center',
     backgroundColor: '#21B8CD',
     borderRadius: 5,
+  },
+  addButtonText: {
+    color: 'white',
+    fontFamily: 'Roboto',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 export default RegisterAccountPage;

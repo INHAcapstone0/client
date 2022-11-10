@@ -107,7 +107,7 @@ function SelectReceiptPage({navigation, route}: any) {
 
       setShowSpinner(true);
       const response = await axiosInstance.post(
-        'http://146.56.190.78/receipts/test',
+        'http://146.56.190.78/receipts/parse',
         data,
         {
           headers: {
@@ -119,7 +119,7 @@ function SelectReceiptPage({navigation, route}: any) {
       console.log('response.data.data', response.data.data);
       navigation.navigate('ReceiptResultPage', {
         data: response.data.data,
-        scheduleId: route.parms.scheduleId,
+        scheduleId: route.params.scheduleId,
       });
       // navigation.reset({
       //   routes: [
