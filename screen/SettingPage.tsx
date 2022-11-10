@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
@@ -13,21 +13,11 @@ import axiosInstance from '../utils/interceptor';
 
 function SettingPage({navigation}: any) {
   const dispatch = useAppDispatch();
-  const [accessToken, setAccessToken] = useState<string | null>('');
   const id = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
     console.log('id', id);
   }, [id]);
-
-  useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
 
   const pressNotificationSetting = () => {
     navigation.navigate('NotificationSettingPage');
@@ -41,18 +31,19 @@ function SettingPage({navigation}: any) {
   };
   const [modalVisible, setModalVisible] = useState(false);
   const signOut = async () => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
     console.log('accessToken:', accessToken);
     try {
-      const result = await axiosInstance.post(
-        'http://146.56.190.78/auth/logout',
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log('/auth/logout', result);
+      // const result = await axiosInstance.post(
+      //   'http://146.56.190.78/auth/logout',
+      //   null,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   },
+      // );
+      // console.log('/auth/logout', result);
       EncryptedStorage.removeItem('refreshToken');
       EncryptedStorage.removeItem('accessToken');
       AsyncStorage.removeItem('fcmToken');

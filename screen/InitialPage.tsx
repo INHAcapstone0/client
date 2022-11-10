@@ -64,10 +64,11 @@ function InitialPage({navigation}: any) {
             title={'로그인'}
             onPress={() => navigation.navigate('SignInPage')}
           />
-          {/* <CustomButton
-            title={'정산'}
-            onPress={() => navigation.navigate('CalculatePage')}
-          /> */}
+          <Text style={styles.text}>비밀번호를 잊으셨나요?</Text>
+          <CustomButton
+            title={'비밀번호 찾기'}
+            onPress={() => navigation.navigate('FindPassWordPage')}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#3E382F',
+    // color: 'black',
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 90,

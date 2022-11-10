@@ -25,7 +25,7 @@ import BottomSheet, {
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
-import ScheduleCard from '../components/ScheduleCard';
+import AccountSpendingCard from '../components/AccountSpendingCard';
 import BottomComponent from '../components/BottomComponent';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -41,10 +41,13 @@ import {any, string} from 'prop-types';
 import axiosInstance from '../utils/interceptor';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-function ExpenseHistoryPage({route, navigation}: any) {
+function AccountHistoryPage({route, navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
-  const saveRoute = useState(route);
-  const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
+  const {finNum, startAt, endAt, name} = useSelector(
+    (state: RootState) => state.persist.account,
+  );
+  // const saveRoute = useState(route);
+  const [scheduleId, setScheduleId] = useState(0);
   const [scheduleInfo, setScheduleInfo] = useState<{
     name: string;
     startAt: string;
@@ -68,31 +71,62 @@ function ExpenseHistoryPage({route, navigation}: any) {
   const [routes, setRoutes] = useState<{key: string; title: string}[]>([]);
 
   const [totalPrice, setTotalPrice] = useState('0');
-
-  const renderScene = ({route}: any) => {
-    return (
-      <View style={styles.receiptSection}>
-        <ScrollView>
-          {receiptsInfo.map((item: any) => {
-            if (item != null) {
-              return (
-                <ReceiptCard
-                  key={item.id}
-                  item={item}
-                  route={navigation}
-                  category={route.key}
-                  navigation={navigation}
-                />
-              );
-            }
-          })}
-        </ScrollView>
-      </View>
-    );
-  };
   const layout = useWindowDimensions();
 
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    getAllAccountTransfer();
+  });
+
+  const getAllAccountTransfer = async () => {
+    try {
+      const params = {
+        status: '승인',
+      };
+      // const headers = {
+      //   Authorization: `Bearer ${accessToken}`,
+      //   bank-authorization:`Bearer ${bankAccessToken}`
+      // };
+
+      const accessTokenData = await EncryptedStorage.getItem('accessToken');
+      const bankAccessTokenData = await EncryptedStorage.getItem(
+        'accessTokenToBank',
+      );
+      const bankRefreshTokenData = await EncryptedStorage.getItem(
+        'refreshTokenToBank',
+      );
+
+      console.log('accessToken', accessTokenData);
+      console.log('bankAccessToken', bankAccessTokenData);
+      console.log('finNum', finNum);
+      console.log('startAt', startAt);
+      console.log('endAt', endAt);
+
+      // const startDate = route.parms.dateStart.toString().replace(/\-/g, '');
+      // const endDate = route.params.dateEnd.replace(/\-/g, '');
+
+      // console.log();
+
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${startAt}&to_date=${endAt}`,
+        {
+          headers: {
+            'bank-authorization': `Bearer ${bankAccessTokenData}`,
+            Authorization: `Bearer ${accessTokenData}`,
+          },
+        },
+      );
+      console.log('response', response);
+      // setInfo(response.data.res_list);
+      // setErrFlag(false);
+    } catch (err: AxiosError | any) {
+      console.log('err', err.response);
+      if (err.response.status === 404) {
+        setErrFlag(true);
+      }
+    }
+  };
 
   const getScheduleInfo = async () => {
     try {
@@ -141,6 +175,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
           },
         );
         setReceiptsInfo(response.data);
+        console.log('response.data', response.data);
         return response.data;
       } catch (err: AxiosError | any) {
         console.log(err);
@@ -190,26 +225,26 @@ function ExpenseHistoryPage({route, navigation}: any) {
     />
   );
 
-  useEffect(() => {
-    getScheduleInfo();
-    getReceiptsInfo('전체')
-      .then(receipts => {
-        var stores: string[] = [];
-        receipts.map((item: {category: string}) => {
-          if (!categoryList.includes(item.category)) {
-            categoryList.push(item.category);
-          }
-        });
-        categoryList.map((item: string) => {
-          routes.push({key: item, title: item});
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+  // useEffect(() => {
+  //   getScheduleInfo();
+  //   getReceiptsInfo('전체')
+  //     .then(receipts => {
+  //       var stores: string[] = [];
+  //       receipts.map((item: {category: string}) => {
+  //         if (!categoryList.includes(item.category)) {
+  //           categoryList.push(item.category);
+  //         }
+  //       });
+  //       categoryList.map((item: string) => {
+  //         routes.push({key: item, title: item});
+  //       });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // }, []);
 
-  if (errFlag) {
+  if (errFlag === false) {
     //등록된 영수증이 0개일 경우
     return (
       <View style={styles.errScreen}>
@@ -225,30 +260,35 @@ function ExpenseHistoryPage({route, navigation}: any) {
             <Text style={styles.errMsg}>지출 내역이 없습니다.</Text>
           </View>
         </ScrollView>
-        <View style={styles.footer}>
-          <View>
-            <Text style={styles.scheduleTotalPrice}>
-              총 지출 금액 : {totalPrice} 원
-            </Text>
-            <Text style={styles.scheduleDate}>
-              {scheduleInfo.startAt.substring(0, 10)} ~{' '}
-              {scheduleInfo.endAt.substring(0, 10)}
-            </Text>
-          </View>
-          <Image
-            style={styles.footerImg}
-            source={require('../resources/icons/ExpenseHistory.png')}
-          />
-        </View>
       </View>
     );
   } else {
     return (
       <View style={{flex: 1}}>
         <View style={styles.header}>
-          <Text style={styles.scheduleName}>{scheduleInfo.name}</Text>
+          <Text style={styles.scheduleName}>{name}</Text>
         </View>
-        <TabView
+
+        <View style={styles.receiptSection}>
+          <ScrollView>
+            {receiptsInfo.map((item: any) => {
+              if (item != null) {
+                return (
+                  <AccountSpendingCard
+                    key={item.id}
+                    item={item}
+                    // route={route}
+                    scheduleId={route.params.scheduleId}
+                    // category={route.key}
+                    navigation={navigation}
+                  />
+                );
+              }
+            })}
+          </ScrollView>
+        </View>
+
+        {/* <TabView
           navigationState={{
             index: index,
             routes: routes,
@@ -257,8 +297,8 @@ function ExpenseHistoryPage({route, navigation}: any) {
           onIndexChange={setIndex}
           initialLayout={{width: layout.width}}
           renderTabBar={renderTabBar}
-        />
-        <View style={styles.footer}>
+        /> */}
+        {/* <View style={styles.footer}>
           <View>
             <Text style={styles.scheduleTotalPrice}>
               총 지출 금액 : {totalPrice} 원
@@ -272,7 +312,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
             style={styles.footerImg}
             source={require('../resources/icons/ExpenseHistory.png')}
           />
-        </View>
+        </View> */}
       </View>
     );
   }
@@ -383,4 +423,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'yellow', //'#21B8CD',
   },
 });
-export default ExpenseHistoryPage;
+export default AccountHistoryPage;

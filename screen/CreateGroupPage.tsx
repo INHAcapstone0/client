@@ -111,7 +111,11 @@ function CreateGroupPage({navigation}: any) {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView
+      style={{
+        backgroundColor: 'white',
+        height: Dimensions.get('window').height,
+      }}>
       <ScrollView style={styles.groupCreateWrapper}>
         <AlertNotificationRoot
           colors={[
@@ -185,7 +189,7 @@ function CreateGroupPage({navigation}: any) {
 const styles = StyleSheet.create({
   groupCreateWrapper: {
     backgroundColor: 'white',
-    height: Dimensions.get('window').height,
+    // height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     padding: 20,
   },
@@ -233,7 +237,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   nextButton: {
-    marginTop: Dimensions.get('window').height / 2,
+    marginTop: Dimensions.get('window').height / 3,
   },
 });
 export default CreateGroupPage;
