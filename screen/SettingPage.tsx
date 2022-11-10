@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
