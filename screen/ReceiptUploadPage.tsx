@@ -266,6 +266,7 @@ function ReceiptUploadPage({route, navigation}: any) {
 
     setPayDate(date);
   };
+
   const uploadReceipt = async (payDateParam: string) => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
