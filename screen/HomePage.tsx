@@ -44,9 +44,11 @@ function HomePage({navigation}: any) {
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
+
   useEffect(() => {
     getAllSchedules();
   }, [infoNumber]);
+
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();

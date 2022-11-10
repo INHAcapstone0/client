@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Linking,
   Button,
   Alert,
+  AppState,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {userActions} from '../slices/User';
@@ -21,10 +22,18 @@ import Modal from 'react-native-modal/dist/modal';
 import Hyperlink from 'react-native-hyperlink';
 import axiosInstance from '../utils/interceptor';
 
+export const enum USER_APP_STATE {
+  active = 'active', // 앱 안에서 사용중인 경우
+  inactive = 'inactive', // [IOS] 앱 안에서 벗어난 경우
+  background = 'background', // 앱 안에서 다른곳으로 벗어난 경우
+}
+
 function RegisterAccountPage({navigation}: any) {
   const dispatch = useAppDispatch();
   //액세스토큰
   const id = useSelector((state: RootState) => state.persist.user.id);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const OPENBANK_CALLBACK_URL_1 = 'http://146.56.190.78/extra/send';
   const OPENBANK_CLIENT_ID = '141f9981-d313-400a-991d-bd7e8fa5392c';
   const OPENBANK_STATE_RANDSTR = 'nananananananananananananananana';
@@ -39,6 +48,7 @@ function RegisterAccountPage({navigation}: any) {
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
   };
+
 
   const getTokenForOpenbanking = async () => {};
 
@@ -66,10 +76,29 @@ function RegisterAccountPage({navigation}: any) {
       console.log('err.response.msg', err.response);
     }
   };
+      console.log('token is ', response.data);
+    } catch (err: any) {
+      console.log('token error is ', err);
+    }
+  };
+
+  const fn_handleAppStateChange = (nextAppState: any) => {
+    if (
+      (appState.current === USER_APP_STATE.inactive ||
+        appState.current === USER_APP_STATE.background) &&
+      nextAppState === USER_APP_STATE.active
+    ) {
+      console.log('앱으로 다시 돌아오는 경우 foreground');
+      setTimeout(() => getToken(), 1000);
+    }
+    appState.current = nextAppState; // 변경된 상태를 바꿔줌.
+    setAppStateVisible(appState.current);
+  };
 
   return (
     <View>
       <Pressable
+        style={styles.addButton}
         onPress={() => {
           //리다이렉션 시키기
           redirectToOpenbanking();
@@ -88,13 +117,13 @@ function RegisterAccountPage({navigation}: any) {
 }
 
 const styles = StyleSheet.create({
-  hyperlinkStyle: {
-    fontSize: 16,
-    color: '#505050',
-  },
-  contentStyle: {
-    fontSize: 18,
-    color: '#111111',
+  addButton: {
+    width: Dimensions.get('window').width * 0.9,
+    height: 50,
+    justifyContent: 'center',
+    aligntems: 'center',
+    backgroundColor: '#21B8CD',
+    borderRadius: 5,
   },
 });
 export default RegisterAccountPage;
