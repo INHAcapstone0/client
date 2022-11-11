@@ -65,7 +65,6 @@ function RegisterAccountPage({navigation}: any) {
 
   const getToken = async () => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
-    console.log('accessToken', accessToken);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -85,7 +84,6 @@ function RegisterAccountPage({navigation}: any) {
         'refreshTokenToBank',
         response.data.refresh_token,
       );
-      console.log('response.data', response.data);
       getAccountInfo();
     } catch (err: any) {
       console.log('err.response.msg', err.response);
@@ -97,7 +95,6 @@ function RegisterAccountPage({navigation}: any) {
     const accessTokenToBank = await EncryptedStorage.getItem(
       'accessTokenToBank',
     );
-    console.log('accessToken', accessToken);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -112,20 +109,16 @@ function RegisterAccountPage({navigation}: any) {
       );
 
       setBankInfo(response.data.res_list);
-      console.log(response.data.res_list);
     } catch (err: any) {
       console.log('err.response.msg', err.response);
     }
   };
 
   const deleteAccount = async () => {
-    console.log('delete account', selectedFinNum);
-
     const accessToken = await EncryptedStorage.getItem('accessToken');
     const accessTokenToBank = await EncryptedStorage.getItem(
       'accessTokenToBank',
     );
-    console.log('accessToken', accessToken);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -143,7 +136,6 @@ function RegisterAccountPage({navigation}: any) {
           headers,
         },
       );
-      console.log('delete response ', response.data);
     } catch (err: any) {
       console.log('err.response.msg', err.response);
     }
@@ -155,7 +147,6 @@ function RegisterAccountPage({navigation}: any) {
         appState.current === USER_APP_STATE.background) &&
       nextAppState === USER_APP_STATE.active
     ) {
-      console.log('앱으로 다시 돌아오는 경우 foreground');
       setTimeout(() => getToken(), 1000);
     }
     appState.current = nextAppState; // 변경된 상태를 바꿔줌.
