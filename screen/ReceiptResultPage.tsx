@@ -119,23 +119,39 @@ function ReceiptResultPage({route, navigation}: any) {
     setIsPayTimeModalVisible(state);
   };
 
-  const [showToast, setShowToast] = useState(false);
-
   const checkValidation = () => {
     if (placeAddress === '') {
-      console.log('정보 다시 입력');
+      console.log('here1');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제처를 입력해주세요',
+      });
     } else if (totalPrice === '') {
-      console.log('정보 다시 입력');
+      console.log('here2');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제한 금액을 입력해주세요',
+      });
     } else if (!totalPriceValidationFlag) {
-      console.log('정보 다시 입력');
+      console.log('here3');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제 항목과 결제 금액이 일치하지 않습니다',
+      });
     } else if (payDate === '') {
-      console.log('정보 다시 입력');
+      console.log('here4');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제 날짜를 선택해주세요',
+      });
     } else if (category.length > 10) {
-      console.log('정보 다시 입력');
+      console.log('here5');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제처 구분을 선택해주세요',
+      });
     } else {
-      console.log('check validation pay date is ', payDate);
-      console.log('check validation pay time is ', payTime);
-
+      console.log('here6');
       uploadReceipt(
         payDate.substring(0, payDate.indexOf('-')) +
           payDate.substring(
@@ -219,7 +235,6 @@ function ReceiptResultPage({route, navigation}: any) {
     setItemFlag(true);
 
     setTotalPriceValidationFlag(false);
-    console.log('addItemInput is ', item);
     setData([
       {
         id: item.name,
@@ -274,6 +289,14 @@ function ReceiptResultPage({route, navigation}: any) {
     setPayDate(date);
   };
 
+  const makeToast = () => {
+    console.log('make toast');
+    Toast.show({
+      type: ALERT_TYPE.WARNING,
+      textBody: '결제 항목과 결제 금액이 일치하지 않습니다',
+    });
+  };
+
   const uploadReceipt = async (payDateParam: string) => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
@@ -300,7 +323,6 @@ function ReceiptResultPage({route, navigation}: any) {
         },
       );
 
-      console.log('upload receipt result : ', response.data);
       if (itemFlag) {
         uploadItems(response.data.id);
       } else {
@@ -333,8 +355,6 @@ function ReceiptResultPage({route, navigation}: any) {
         }),
       );
 
-      console.log('upload item is ', items);
-
       const response = await axiosInstance.post(
         `http://146.56.190.78/items/many`,
         items,
@@ -342,8 +362,6 @@ function ReceiptResultPage({route, navigation}: any) {
           headers,
         },
       );
-
-      console.log('upload receipt items result : ', response.data);
 
       uploadImage(response.data.id);
     } catch (err: AxiosError | any) {
@@ -370,8 +388,6 @@ function ReceiptResultPage({route, navigation}: any) {
           headers,
         },
       );
-
-      console.log('upload receipt image result : ', response.data);
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         textBody: '지출정보 등록이 완료되었습니다',
@@ -393,7 +409,6 @@ function ReceiptResultPage({route, navigation}: any) {
   };
 
   const loadReceiptData = () => {
-    console.log('route.params.data.payDate', route.params.data.payDate);
     setItemFlag(true);
     let arr: any = [];
     let receiptTotalPrice = 0;
@@ -409,10 +424,8 @@ function ReceiptResultPage({route, navigation}: any) {
     });
     setData(arr);
     if (receiptTotalPrice === route.params.data.totalPrice) {
-      console.log('true');
       setTotalPriceValidationFlag(true);
     } else {
-      console.log('false', receiptTotalPrice);
       setTotalPriceValidationFlag(false);
     }
     setTotalPrice(route.params.data.totalPrice.toString());
@@ -448,7 +461,6 @@ function ReceiptResultPage({route, navigation}: any) {
     if (data.length === 0 && itemFlag) {
       addEmptyInput();
     }
-    console.log('useEffect data is ', data);
   }, [data]);
 
   useEffect(() => {
@@ -457,561 +469,609 @@ function ReceiptResultPage({route, navigation}: any) {
 
   return (
     <View style={styles.window}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>지출정보 등록</Text>
-      </View>
-      <ScrollView>
-        <View style={styles.itemSection}>
-          <Text style={styles.itemTitle}>
-            결제한 사람<Text style={styles.redStar}> *</Text>
-          </Text>
-          <View style={styles.itemContainer}>
-            <Text style={styles.itemContent}>{userName}</Text>
-          </View>
+      <AlertNotificationRoot
+        colors={[
+          {
+            label: '',
+            card: '#e5e8e8',
+            overlay: '',
+            success: '',
+            danger: '',
+            warning: '',
+          },
+          {
+            label: 'gray',
+            card: 'gray',
+            overlay: 'gray',
+            success: 'gray',
+            danger: 'gray',
+            warning: 'gray',
+          },
+        ]}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>지출정보 등록</Text>
         </View>
-        <View style={styles.borderLine} />
-        <View style={styles.itemSection}>
-          <View style={styles.itemTitleWithButton}>
-            <Text style={styles.itemTitle}>결제 항목</Text>
+        <ScrollView>
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <Text style={styles.itemTitle}>
+                결제한 사람<Text style={styles.redStar}> *</Text>
+              </Text>
+              <View style={styles.itemContainer}>
+                <Text style={styles.itemContent}>{userName}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.borderContainer}>
+            <View style={styles.borderLine} />
+          </View>
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <View style={styles.itemTitleWithButton}>
+                <Text style={styles.itemTitle}>결제 항목</Text>
+                <Pressable
+                  onPress={() => {
+                    addEmptyInput();
+                  }}
+                  style={styles.addButton}>
+                  <Text style={styles.addButtonText}>추가하기</Text>
+                </Pressable>
+              </View>
+            </View>
+            {data.map((item: any) => {
+              return (
+                <PurchaseItem
+                  key={item.id}
+                  item={item}
+                  deleteItem={deleteItem}
+                />
+              );
+            })}
+            {!itemFlag && (
+              <View style={styles.passFillingItemSection}>
+                <Text style={styles.passFillingItemText}>
+                  결제 항목 입력을 생략하고 있어요!
+                </Text>
+                <Text style={styles.passFillingItemText}>
+                  우측 상단의{' '}
+                  <Text style={styles.passFillingItemButtonText}>추가하기</Text>{' '}
+                  버튼으로
+                </Text>
+                <Text style={styles.passFillingItemText}>
+                  언제든지 항목을 추가할 수 있어요!
+                </Text>
+              </View>
+            )}
             <Pressable
               onPress={() => {
-                addEmptyInput();
-              }}
-              style={styles.addButton}>
-              <Text style={styles.addButtonText}>추가하기</Text>
+                passFillingItem();
+              }}>
+              <View style={styles.itemComponent}>
+                <Text style={styles.passFillingItemButtonText}>
+                  결제 항목 입력을 생략하고 싶어요!
+                </Text>
+              </View>
             </Pressable>
           </View>
-          {data.map((item: any) => {
-            return (
-              <PurchaseItem key={item.id} item={item} deleteItem={deleteItem} />
-            );
-          })}
-          {!itemFlag && (
-            <View style={styles.passFillingItemSection}>
-              <Text style={styles.passFillingItemText}>
-                결제 항목 입력을 생략하고 있어요!
-              </Text>
-              <Text style={styles.passFillingItemText}>
-                우측 상단의{' '}
-                <Text style={styles.passFillingItemButtonText}>추가하기</Text>{' '}
-                버튼으로
-              </Text>
-              <Text style={styles.passFillingItemText}>
-                언제든지 항목을 추가할 수 있어요!
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <Text style={styles.itemTitle}>
+                결제한 금액<Text style={styles.redStar}> *</Text>
               </Text>
             </View>
-          )}
-          <Pressable
-            onPress={() => {
-              passFillingItem();
-            }}>
-            <Text style={styles.passFillingItemButtonText}>
-              결제 항목 입력을 생략하고 싶어요!
-            </Text>
-          </Pressable>
-        </View>
-        <View style={styles.itemSection}>
-          <Text style={styles.itemTitle}>
-            결제한 금액<Text style={styles.redStar}> *</Text>
-          </Text>
-          <View style={styles.itemContainer}>
-            <TextInput
-              onChangeText={text => {
-                setTotalPrice(text);
-              }}
-              onBlur={() => {
-                checkPriceValidation();
-              }}
-              placeholder="숫자만 입력해주세요."
-              style={styles.itemContent}
-              value={totalPrice}
-            />
+            <View style={styles.itemContainer}>
+              <TextInput
+                onChangeText={text => {
+                  setTotalPrice(text);
+                }}
+                onBlur={() => {
+                  checkPriceValidation();
+                }}
+                placeholder="숫자만 입력해주세요."
+                style={styles.itemContent}
+                value={totalPrice}
+              />
+            </View>
+            {!totalPriceValidationFlag && (
+              <Text style={styles.totalPriceValidationError}>
+                결제한 금액과 결제 항목들이 일치하지 않습니다.
+              </Text>
+            )}
           </View>
-          {!totalPriceValidationFlag && (
-            <Text style={styles.totalPriceValidationError}>
-              결제한 금액과 결제 항목들이 일치하지 않습니다.
-            </Text>
-          )}
-        </View>
-        <View style={styles.borderLine} />
-        <Calendar
-          style={styles.calendar}
-          markedDates={selectedDate}
-          theme={{
-            selectedDayBackgroundColor: '#21B8CD',
-            arrowColor: '#21B8CD',
-            dotColor: '#21B8CD',
-            todayTextColor: 'black',
-          }}
-          onDayPress={day => {
-            console.log(day.dateString);
-            addSelectedDate(day.dateString);
-          }}
-        />
-        <View style={{margin: 10}}>
-          <Button
-            color="#21B8CD"
-            title="결제시각 선택하기"
-            onPress={() => togglePayTimeModal(true)}
-          />
-          <DatePicker
-            modal
-            title={null}
-            mode={'time'}
-            open={isPayTimeModalVisible}
-            date={payTime}
-            confirmText={'선택'}
-            cancelText={'취소'}
-            onConfirm={date => {
-              togglePayTimeModal(false);
-              setPayTime(date);
+          <View style={styles.borderContainer}>
+            <View style={styles.borderLine} />
+          </View>
+          <Calendar
+            style={styles.calendar}
+            markedDates={selectedDate}
+            theme={{
+              selectedDayBackgroundColor: '#21B8CD',
+              arrowColor: '#21B8CD',
+              dotColor: '#21B8CD',
+              todayTextColor: 'black',
             }}
-            onCancel={() => {
-              togglePayTimeModal(false);
+            onDayPress={day => {
+              addSelectedDate(day.dateString);
             }}
           />
-        </View>
-        <View style={styles.borderLine} />
-        <View style={styles.itemSection}>
-          <View style={styles.itemTitleWithButton}>
-            <Text style={styles.itemTitle}>
-              결제처<Text style={styles.redStar}> *</Text>
-            </Text>
-            <Pressable
-              onPress={() => setPlaceModalVisible(true)}
-              style={styles.addButton}>
-              <Text style={styles.addButtonText}>찾아보기</Text>
-            </Pressable>
-          </View>
-          <View style={styles.itemContainer}>
-            <Text style={styles.itemContent}>{place}</Text>
-          </View>
-          <View style={styles.webviewContainer}>
-            <WebView
-              ref={mapViewRef}
-              source={{uri: 'http://146.56.190.78/webview/'}}
-              style={styles.webview}
+          <View style={{margin: 10}}>
+            <Button
+              color="#21B8CD"
+              title="결제시각 선택하기"
+              onPress={() => togglePayTimeModal(true)}
+            />
+            <DatePicker
+              modal
+              title={null}
+              mode={'time'}
+              open={isPayTimeModalVisible}
+              date={payTime}
+              confirmText={'선택'}
+              cancelText={'취소'}
+              onConfirm={date => {
+                togglePayTimeModal(false);
+                setPayTime(date);
+              }}
+              onCancel={() => {
+                togglePayTimeModal(false);
+              }}
             />
           </View>
-        </View>
-        <Modal isVisible={placeModalVisible}>
-          <View style={styles.centeredView}>
-            <View style={styles.placeModalView}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalHeaderText}>결제처 찾기</Text>
+          <View style={styles.borderContainer}>
+            <View style={styles.borderLine} />
+          </View>
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <View style={styles.itemTitleWithButton}>
+                <Text style={styles.itemTitle}>
+                  결제처<Text style={styles.redStar}> *</Text>
+                </Text>
+                <Pressable
+                  onPress={() => setPlaceModalVisible(true)}
+                  style={styles.addButton}>
+                  <Text style={styles.addButtonText}>찾아보기</Text>
+                </Pressable>
               </View>
-              <View style={styles.placeModalBody}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <TextInput
-                    style={{
-                      borderBottomWidth: 1,
-                      width: Dimensions.get('window').width * 0.7,
-                      height: 40,
-                    }}
-                    onChangeText={text => {
-                      setPlaceKeyword(text);
-                    }}
-                    onSubmitEditing={() => {
-                      searchPlace(placeKeyword);
-                    }}
-                    placeholder="가게 이름을 입력해주세요"
-                    value={placeKeyword}
-                  />
-                  <Pressable
-                    onPress={() => {
-                      searchPlace(placeKeyword);
-                    }}>
-                    <FontAwesomeIcon
-                      icon={faMagnifyingGlass}
-                      size={30}
-                      style={{
-                        color: '#21B8CD',
-                      }}
-                    />
-                  </Pressable>
+            </View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.itemContent}>{place}</Text>
+            </View>
+            <View style={styles.webviewContainer}>
+              <WebView
+                ref={mapViewRef}
+                source={{uri: 'http://146.56.190.78/webview/'}}
+                style={styles.webview}
+              />
+            </View>
+          </View>
+          <Modal isVisible={placeModalVisible}>
+            <View style={styles.centeredView}>
+              <View style={styles.placeModalView}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalHeaderText}>결제처 찾기</Text>
                 </View>
-                <ScrollView style={{}}>
-                  {searchedPlaces.map((item: any) => {
-                    return (
-                      <View key={item.id}>
-                        <View style={{marginTop: 20, marginBottom: 20}}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-between',
-                            }}>
-                            <Text style={styles.placeName}>
-                              {item.place_name}
-                            </Text>
-                            <Pressable
-                              style={styles.placeSelectButton}
-                              onPress={() => {
-                                setPlace(item.place_name);
-                                setPlaceAddress(item.road_address_name);
-                                setCategory(item.category_group_name);
-                                setPlaceTel(item.phone);
-                                drawMap(item.road_address_name);
-                                setPlaceModalVisible(false);
+                <View style={styles.placeModalBody}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <TextInput
+                      style={{
+                        borderBottomWidth: 1,
+                        width: Dimensions.get('window').width * 0.7,
+                        height: 40,
+                      }}
+                      onChangeText={text => {
+                        setPlaceKeyword(text);
+                      }}
+                      onSubmitEditing={() => {
+                        searchPlace(placeKeyword);
+                      }}
+                      placeholder="가게 이름을 입력해주세요"
+                      value={placeKeyword}
+                    />
+                    <Pressable
+                      onPress={() => {
+                        searchPlace(placeKeyword);
+                      }}>
+                      <FontAwesomeIcon
+                        icon={faMagnifyingGlass}
+                        size={30}
+                        style={{
+                          color: '#21B8CD',
+                        }}
+                      />
+                    </Pressable>
+                  </View>
+                  <ScrollView style={{}}>
+                    {searchedPlaces.map((item: any) => {
+                      return (
+                        <View key={item.id}>
+                          <View style={{marginTop: 20, marginBottom: 20}}>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
                               }}>
-                              <Text style={styles.placeSelectButtonText}>
-                                선택하기
+                              <Text style={styles.placeName}>
+                                {item.place_name}
                               </Text>
-                            </Pressable>
+                              <Pressable
+                                style={styles.placeSelectButton}
+                                onPress={() => {
+                                  setPlace(item.place_name);
+                                  setPlaceAddress(item.road_address_name);
+                                  setCategory(item.category_group_name);
+                                  setPlaceTel(item.phone);
+                                  drawMap(item.road_address_name);
+                                  setPlaceModalVisible(false);
+                                }}>
+                                <Text style={styles.placeSelectButtonText}>
+                                  선택하기
+                                </Text>
+                              </Pressable>
+                            </View>
+                            <Text style={styles.roadAddressName}>
+                              {item.road_address_name}
+                            </Text>
+                            <Text style={styles.addressName}>
+                              (지번) {item.address_name}
+                            </Text>
+                            <Text style={styles.phone}>{item.phone}</Text>
                           </View>
-                          <Text style={styles.roadAddressName}>
-                            {item.road_address_name}
-                          </Text>
-                          <Text style={styles.addressName}>
-                            (지번) {item.address_name}
-                          </Text>
-                          <Text style={styles.phone}>{item.phone}</Text>
+                          <View style={styles.borderLineInModal} />
                         </View>
-                        <View style={styles.borderLineInModal} />
-                      </View>
-                    );
-                  })}
-                </ScrollView>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-        <View style={styles.itemSection}>
-          <View style={styles.itemTitleWithButton}>
-            <Text style={styles.itemTitle}>
-              결제처 구분<Text style={styles.redStar}> *</Text>
-            </Text>
-            <Pressable
-              onPress={() => setCategoryModalVisible(true)}
-              style={styles.addButton}>
-              <Text style={styles.addButtonText}>선택하기</Text>
-            </Pressable>
-          </View>
-          <View style={styles.itemContainer}>
-            <Text style={styles.itemContent}>{category}</Text>
-          </View>
-        </View>
-        <Modal isVisible={categoryModalVisible}>
-          <View style={styles.centeredView}>
-            <View style={styles.categoryModalView}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalHeaderText}>결제처 구분</Text>
+          </Modal>
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <View style={styles.itemTitleWithButton}>
+                <Text style={styles.itemTitle}>
+                  결제처 구분<Text style={styles.redStar}> *</Text>
+                </Text>
+                <Pressable
+                  onPress={() => setCategoryModalVisible(true)}
+                  style={styles.addButton}>
+                  <Text style={styles.addButtonText}>선택하기</Text>
+                </Pressable>
               </View>
-              <View style={styles.categoryModalBody}>
-                <View style={styles.categorySection}>
-                  <Pressable
-                    style={
-                      selectedCategory === '대형마트'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('대형마트')}>
-                    <Text
+            </View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.itemContent}>{category}</Text>
+            </View>
+          </View>
+          <Modal isVisible={categoryModalVisible}>
+            <View style={styles.centeredView}>
+              <View style={styles.categoryModalView}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalHeaderText}>결제처 구분</Text>
+                </View>
+                <View style={styles.categoryModalBody}>
+                  <View style={styles.categorySection}>
+                    <Pressable
                       style={
                         selectedCategory === '대형마트'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      대형마트
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '편의점'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('편의점')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('대형마트')}>
+                      <Text
+                        style={
+                          selectedCategory === '대형마트'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        대형마트
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '편의점'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      편의점
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '어린이집, 유치원'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('어린이집, 유치원')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('편의점')}>
+                      <Text
+                        style={
+                          selectedCategory === '편의점'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        편의점
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '어린이집, 유치원'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      어린이집, 유치원
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.categorySection}>
-                  <Pressable
-                    style={
-                      selectedCategory === '학교'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('학교')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('어린이집, 유치원')}>
+                      <Text
+                        style={
+                          selectedCategory === '어린이집, 유치원'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        어린이집, 유치원
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <View style={styles.categorySection}>
+                    <Pressable
                       style={
                         selectedCategory === '학교'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      학교
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '지하철역'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('지하철역')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('학교')}>
+                      <Text
+                        style={
+                          selectedCategory === '학교'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        학교
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '지하철역'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      지하철역
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '문화시설'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('문화시설')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('지하철역')}>
+                      <Text
+                        style={
+                          selectedCategory === '지하철역'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        지하철역
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '문화시설'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      문화시설
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '음식점'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('음식점')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('문화시설')}>
+                      <Text
+                        style={
+                          selectedCategory === '문화시설'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        문화시설
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '음식점'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      음식점
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.categorySection}>
-                  <Pressable
-                    style={
-                      selectedCategory === '주유소, 충전소'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('주유소, 충전소')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('음식점')}>
+                      <Text
+                        style={
+                          selectedCategory === '음식점'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        음식점
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <View style={styles.categorySection}>
+                    <Pressable
                       style={
                         selectedCategory === '주유소, 충전소'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      주유소, 충전소
-                    </Text>
-                  </Pressable>
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('주유소, 충전소')}>
+                      <Text
+                        style={
+                          selectedCategory === '주유소, 충전소'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        주유소, 충전소
+                      </Text>
+                    </Pressable>
 
-                  <Pressable
-                    style={
-                      selectedCategory === '중개업소'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('중개업소')}>
-                    <Text
+                    <Pressable
                       style={
                         selectedCategory === '중개업소'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      중개업소
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '공공기관'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('공공기관')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('중개업소')}>
+                      <Text
+                        style={
+                          selectedCategory === '중개업소'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        중개업소
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '공공기관'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      공공기관
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.categorySection}>
-                  <Pressable
-                    style={
-                      selectedCategory === '학원'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('학원')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('공공기관')}>
+                      <Text
+                        style={
+                          selectedCategory === '공공기관'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        공공기관
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <View style={styles.categorySection}>
+                    <Pressable
                       style={
                         selectedCategory === '학원'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      학원
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '관광명소'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('관광명소')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('학원')}>
+                      <Text
+                        style={
+                          selectedCategory === '학원'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        학원
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '관광명소'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      관광명소
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '숙박'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('숙박')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('관광명소')}>
+                      <Text
+                        style={
+                          selectedCategory === '관광명소'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        관광명소
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '숙박'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      숙박
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '약국'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('약국')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('숙박')}>
+                      <Text
+                        style={
+                          selectedCategory === '숙박'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        숙박
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '약국'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      약국
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={
-                      selectedCategory === '병원'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('병원')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('약국')}>
+                      <Text
+                        style={
+                          selectedCategory === '약국'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        약국
+                      </Text>
+                    </Pressable>
+                    <Pressable
                       style={
                         selectedCategory === '병원'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      병원
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.categorySection}>
-                  <Pressable
-                    style={
-                      selectedCategory === '카페'
-                        ? styles.selectedCategoryButton
-                        : styles.unselectedCategoryButton
-                    }
-                    onPress={() => setSelectedCategory('카페')}>
-                    <Text
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('병원')}>
+                      <Text
+                        style={
+                          selectedCategory === '병원'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        병원
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <View style={styles.categorySection}>
+                    <Pressable
                       style={
                         selectedCategory === '카페'
-                          ? styles.selectedCategoryText
-                          : styles.unselectedCategoryText
-                      }>
-                      카페
-                    </Text>
-                  </Pressable>
+                          ? styles.selectedCategoryButton
+                          : styles.unselectedCategoryButton
+                      }
+                      onPress={() => setSelectedCategory('카페')}>
+                      <Text
+                        style={
+                          selectedCategory === '카페'
+                            ? styles.selectedCategoryText
+                            : styles.unselectedCategoryText
+                        }>
+                        카페
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
+                <Pressable
+                  style={styles.categorySelectButton}
+                  onPress={() => {
+                    if (selectedCategory !== '') {
+                      setCategory(selectedCategory);
+                    }
+                    setCategoryModalVisible(false);
+                  }}>
+                  <Text style={styles.categorySelectButtonText}>확인</Text>
+                </Pressable>
               </View>
-              <Pressable
-                style={styles.categorySelectButton}
-                onPress={() => {
-                  if (selectedCategory !== '') {
-                    setCategory(selectedCategory);
-                  }
-                  setCategoryModalVisible(false);
-                }}>
-                <Text style={styles.categorySelectButtonText}>확인</Text>
-              </Pressable>
+            </View>
+          </Modal>
+          <View style={styles.borderContainer}>
+            <View style={styles.borderLine} />
+          </View>
+          <View style={styles.itemSection}>
+            <View style={styles.itemComponent}>
+              <Text style={styles.itemTitle}>메모</Text>
+            </View>
+            <View style={styles.memoContainer}>
+              <TextInput
+                onChangeText={text => {
+                  setMemo(text);
+                }}
+                placeholder="50자 내로 입력해주세요."
+                style={styles.itemContent}
+                value={memo}
+                maxLength={50}
+                multiline={true}
+              />
             </View>
           </View>
-        </Modal>
-        <View style={styles.borderLine} />
-        <View style={styles.itemSection}>
-          <Text style={styles.itemTitle}>메모</Text>
-          <View style={styles.memoContainer}>
-            <TextInput
-              onChangeText={text => {
-                setMemo(text);
-              }}
-              placeholder="50자 내로 입력해주세요."
-              style={styles.itemContent}
-              value={memo}
-              maxLength={50}
-              multiline={true}
-            />
+          <View style={styles.itemSection}>
+            <Pressable
+              style={styles.uploadButton}
+              onPress={() => {
+                checkValidation();
+              }}>
+              <Text style={styles.uploadButtonText}>등록하기</Text>
+            </Pressable>
+            <Pressable
+              style={styles.uploadButton}
+              onPress={() => {
+                makeToast();
+              }}>
+              <Text style={styles.uploadButtonText}>토스트메세지</Text>
+            </Pressable>
           </View>
-        </View>
-        <View style={styles.itemSection}>
-          <Pressable
-            style={styles.uploadButton}
-            onPress={() => {
-              console.log('등록하기');
-              console.log('pay date is ', payDate);
-              console.log('pay time is', payTime);
-              console.log('memo is ', memo);
-              checkValidation();
-            }}>
-            <Text style={styles.uploadButtonText}>등록하기</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </AlertNotificationRoot>
     </View>
   );
 }
@@ -1041,6 +1101,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
+  borderContainer: {justifyContent: 'center', alignItems: 'center'},
   borderLine: {
     height: 1,
     backgroundColor: '#21B8CD',
@@ -1054,6 +1115,8 @@ const styles = StyleSheet.create({
   itemSection: {
     marginTop: 20,
     marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemTitleWithButton: {
     flexDirection: 'row',
@@ -1082,6 +1145,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'black',
     marginLeft: 10,
+  },
+  itemComponent: {
+    width: Dimensions.get('window').width * 0.9,
   },
   addButton: {
     borderRadius: 8,
