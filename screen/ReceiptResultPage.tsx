@@ -10,42 +10,77 @@ import {
   View,
   ScrollView,
   Dimensions,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  TouchableOpacity,
+  Button,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {WebView} from 'react-native-webview';
 import Modal from 'react-native-modal';
-import ParsingItem from '../components/ParsingItem';
+import PurchaseItem from '../components/PurchaseItem';
+import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import KakaoMap from '../components/KakaoMap';
+import axios, {AxiosError} from 'axios';
+import DatePicker from 'react-native-date-picker';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axiosInstance from '../utils/interceptor';
+import {Calendar} from 'react-native-calendars';
 import {
   ALERT_TYPE,
   Dialog,
   AlertNotificationRoot,
   Toast,
 } from 'react-native-alert-notification';
-import axios, {AxiosError} from 'axios';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import axiosInstance from '../utils/interceptor';
 
-function ReceiptResultPage({navigation, route}: any) {
-  //유저이름
+interface selectDateType {
+  [key: string]: {[key: string]: boolean};
+}
+interface itemData {
+  receipt_id: string;
+  quantity: string;
+  price: string;
+  name: string;
+}
+interface item {
+  id: string;
+  quantity: string;
+  price: string;
+  name: string;
+}
+
+function ReceiptResultPage({route, navigation}: any) {
   const userName = useSelector((state: RootState) => state.persist.user.name);
+
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
-  //카테고리 모달 visible변수
-  const [modalVisible, setModalVisible] = useState(false);
+  const [scheduleId, setScheduleId] = useState(route.params.scheduleId);
 
-  //추가한 빈칸의 수(아이디로 사용)
-  const [emptyInputNumber, setEmptyInputNumber] = useState(0);
+  const [screenShot, setScreenShot] = useState(route.params.screenShot);
+
+  //장소 찾기 모달 visible
+  const [placeModalVisible, setPlaceModalVisible] = useState(false);
+
+  //장소 변수
+  const [place, setPlace] = useState('찾아보기 버튼을 눌러주세요.');
+
+  const [placeAddress, setPlaceAddress] = useState('');
+
+  const [placeTel, setPlaceTel] = useState('');
+
+  //장소 검색어
+  const [placeKeyword, setPlaceKeyword] = useState('');
+
+  //카테고리 선택 모달 visible
+  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
 
   //카테고리 변수
   const [category, setCategory] = useState('선택하기 버튼을 눌러주세요.');
 
   //선택한 카테고리 변수(확인 누르면 이걸 카테고리에 set)
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  //추가한 빈칸의 수(아이디로 사용)
+  const [emptyInputNumber, setEmptyInputNumber] = useState(1);
 
   //결제 항목 생략할지에 관한 변수 true:결제항목입력 false:결제항목생략
   const [itemFlag, setItemFlag] = useState(true);
@@ -54,93 +89,82 @@ function ReceiptResultPage({navigation, route}: any) {
   const [totalPriceValidationFlag, setTotalPriceValidationFlag] =
     useState(true);
 
-  //더미데이터
-  const [data, setData] = useState(route.params.data.items);
-
+  //아이템데이터
+  const [data, setData] = useState<Array<item>>([]);
+  const [searchedPlaces, setSearchedPlaces] = useState([]);
   //결제항목의 이름, 수량, 가격 유효성 변수 / 빈칸이거나 (수량, 가격의 경우)숫자가 아니면 false
   const [itemValidation, setItemValidation] = useState(true);
 
   //사용자가 입력한 결제한 금액
   const [totalPrice, setTotalPrice] = useState('');
 
-  const [showToast, setShowToast] = useState(false);
-
   //메모
   const [memo, setMemo] = useState('');
 
-  useEffect(() => {
-    drawMap(route.params.data.store.addresses);
-  }, []);
+  const [payDate, setPayDate] = useState('');
 
-  const mapViewRef = useRef<WebView>(null);
-  const drawMap = (address: string) => {
-    mapViewRef.current?.postMessage(address);
+  const [isPayDateModalVisible, setIsPayDateModalVisible] = useState(false);
+
+  const togglePayDateModal = () => {
+    setIsPayDateModalVisible(!isPayDateModalVisible);
   };
 
-  useEffect(() => {
-    if (data.length === 0 && itemFlag) {
-      addEmptyInput();
-    }
+  const [payTime, setPayTime] = useState(new Date());
 
-    let total = 0;
-    route.params.data.items.forEach(
-      (item: {price: number}): any => (total += item.price),
-    );
+  const [isPayTimeModalVisible, setIsPayTimeModalVisible] = useState(false);
 
-    setTotalPrice(total.toString());
+  const [selectedDate, setSelectedDate] = useState<selectDateType>({});
 
-    console.log('route.params.data', route.params.data);
-    console.log('route.params.data', route.params.data.items);
-  }, [data]);
+  const togglePayTimeModal = (state: boolean) => {
+    setIsPayTimeModalVisible(state);
+  };
 
-  const uploadReceipt = async () => {
-    try {
-      const accessToken = await EncryptedStorage.getItem('accessToken');
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/receipts`,
-        {
-          schedule_id: route.params.scheduleId,
-          poster_id: userId,
-          payDate:
-            route.params.data.payDate.year +
-            route.params.data.payDate.month +
-            route.params.data.payDate.day +
-            route.params.data.payDate.hour +
-            route.params.data.payDate.minute,
-          total_price: route.params.data.totalPrice,
-          memo: memo,
-          place: route.params.data.store.name,
-          address: route.params.data.store.addresses,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+  const [showToast, setShowToast] = useState(false);
+
+  const checkValidation = () => {
+    if (placeAddress === '') {
+      console.log('정보 다시 입력');
+    } else if (totalPrice === '') {
+      console.log('정보 다시 입력');
+    } else if (!totalPriceValidationFlag) {
+      console.log('정보 다시 입력');
+    } else if (payDate === '') {
+      console.log('정보 다시 입력');
+    } else if (category.length > 10) {
+      console.log('정보 다시 입력');
+    } else {
+      console.log('check validation pay date is ', payDate);
+      console.log('check validation pay time is ', payTime);
+
+      uploadReceipt(
+        payDate.substring(0, payDate.indexOf('-')) +
+          payDate.substring(
+            payDate.indexOf('-') + 1,
+            payDate.indexOf('-') + 3,
+          ) +
+          payDate.substring(
+            payDate.lastIndexOf('-') + 1,
+            payDate.lastIndexOf('-') + 3,
+          ) +
+          payTime
+            .toISOString()
+            .substring(
+              payTime.toISOString().indexOf('T') + 1,
+              payTime.toISOString().indexOf('T') + 3,
+            ) +
+          payTime
+            .toISOString()
+            .substring(
+              payTime.toISOString().indexOf(':') + 1,
+              payTime.toISOString().indexOf(':') + 3,
+            ),
       );
-      console.log(response);
-      Toast.show({
-        type: ALERT_TYPE.SUCCESS,
-        textBody: '지출정보 등록이 완료되었습니다',
-      });
-      moveToHomePage();
-    } catch (err: AxiosError | any) {
-      console.log(err.response);
-      Toast.show({
-        type: ALERT_TYPE.WARNING,
-        textBody: '지출정보 등록이 실패하였습니다',
-      });
     }
-  };
-
-  const moveToHomePage = () => {
-    setTimeout(() => {
-      navigation.navigate('HomePage');
-    }, 3000);
+    //주소 날짜시간 가격
   };
 
   //결제항목과 결제금액 유효성 검사 함수
-  const checkValidation = () => {
+  const checkPriceValidation = () => {
     //결제항목을 입력한 경우에만 검사
     if (itemFlag) {
       data.map((item: any) => {
@@ -173,7 +197,7 @@ function ReceiptResultPage({navigation, route}: any) {
     }
   };
 
-  //결제항목 추가 함수
+  //결제항목 빈칸 추가 함수
   const addEmptyInput = () => {
     setEmptyInputNumber(emptyInputNumber + 1);
     setItemFlag(true);
@@ -181,7 +205,7 @@ function ReceiptResultPage({navigation, route}: any) {
     setTotalPriceValidationFlag(false);
     setData([
       {
-        id: emptyInputNumber.toString(),
+        id: (emptyInputNumber + 1).toString(),
         name: '',
         quantity: '',
         price: '',
@@ -190,9 +214,26 @@ function ReceiptResultPage({navigation, route}: any) {
     ]);
   };
 
+  //파싱된 결제항목 추가 함수
+  const addItemInput = (item: any) => {
+    setItemFlag(true);
+
+    setTotalPriceValidationFlag(false);
+    console.log('addItemInput is ', item);
+    setData([
+      {
+        id: item.name,
+        name: item.name,
+        quantity: item.count + '',
+        price: item.price + '',
+      },
+      ...data,
+    ]);
+  };
+
   //결제항목 삭제 함수
-  const deleteItem = (name: string) => {
-    setData(data.filter((item: any) => item.name !== name));
+  const deleteItem = (id: string) => {
+    setData(data.filter(item => item.id !== id));
   };
 
   //결제항목 생략 함수
@@ -202,184 +243,787 @@ function ReceiptResultPage({navigation, route}: any) {
     setTotalPriceValidationFlag(true);
   };
 
+  const searchPlace = async (keyword: string) => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/extra/kakao?query=${keyword}`,
+        {
+          headers,
+        },
+      );
+      setSearchedPlaces(response.data.documents);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+    }
+  };
+
+  const mapViewRef = useRef<WebView>(null);
+  const drawMap = (address: string) => {
+    mapViewRef.current?.postMessage(address);
+  };
+
+  const addSelectedDate = (date: string) => {
+    const newDate: any = {};
+    newDate[date] = {selected: true};
+    setSelectedDate({...newDate});
+
+    setPayDate(date);
+  };
+
+  const uploadReceipt = async (payDateParam: string) => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const body = {
+        schedule_id: scheduleId,
+        poster_id: userId,
+        payDate: payDateParam,
+        total_price: totalPrice,
+        memo: memo,
+        place: place,
+        address: placeAddress,
+        category: category,
+        tel: placeTel,
+      };
+      const response = await axiosInstance.post(
+        `http://146.56.190.78/receipts`,
+        body,
+        {
+          headers,
+        },
+      );
+
+      console.log('upload receipt result : ', response.data);
+      if (itemFlag) {
+        uploadItems(response.data.id);
+      } else {
+        uploadImage(response.data.id);
+      }
+    } catch (err: AxiosError | any) {
+      console.log(err);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '지출정보 등록에 실패하였습니다',
+      });
+    }
+  };
+
+  const uploadItems = async (receiptId: string) => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const items: itemData[] = [];
+
+      data.filter(item =>
+        items.push({
+          receipt_id: receiptId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+        }),
+      );
+
+      console.log('upload item is ', items);
+
+      const response = await axiosInstance.post(
+        `http://146.56.190.78/items/many`,
+        items,
+        {
+          headers,
+        },
+      );
+
+      console.log('upload receipt items result : ', response.data);
+
+      uploadImage(response.data.id);
+    } catch (err: AxiosError | any) {
+      console.log(err);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '지출정보 등록에 실패하였습니다',
+      });
+    }
+  };
+
+  const uploadImage = async (receiptId: string) => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    try {
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const response = await axiosInstance.patch(
+        `http://146.56.190.78/receipts/img/upload/${receiptId}`,
+        screenShot,
+        {
+          headers,
+        },
+      );
+
+      console.log('upload receipt image result : ', response.data);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        textBody: '지출정보 등록이 완료되었습니다',
+      });
+      moveToHomePage();
+    } catch (err: AxiosError | any) {
+      console.log(err);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '지출정보 등록에 실패하였습니다',
+      });
+    }
+  };
+
+  const moveToHomePage = () => {
+    setTimeout(() => {
+      navigation.navigate('HomePage');
+    }, 3000);
+  };
+
+  const loadReceiptData = () => {
+    console.log('route.params.data.payDate', route.params.data.payDate);
+    setItemFlag(true);
+    let arr: any = [];
+    let receiptTotalPrice = 0;
+    route.params.data.items.forEach((item: any) => {
+      let newItem = {
+        id: item.name,
+        name: item.name,
+        quantity: item.count.toString(),
+        price: item.price.toString(),
+      };
+      receiptTotalPrice += item.price;
+      arr.push(newItem);
+    });
+    setData(arr);
+    if (receiptTotalPrice === route.params.data.totalPrice) {
+      console.log('true');
+      setTotalPriceValidationFlag(true);
+    } else {
+      console.log('false', receiptTotalPrice);
+      setTotalPriceValidationFlag(false);
+    }
+    setTotalPrice(route.params.data.totalPrice.toString());
+    setPlaceTel(route.params.data.store.tel);
+    setPlace(route.params.data.store.name);
+    setPlaceAddress(route.params.data.store.addresses);
+    setPayTime(
+      new Date(
+        route.params.data.payDate.year +
+          '-' +
+          route.params.data.payDate.month +
+          '-' +
+          route.params.data.payDate.day +
+          'T' +
+          route.params.data.payDate.hour +
+          ':' +
+          route.params.data.payDate.minute +
+          ':' +
+          route.params.data.payDate.second,
+      ),
+    );
+    addSelectedDate(
+      route.params.data.payDate.year +
+        '-' +
+        route.params.data.payDate.month +
+        '-' +
+        route.params.data.payDate.day,
+    );
+    setTimeout(() => drawMap(route.params.data.store.addresses), 2000);
+  };
+
+  useEffect(() => {
+    if (data.length === 0 && itemFlag) {
+      addEmptyInput();
+    }
+    console.log('useEffect data is ', data);
+  }, [data]);
+
+  useEffect(() => {
+    loadReceiptData();
+  }, []);
+
   return (
-    <SafeAreaView style={styles.window}>
-      <View style={styles.window}>
-        <AlertNotificationRoot
-          colors={[
-            {
-              label: '',
-              card: '#e5e8e8',
-              overlay: '',
-              success: '',
-              danger: '',
-              warning: '',
-            },
-            {
-              label: 'gray',
-              card: 'gray',
-              overlay: 'gray',
-              success: 'gray',
-              danger: 'gray',
-              warning: 'gray',
-            },
-          ]}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>지출정보 등록</Text>
-          </View>
-          <ScrollView>
-            <View style={styles.itemSection}>
-              <Text style={styles.itemTitle}>
-                결제한 사람<Text style={styles.redStar}> *</Text>
-              </Text>
-              <View style={styles.itemContainer}>
-                <Text style={styles.itemContent}>{userName}</Text>
-              </View>
-            </View>
-            <View style={styles.borderLine} />
-            <View>
-              <View style={styles.itemSectionWithButton}>
-                <Text style={styles.itemTitle}>결제 항목</Text>
-                <Pressable
-                  onPress={() => {
-                    addEmptyInput();
-                  }}
-                  style={styles.addButton}>
-                  <Text style={styles.addButtonText}>추가하기</Text>
-                </Pressable>
-              </View>
-              {data.map((item: any) => {
-                return (
-                  <ParsingItem
-                    key={item.name}
-                    item={item}
-                    deleteItem={deleteItem}
-                  />
-                );
-              })}
-              {!itemFlag && (
-                <View style={styles.passFillingItemSection}>
-                  {/* <Text style={styles.passFillingItemText}>
-                결제 항목 입력을 생략하고 있어요!
-              </Text> */}
-                  <Text style={styles.passFillingItemText}>
-                    우측 상단의{' '}
-                    <Text style={styles.passFillingItemButtonText}>
-                      추가하기
-                    </Text>{' '}
-                    버튼으로
-                  </Text>
-                  <Text style={styles.passFillingItemText}>
-                    언제든지 항목을 추가할 수 있어요!
-                  </Text>
-                </View>
-              )}
-              <Pressable
-                onPress={() => {
-                  passFillingItem();
-                }}>
-                {/* <Text style={styles.passFillingItemButtonText}>
-              결제 항목 입력을 생략하고 싶어요!
-            </Text> */}
-              </Pressable>
-              <View style={styles.itemSection}>
-                <Text style={styles.itemTitle}>
-                  결제한 금액<Text style={styles.redStar}> *</Text>
-                </Text>
-                <View style={styles.itemContainer}>
-                  <TextInput
-                    onChangeText={text => {
-                      setTotalPrice(text);
-                    }}
-                    onBlur={() => {
-                      checkValidation();
-                    }}
-                    placeholder="숫자만 입력해주세요."
-                    style={styles.itemContent}
-                    value={totalPrice}
-                  />
-                </View>
-                {!totalPriceValidationFlag && (
-                  <View>
-                    <Text style={styles.totalPriceValidationError}>
-                      결제한 금액과 결제 항목들이 일치하지 않습니다.
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-            <View style={styles.borderLine} />
-            <View style={styles.itemSectionWithButton}>
-              <Text style={styles.itemTitle}>
-                결제처<Text style={styles.redStar}> *</Text>
-              </Text>
-              {/* <Pressable onPress={() => {}} style={styles.addButton}>
-            <Text style={styles.addButtonText}>찾아보기</Text>
-          </Pressable> */}
-            </View>
-            <View style={styles.itemContainer2}>
-              <Text style={styles.itemContent}>
-                {route.params.data.store.name}
-              </Text>
-            </View>
-            <View style={styles.webviewContainer}>
-              <WebView
-                ref={mapViewRef}
-                source={{uri: 'http://146.56.190.78/webview/'}}
-                style={styles.webview}
-              />
-            </View>
-            <View style={styles.itemSectionWithButton}>
-              <Text style={styles.itemTitle}>
-                결제처 구분<Text style={styles.redStar}> *</Text>
-              </Text>
-              {/* <Pressable
-            onPress={() => setModalVisible(true)}
-            style={styles.addButton}>
-            <Text style={styles.addButtonText}>선택하기</Text>
-          </Pressable> */}
-            </View>
-            <View style={styles.itemContainer3}>
-              <Text style={styles.itemContent}>
-                {route.params.data.store.category}
-              </Text>
-            </View>
-            <View style={styles.borderLine} />
-            <View style={styles.itemSection}>
-              <Text style={styles.itemTitle}>메모</Text>
-              <KeyboardAvoidingView style={styles.memoContainer}>
-                <TextInput
-                  onChangeText={text => {
-                    setMemo(text);
-                  }}
-                  placeholder="50자 내로 입력해주세요."
-                  style={styles.itemContent}
-                  value={memo}
-                  maxLength={50}
-                  multiline={true}
-                />
-              </KeyboardAvoidingView>
-            </View>
-            <View style={styles.itemSection}>
-              <TouchableOpacity activeOpacity={0.8} onPress={uploadReceipt}>
-                <Text style={styles.uploadButtonText}>등록하기</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </AlertNotificationRoot>
+    <View style={styles.window}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>지출정보 등록</Text>
       </View>
-    </SafeAreaView>
+      <ScrollView>
+        <View style={styles.itemSection}>
+          <Text style={styles.itemTitle}>
+            결제한 사람<Text style={styles.redStar}> *</Text>
+          </Text>
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemContent}>{userName}</Text>
+          </View>
+        </View>
+        <View style={styles.borderLine} />
+        <View style={styles.itemSection}>
+          <View style={styles.itemTitleWithButton}>
+            <Text style={styles.itemTitle}>결제 항목</Text>
+            <Pressable
+              onPress={() => {
+                addEmptyInput();
+              }}
+              style={styles.addButton}>
+              <Text style={styles.addButtonText}>추가하기</Text>
+            </Pressable>
+          </View>
+          {data.map((item: any) => {
+            return (
+              <PurchaseItem key={item.id} item={item} deleteItem={deleteItem} />
+            );
+          })}
+          {!itemFlag && (
+            <View style={styles.passFillingItemSection}>
+              <Text style={styles.passFillingItemText}>
+                결제 항목 입력을 생략하고 있어요!
+              </Text>
+              <Text style={styles.passFillingItemText}>
+                우측 상단의{' '}
+                <Text style={styles.passFillingItemButtonText}>추가하기</Text>{' '}
+                버튼으로
+              </Text>
+              <Text style={styles.passFillingItemText}>
+                언제든지 항목을 추가할 수 있어요!
+              </Text>
+            </View>
+          )}
+          <Pressable
+            onPress={() => {
+              passFillingItem();
+            }}>
+            <Text style={styles.passFillingItemButtonText}>
+              결제 항목 입력을 생략하고 싶어요!
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.itemSection}>
+          <Text style={styles.itemTitle}>
+            결제한 금액<Text style={styles.redStar}> *</Text>
+          </Text>
+          <View style={styles.itemContainer}>
+            <TextInput
+              onChangeText={text => {
+                setTotalPrice(text);
+              }}
+              onBlur={() => {
+                checkPriceValidation();
+              }}
+              placeholder="숫자만 입력해주세요."
+              style={styles.itemContent}
+              value={totalPrice}
+            />
+          </View>
+          {!totalPriceValidationFlag && (
+            <Text style={styles.totalPriceValidationError}>
+              결제한 금액과 결제 항목들이 일치하지 않습니다.
+            </Text>
+          )}
+        </View>
+        <View style={styles.borderLine} />
+        <Calendar
+          style={styles.calendar}
+          markedDates={selectedDate}
+          theme={{
+            selectedDayBackgroundColor: '#21B8CD',
+            arrowColor: '#21B8CD',
+            dotColor: '#21B8CD',
+            todayTextColor: 'black',
+          }}
+          onDayPress={day => {
+            console.log(day.dateString);
+            addSelectedDate(day.dateString);
+          }}
+        />
+        <View style={{margin: 10}}>
+          <Button
+            color="#21B8CD"
+            title="결제시각 선택하기"
+            onPress={() => togglePayTimeModal(true)}
+          />
+          <DatePicker
+            modal
+            title={null}
+            mode={'time'}
+            open={isPayTimeModalVisible}
+            date={payTime}
+            confirmText={'선택'}
+            cancelText={'취소'}
+            onConfirm={date => {
+              togglePayTimeModal(false);
+              setPayTime(date);
+            }}
+            onCancel={() => {
+              togglePayTimeModal(false);
+            }}
+          />
+        </View>
+        <View style={styles.borderLine} />
+        <View style={styles.itemSection}>
+          <View style={styles.itemTitleWithButton}>
+            <Text style={styles.itemTitle}>
+              결제처<Text style={styles.redStar}> *</Text>
+            </Text>
+            <Pressable
+              onPress={() => setPlaceModalVisible(true)}
+              style={styles.addButton}>
+              <Text style={styles.addButtonText}>찾아보기</Text>
+            </Pressable>
+          </View>
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemContent}>{place}</Text>
+          </View>
+          <View style={styles.webviewContainer}>
+            <WebView
+              ref={mapViewRef}
+              source={{uri: 'http://146.56.190.78/webview/'}}
+              style={styles.webview}
+            />
+          </View>
+        </View>
+        <Modal isVisible={placeModalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.placeModalView}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalHeaderText}>결제처 찾기</Text>
+              </View>
+              <View style={styles.placeModalBody}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <TextInput
+                    style={{
+                      borderBottomWidth: 1,
+                      width: Dimensions.get('window').width * 0.7,
+                      height: 40,
+                    }}
+                    onChangeText={text => {
+                      setPlaceKeyword(text);
+                    }}
+                    onSubmitEditing={() => {
+                      searchPlace(placeKeyword);
+                    }}
+                    placeholder="가게 이름을 입력해주세요"
+                    value={placeKeyword}
+                  />
+                  <Pressable
+                    onPress={() => {
+                      searchPlace(placeKeyword);
+                    }}>
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      size={30}
+                      style={{
+                        color: '#21B8CD',
+                      }}
+                    />
+                  </Pressable>
+                </View>
+                <ScrollView style={{}}>
+                  {searchedPlaces.map((item: any) => {
+                    return (
+                      <View key={item.id}>
+                        <View style={{marginTop: 20, marginBottom: 20}}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}>
+                            <Text style={styles.placeName}>
+                              {item.place_name}
+                            </Text>
+                            <Pressable
+                              style={styles.placeSelectButton}
+                              onPress={() => {
+                                setPlace(item.place_name);
+                                setPlaceAddress(item.road_address_name);
+                                setCategory(item.category_group_name);
+                                setPlaceTel(item.phone);
+                                drawMap(item.road_address_name);
+                                setPlaceModalVisible(false);
+                              }}>
+                              <Text style={styles.placeSelectButtonText}>
+                                선택하기
+                              </Text>
+                            </Pressable>
+                          </View>
+                          <Text style={styles.roadAddressName}>
+                            {item.road_address_name}
+                          </Text>
+                          <Text style={styles.addressName}>
+                            (지번) {item.address_name}
+                          </Text>
+                          <Text style={styles.phone}>{item.phone}</Text>
+                        </View>
+                        <View style={styles.borderLineInModal} />
+                      </View>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <View style={styles.itemSection}>
+          <View style={styles.itemTitleWithButton}>
+            <Text style={styles.itemTitle}>
+              결제처 구분<Text style={styles.redStar}> *</Text>
+            </Text>
+            <Pressable
+              onPress={() => setCategoryModalVisible(true)}
+              style={styles.addButton}>
+              <Text style={styles.addButtonText}>선택하기</Text>
+            </Pressable>
+          </View>
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemContent}>{category}</Text>
+          </View>
+        </View>
+        <Modal isVisible={categoryModalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.categoryModalView}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalHeaderText}>결제처 구분</Text>
+              </View>
+              <View style={styles.categoryModalBody}>
+                <View style={styles.categorySection}>
+                  <Pressable
+                    style={
+                      selectedCategory === '대형마트'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('대형마트')}>
+                    <Text
+                      style={
+                        selectedCategory === '대형마트'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      대형마트
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '편의점'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('편의점')}>
+                    <Text
+                      style={
+                        selectedCategory === '편의점'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      편의점
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '어린이집, 유치원'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('어린이집, 유치원')}>
+                    <Text
+                      style={
+                        selectedCategory === '어린이집, 유치원'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      어린이집, 유치원
+                    </Text>
+                  </Pressable>
+                </View>
+                <View style={styles.categorySection}>
+                  <Pressable
+                    style={
+                      selectedCategory === '학교'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('학교')}>
+                    <Text
+                      style={
+                        selectedCategory === '학교'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      학교
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '지하철역'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('지하철역')}>
+                    <Text
+                      style={
+                        selectedCategory === '지하철역'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      지하철역
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '문화시설'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('문화시설')}>
+                    <Text
+                      style={
+                        selectedCategory === '문화시설'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      문화시설
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '음식점'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('음식점')}>
+                    <Text
+                      style={
+                        selectedCategory === '음식점'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      음식점
+                    </Text>
+                  </Pressable>
+                </View>
+                <View style={styles.categorySection}>
+                  <Pressable
+                    style={
+                      selectedCategory === '주유소, 충전소'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('주유소, 충전소')}>
+                    <Text
+                      style={
+                        selectedCategory === '주유소, 충전소'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      주유소, 충전소
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={
+                      selectedCategory === '중개업소'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('중개업소')}>
+                    <Text
+                      style={
+                        selectedCategory === '중개업소'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      중개업소
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '공공기관'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('공공기관')}>
+                    <Text
+                      style={
+                        selectedCategory === '공공기관'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      공공기관
+                    </Text>
+                  </Pressable>
+                </View>
+                <View style={styles.categorySection}>
+                  <Pressable
+                    style={
+                      selectedCategory === '학원'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('학원')}>
+                    <Text
+                      style={
+                        selectedCategory === '학원'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      학원
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '관광명소'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('관광명소')}>
+                    <Text
+                      style={
+                        selectedCategory === '관광명소'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      관광명소
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '숙박'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('숙박')}>
+                    <Text
+                      style={
+                        selectedCategory === '숙박'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      숙박
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '약국'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('약국')}>
+                    <Text
+                      style={
+                        selectedCategory === '약국'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      약국
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={
+                      selectedCategory === '병원'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('병원')}>
+                    <Text
+                      style={
+                        selectedCategory === '병원'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      병원
+                    </Text>
+                  </Pressable>
+                </View>
+                <View style={styles.categorySection}>
+                  <Pressable
+                    style={
+                      selectedCategory === '카페'
+                        ? styles.selectedCategoryButton
+                        : styles.unselectedCategoryButton
+                    }
+                    onPress={() => setSelectedCategory('카페')}>
+                    <Text
+                      style={
+                        selectedCategory === '카페'
+                          ? styles.selectedCategoryText
+                          : styles.unselectedCategoryText
+                      }>
+                      카페
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+              <Pressable
+                style={styles.categorySelectButton}
+                onPress={() => {
+                  if (selectedCategory !== '') {
+                    setCategory(selectedCategory);
+                  }
+                  setCategoryModalVisible(false);
+                }}>
+                <Text style={styles.categorySelectButtonText}>확인</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <View style={styles.borderLine} />
+        <View style={styles.itemSection}>
+          <Text style={styles.itemTitle}>메모</Text>
+          <View style={styles.memoContainer}>
+            <TextInput
+              onChangeText={text => {
+                setMemo(text);
+              }}
+              placeholder="50자 내로 입력해주세요."
+              style={styles.itemContent}
+              value={memo}
+              maxLength={50}
+              multiline={true}
+            />
+          </View>
+        </View>
+        <View style={styles.itemSection}>
+          <Pressable
+            style={styles.uploadButton}
+            onPress={() => {
+              console.log('등록하기');
+              console.log('pay date is ', payDate);
+              console.log('pay time is', payTime);
+              console.log('memo is ', memo);
+              checkValidation();
+            }}>
+            <Text style={styles.uploadButtonText}>등록하기</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   webview: {
-    height: 300,
-    width: 300,
+    width: Dimensions.get('window').width * 0.9,
+    height: 195,
+    opacity: 0.99,
   },
   window: {
     backgroundColor: 'white',
-    height: Dimensions.get('window').height,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -401,20 +1045,17 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#21B8CD',
     width: Dimensions.get('window').width * 0.9,
-    marginLeft: 17,
-    marginRight: 17,
+  },
+  borderLineInModal: {
+    height: 1,
+    backgroundColor: '#F0F0F0',
+    width: Dimensions.get('window').width * 0.8,
   },
   itemSection: {
-    marginTop: 30,
-    marginBottom: 30,
-    marginRight: 17,
-    marginLeft: 17,
-  },
-  itemSectionWithButton: {
     marginTop: 20,
     marginBottom: 20,
-    marginRight: 17,
-    marginLeft: 17,
+  },
+  itemTitleWithButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -429,22 +1070,6 @@ const styles = StyleSheet.create({
     height: 44,
     backgroundColor: '#F6F8FA',
     justifyContent: 'center',
-  },
-  itemContainer2: {
-    width: Dimensions.get('window').width * 0.9,
-    height: 44,
-    backgroundColor: '#F6F8FA',
-    justifyContent: 'center',
-    marginLeft: 17,
-    marginBottom: 20,
-  },
-  itemContainer3: {
-    width: Dimensions.get('window').width * 0.9,
-    height: 44,
-    backgroundColor: '#F6F8FA',
-    justifyContent: 'center',
-    marginLeft: 17,
-    marginBottom: 30,
   },
   memoContainer: {
     width: Dimensions.get('window').width * 0.9,
@@ -477,8 +1102,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
   },
-  modalView: {
+  placeModalView: {
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.7,
+    margin: 10,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  categoryModalView: {
     width: Dimensions.get('window').width * 0.8,
+    height: Dimensions.get('window').height * 0.7,
     margin: 10,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -508,18 +1154,48 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  modalBody: {
+  categoryModalBody: {
     marginTop: 5,
     marginBottom: 20,
   },
-  modalCloseButton: {
+  placeModalBody: {
+    height: Dimensions.get('window').height * 0.55,
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  placeName: {
+    color: 'black',
+    fontSize: 12,
+    fontFamily: 'Roboto',
+  },
+  roadAddressName: {
+    color: '#808080',
+    fontSize: 9,
+    fontFamily: 'Roboto',
+  },
+  addressName: {color: '#808080', fontSize: 9, fontFamily: 'Roboto'},
+  phone: {color: '#808080', fontSize: 9, fontFamily: 'Roboto'},
+  placeSelectButton: {
+    width: 55,
+    height: 23,
+    backgroundColor: '#21B8CD',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3,
+  },
+  placeSelectButtonText: {
+    color: 'white',
+    fontFamily: 'Roboto',
+    fontSize: 10,
+  },
+  categorySelectButton: {
     height: 45,
     backgroundColor: '#21B8CD',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
   },
-  modalCloseButtonText: {
+  categorySelectButtonText: {
     color: 'white',
     fontFamily: 'Roboto',
     fontSize: 16,
@@ -596,6 +1272,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 195,
     marginTop: 30,
+  },
+  calendar: {
+    width: '100%',
+    borderColor: 'white',
   },
 });
 export default ReceiptResultPage;
