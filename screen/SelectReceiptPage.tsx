@@ -89,6 +89,8 @@ function SelectReceiptPage({navigation, route}: any) {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       console.log(1);
       const data = new FormData();
+
+      const photo = new FormData();
       console.log(`Bearer ${accessToken}`);
       console.log('uri', screenShot.uri);
       console.log('name', screenShot.fileName);
@@ -97,6 +99,12 @@ function SelectReceiptPage({navigation, route}: any) {
       // data.append('file', screenShot.uri);
 
       data.append('file', {
+        uri: screenShot.uri,
+        name: screenShot.fileName,
+        type: screenShot.type,
+      });
+
+      photo.append('receipt-img', {
         uri: screenShot.uri,
         name: screenShot.fileName,
         type: screenShot.type,
@@ -119,6 +127,7 @@ function SelectReceiptPage({navigation, route}: any) {
       navigation.navigate('ReceiptResultPage', {
         data: response.data.data,
         scheduleId: route.params.scheduleId,
+        screenShot: photo,
       });
       // navigation.reset({
       //   routes: [

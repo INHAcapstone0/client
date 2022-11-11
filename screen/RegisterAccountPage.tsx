@@ -10,9 +10,10 @@ import {
   Button,
   Alert,
   AppState,
+  ScrollView,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/User';
+import {userActions} from '../slices/user';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
@@ -21,6 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal/dist/modal';
 import Hyperlink from 'react-native-hyperlink';
 import axiosInstance from '../utils/interceptor';
+import AccountSettingCard from '../components/AccountSettingCard';
 
 export const enum USER_APP_STATE {
   active = 'active', // 앱 안에서 사용중인 경우
@@ -45,6 +47,65 @@ function RegisterAccountPage({navigation}: any) {
     `state=${OPENBANK_STATE_RANDSTR}` +
     `&client_info=${id}`;
 
+  const dummyData = [
+    {
+      bank: '카카오',
+      name: '카카오뱅크통장',
+      number: '11111-11111-11111',
+      fin_num: '1',
+      money: '10000',
+    },
+    {
+      bank: '하나',
+      name: 'Young하나은행',
+      number: '22222-22222-22222',
+      fin_num: '2',
+      money: '20000',
+    },
+    {
+      bank: '우체국',
+      name: '우체국',
+      number: '33333-33333-33333',
+      fin_num: '3',
+      money: '30000',
+    },
+    {
+      bank: '국민',
+      name: '국민통장',
+      number: '44444-44444-44444',
+      fin_num: '4',
+      money: '40000',
+    },
+    {
+      bank: '우리',
+      name: '우리통장',
+      number: '55555-55555-55555',
+      fin_num: '5',
+      money: '50000',
+    },
+    {
+      bank: '농협',
+      name: '농협통장',
+      number: '66666-66666-66666',
+      fin_num: '6',
+      money: '60000',
+    },
+    {
+      bank: '기업',
+      name: '기업통장',
+      number: '77777-77777-77777',
+      fin_num: '7',
+      money: '70000',
+    },
+    {
+      bank: '신한',
+      name: '신한통장',
+      number: '88888-88888-88888',
+      fin_num: '8',
+      money: '80000',
+    },
+  ];
+
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
   };
@@ -57,9 +118,12 @@ function RegisterAccountPage({navigation}: any) {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get(`http://146.56.190.78/extra/token`, {
-        headers,
-      });
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/extra/token`,
+        {
+          headers,
+        },
+      );
       const accessTokenData = await EncryptedStorage.setItem(
         'accessTokenToBank',
         response.data.access_token,
@@ -87,8 +151,11 @@ function RegisterAccountPage({navigation}: any) {
     setAppStateVisible(appState.current);
   };
 
+  useEffect(() => {
+    AppState.addEventListener('change', fn_handleAppStateChange);
+  });
   return (
-    <View>
+    <ScrollView>
       <Pressable
         style={styles.addButton}
         onPress={() => {
@@ -104,7 +171,10 @@ function RegisterAccountPage({navigation}: any) {
         }}>
         <Text>인증 완료 후 토큰 발급받기</Text>
       </Pressable>
-    </View>
+      {dummyData.map((item: any) => {
+        return <AccountSettingCard key={item.number} item={item} />;
+      })}
+    </ScrollView>
   );
 }
 

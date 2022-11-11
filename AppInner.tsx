@@ -25,7 +25,7 @@ import RegisterAccountPage from './screen/RegisterAccountPage';
 import PreMyPage from './screen/PreMyPage';
 import MyPage from './screen/MyPage';
 import {useAppDispatch} from './store/Store';
-import {userActions} from './slices/User';
+import {userActions} from './slices/user';
 import ReceiptResultPage from './screen/ReceiptResultPage';
 import MyAccountPage from './screen/MyAccountPage';
 import AccountHistoryPage from './screen/AccountHistoryPage';
