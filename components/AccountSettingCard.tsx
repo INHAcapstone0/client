@@ -16,7 +16,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faCrown, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
+import {faEllipsisV} from '@fortawesome/free-solid-svg-icons';
+import {faCircleQuestion} from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
 import {Menu, MenuItem} from 'react-native-material-menu';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -29,6 +30,8 @@ import axiosInstance from '../utils/interceptor';
 
 interface AccountSettingCardProps {
   item: any;
+  setSelectedFinNum: (funNum: any) => void;
+  openDeleteModal: () => void;
   //doRefresh: () => void;
   //openModal: () => void;
   //closeModal: () => void;
@@ -38,6 +41,8 @@ interface AccountSettingCardProps {
 }
 function AccountSettingCard({
   item,
+  setSelectedFinNum,
+  openDeleteModal,
 }: //doRefresh,
 //openModal,
 //closeModal,
@@ -92,22 +97,27 @@ AccountSettingCardProps) {
   //   setStartDate(item.startAt.substring(0, 10));
   //   setEndDate(item.endAt.substring(0, 10));
   // }, []);
-  if (item.bank === '하나') {
+  if (item.bank_name === '하나은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 20, height: 15}}
-                  source={require('../resources/bankIcon/Hana.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/Hana.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -123,8 +133,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -132,33 +143,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '카카오') {
+  } else if (item.bank_name === '카카오은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 15, height: 15}}
-                  source={require('../resources/bankIcon/KakaoBank.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/KakaoBank.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -174,8 +185,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -183,33 +195,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '우체국') {
+  } else if (item.bank_name === '우체국') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 20, height: 10}}
-                  source={require('../resources/bankIcon/Epost.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 20,
+                  height: 10,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/Epost.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -225,8 +237,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -234,33 +247,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '기업') {
+  } else if (item.bank_name === 'IBK기업은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 15, height: 15}}
-                  source={require('../resources/bankIcon/IBK.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/IBK.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -276,8 +289,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -285,33 +299,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '국민') {
+  } else if (item.bank_name === 'KB국민은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 20, height: 15}}
-                  source={require('../resources/bankIcon/KbStar.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 18,
+                  height: 12,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/KbStar.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -327,8 +341,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -336,33 +351,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '농협') {
+  } else if (item.bank_name === '농협은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 20, height: 7}}
-                  source={require('../resources/bankIcon/NH.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 24,
+                  height: 8,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/NH.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -378,8 +393,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -387,33 +403,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '신한') {
+  } else if (item.bank_name === '신한은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 13, height: 13}}
-                  source={require('../resources/bankIcon/Shinhan.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/Shinhan.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -429,8 +445,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -438,33 +455,33 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
     );
-  } else if (item.bank === '우리') {
+  } else if (item.bank_name === '우리은행') {
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image
-                  style={{width: 15, height: 15}}
-                  source={require('../resources/bankIcon/Woori.png')}
-                />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginLeft: 7,
+                  marginTop: 10,
+                }}
+                source={require('../resources/bankIcon/Woori.png')}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -480,8 +497,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -489,13 +507,8 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
@@ -505,14 +518,17 @@ AccountSettingCardProps) {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View>
-            <View>
-              <Text style={styles.cardTitleText}>
-                <Image source={require('../resources/icons/KaKaoBank.png')} />
-                {item.bank_name}
-              </Text>
-            </View>
-            <View style={styles.cardDateArea}>
-              <Text style={styles.cardDateText}></Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <FontAwesomeIcon
+                style={styles.cardOtherAccountIcon}
+                icon={faCircleQuestion}
+              />
+              <Text style={styles.cardAccountName}>{item.account_alias}</Text>
             </View>
           </View>
           <Menu
@@ -528,8 +544,9 @@ AccountSettingCardProps) {
             onRequestClose={closeMenu}>
             <MenuItem
               onPress={() => {
-                //setFinNum(item.fintech_use_num);
-                //openModal();
+                closeMenu();
+                setSelectedFinNum(item.fintech_use_num);
+                openDeleteModal();
               }}>
               <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
             </MenuItem>
@@ -537,13 +554,8 @@ AccountSettingCardProps) {
         </View>
         <View style={styles.cardBody}>
           <View style={styles.cardTotalPriceArea}>
-            <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-            <Text style={styles.cardTotalPrice}>0</Text>
-            <Text style={styles.cardTotalPriceWon}> 원</Text>
-            <Text>은행종류{item.bank}</Text>
-            <Text>계좌이름{item.name}</Text>
-            <Text>계좌번호{item.number}</Text>
-            <Text>잔액{item.money}</Text>
+            <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+            <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
           </View>
         </View>
       </View>
@@ -600,7 +612,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardHeader: {
-    height: 60,
+    height: 40,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     flexDirection: 'row',
@@ -619,18 +631,23 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   cardTitleSection: {},
-  cardTitleText: {
-    fontSize: 16,
+  cardAccountLogo: {
+    marginLeft: 7,
+    marginTop: 10,
+  },
+  cardAccountName: {
+    fontSize: 13,
     fontFamily: 'Roboto',
     color: '#000000',
     marginLeft: 7,
     marginTop: 10,
     fontWeight: 'bold',
   },
-  cardDateArea: {},
-  cardDateText: {
-    fontSize: 13,
+  cardAccountNumberArea: {},
+  cardAccountNumber: {
+    fontSize: 11,
     fontFamily: 'Roboto',
+    marginTop: 2,
     marginLeft: 7,
     color: '#4D483D',
   },
@@ -664,9 +681,8 @@ const styles = StyleSheet.create({
     color: '#21B8CD',
     fontFamily: 'Roboto',
     marginLeft: 5,
-    paddingBottom: 5,
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
   },
   cardTotalPriceWon: {
     color: 'black',
@@ -677,6 +693,11 @@ const styles = StyleSheet.create({
     color: '#4D483D',
     marginTop: 12,
     marginRight: 8,
+  },
+  cardOtherAccountIcon: {
+    color: '#4D483D',
+    marginTop: 12,
+    marginLeft: 7,
   },
   buttonArea: {
     width: Dimensions.get('window').width * 0.75,

@@ -36,6 +36,8 @@ function RegisterAccountPage({navigation}: any) {
   const id = useSelector((state: RootState) => state.persist.user.id);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [bankInfo, setBankInfo] = useState([]);
+  const [selectedFinNum, setSelectedFinNum] = useState('');
   const OPENBANK_CALLBACK_URL_1 = 'http://146.56.190.78/extra/send';
   const OPENBANK_CLIENT_ID = '141f9981-d313-400a-991d-bd7e8fa5392c';
   const OPENBANK_STATE_RANDSTR = 'nananananananananananananananana';
@@ -47,64 +49,14 @@ function RegisterAccountPage({navigation}: any) {
     `state=${OPENBANK_STATE_RANDSTR}` +
     `&client_info=${id}`;
 
-  const dummyData = [
-    {
-      bank: '카카오',
-      name: '카카오뱅크통장',
-      number: '11111-11111-11111',
-      fin_num: '1',
-      money: '10000',
-    },
-    {
-      bank: '하나',
-      name: 'Young하나은행',
-      number: '22222-22222-22222',
-      fin_num: '2',
-      money: '20000',
-    },
-    {
-      bank: '우체국',
-      name: '우체국',
-      number: '33333-33333-33333',
-      fin_num: '3',
-      money: '30000',
-    },
-    {
-      bank: '국민',
-      name: '국민통장',
-      number: '44444-44444-44444',
-      fin_num: '4',
-      money: '40000',
-    },
-    {
-      bank: '우리',
-      name: '우리통장',
-      number: '55555-55555-55555',
-      fin_num: '5',
-      money: '50000',
-    },
-    {
-      bank: '농협',
-      name: '농협통장',
-      number: '66666-66666-66666',
-      fin_num: '6',
-      money: '60000',
-    },
-    {
-      bank: '기업',
-      name: '기업통장',
-      number: '77777-77777-77777',
-      fin_num: '7',
-      money: '70000',
-    },
-    {
-      bank: '신한',
-      name: '신한통장',
-      number: '88888-88888-88888',
-      fin_num: '8',
-      money: '80000',
-    },
-  ];
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const openDeleteModal = () => {
+    setDeleteModalVisible(true);
+  };
+  const closeDeleteModal = () => {
+    setDeleteModalVisible(false);
+  };
 
   const redirectToOpenbanking = async () => {
     await Linking.openURL(redirect_uri);
@@ -134,10 +86,69 @@ function RegisterAccountPage({navigation}: any) {
         response.data.refresh_token,
       );
       console.log('response.data', response.data);
+      getAccountInfo();
     } catch (err: any) {
       console.log('err.response.msg', err.response);
     }
   };
+
+  const getAccountInfo = async () => {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    const accessTokenToBank = await EncryptedStorage.getItem(
+      'accessTokenToBank',
+    );
+    console.log('accessToken', accessToken);
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        'bank-authorization': `Bearer ${accessTokenToBank}`,
+      };
+
+      const response = await axiosInstance.get(
+        `http://146.56.190.78/extra/user/me`,
+        {
+          headers,
+        },
+      );
+
+      setBankInfo(response.data.res_list);
+      console.log(response.data.res_list);
+    } catch (err: any) {
+      console.log('err.response.msg', err.response);
+    }
+  };
+
+  const deleteAccount = async () => {
+    console.log('delete account', selectedFinNum);
+
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    const accessTokenToBank = await EncryptedStorage.getItem(
+      'accessTokenToBank',
+    );
+    console.log('accessToken', accessToken);
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        'bank-authorization': `Bearer ${accessTokenToBank}`,
+      };
+
+      const body = {
+        fintech_use_num: selectedFinNum,
+      };
+
+      const response = await axiosInstance.post(
+        `http://146.56.190.78/extra/account/cancel`,
+        body,
+        {
+          headers,
+        },
+      );
+      console.log('delete response ', response.data);
+    } catch (err: any) {
+      console.log('err.response.msg', err.response);
+    }
+  };
+
   const fn_handleAppStateChange = (nextAppState: any) => {
     if (
       (appState.current === USER_APP_STATE.inactive ||
@@ -153,27 +164,64 @@ function RegisterAccountPage({navigation}: any) {
 
   useEffect(() => {
     AppState.addEventListener('change', fn_handleAppStateChange);
-  });
+    getAccountInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
-    <ScrollView>
-      <Pressable
-        style={styles.addButton}
-        onPress={() => {
-          //리다이렉션 시키기
-          redirectToOpenbanking();
+    <ScrollView
+      style={{
+        backgroundColor: 'white',
+      }}>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: 20,
         }}>
-        <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          //토큰 발급 받기
-          getToken();
-        }}>
-        <Text>인증 완료 후 토큰 발급받기</Text>
-      </Pressable>
-      {dummyData.map((item: any) => {
-        return <AccountSettingCard key={item.number} item={item} />;
+        <Pressable
+          style={styles.addButton}
+          onPress={() => {
+            //리다이렉션 시키기
+            redirectToOpenbanking();
+          }}>
+          <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
+        </Pressable>
+      </View>
+      {bankInfo.map((item: any) => {
+        return (
+          <AccountSettingCard
+            key={item.fintech_use_num}
+            item={item}
+            setSelectedFinNum={setSelectedFinNum}
+            openDeleteModal={openDeleteModal}
+          />
+        );
       })}
+      <Modal
+        isVisible={isDeleteModalVisible}
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        style={styles.modalContainer}>
+        <View style={styles.modalContainerForDelete}>
+          <View style={styles.modalInnerContainer}>
+            <Text style={styles.modalComment}>계좌를 삭제하시겠습니까?</Text>
+            <View style={styles.modalButtonArea}>
+              <Pressable style={styles.modalButton} onPress={closeDeleteModal}>
+                <Text style={styles.modalButtonText}>아니오</Text>
+              </Pressable>
+              <Pressable
+                style={styles.modalButton}
+                onPress={() => {
+                  deleteAccount();
+                  closeDeleteModal();
+                  getAccountInfo();
+                }}>
+                <Text style={styles.modalButtonText}>예</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -183,7 +231,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 50,
     justifyContent: 'center',
-    aligntems: 'center',
+    alignItems: 'center',
     backgroundColor: '#21B8CD',
     borderRadius: 5,
   },
@@ -192,6 +240,45 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  modalContainer: {
+    alignItems: 'center',
+  },
+  modalContainerForDelete: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 175,
+  },
+  modalInnerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 15,
+    color: 'black',
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 15,
   },
 });
 export default RegisterAccountPage;
