@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,
@@ -26,11 +26,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 
-function FindPassWordPage({navigation}: any) {
+function ResetPasswordPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [emailChecked, setEmailChecked] = useState(false);
-  const [password, setPassword] = useState('');
+  const [password, setPassWord] = useState('');
+  const [confirmPassword, setConfirmPassWord] = useState('');
+  const [checked, setChecked] = useState(false);
+  // const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const dispatch = useAppDispatch();
@@ -39,40 +40,49 @@ function FindPassWordPage({navigation}: any) {
     emailRef.current?.focus();
   }, []);
 
-  const onChangeEmail = useCallback((text: string) => {
-    setEmail(text.trim());
+  const onChangePassWord = useCallback((text: string) => {
+    setPassWord(text.trim());
   }, []);
-  const onChangePassword = useCallback((text: string) => {
-    setPassword(text.trim());
+  const onChangeConfirmPassWord = useCallback((text: string) => {
+    setConfirmPassWord(text.trim());
   }, []);
 
   const sendTempPassword = async () => {
-    try {
-      const response = await axios.post(
-        `http://146.56.190.78/auth/mail/password`,
-        {
-          email: email,
-        },
-      );
-      Alert.alert('알림', '이메일로 임시 비밀번호가 발송되었습니다.');
-      setEmailChecked(true);
-    } catch (err: any) {
-      console.log(err.response);
+    if (password !== confirmPassword) {
+      Alert.alert('알림', '비밀번호가 일치하지 않습니다');
+    } else {
+      try {
+        const response = await axios.post(
+          `http://146.56.190.78/auth/mail/password`,
+          {
+            password: password,
+          },
+        );
+        Alert.alert('알림', '비밀번호 변경이 완료되었습니다.', [
+          {
+            text: '확인',
+            onPress: () => {
+              navigation.navigate('SignInPage');
+            },
+          },
+        ]);
+      } catch (err: any) {
+        console.log(err.response);
+      }
     }
   };
 
   const onSubmit = async () => {
-    if (!email || !email.trim()) {
-      return Alert.alert('알림', '이메일을 입력해주세요.');
+    if (loading) {
+      return;
     }
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
-      console.log(email);
-      console.log(password);
+      setLoading(true);
       const response = await axios.post('http://146.56.190.78/auth/login', {
-        email: email,
+        // email: email,
         password: password,
       });
 
@@ -95,7 +105,7 @@ function FindPassWordPage({navigation}: any) {
         }),
       );
 
-      navigation.navigate('ResetPasswordPage');
+      navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
       console.log('login error', error);
       // Alert.alert(error.response);
@@ -108,7 +118,6 @@ function FindPassWordPage({navigation}: any) {
     navigation.navigate('SignUpPage');
   }, [navigation]);
 
-  const canGoNext = email && password;
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
@@ -117,17 +126,28 @@ function FindPassWordPage({navigation}: any) {
       />
       {/* <Text style={styles.text}>로그인</Text> */}
       <FormInput
-        labelValue={email}
-        onChangeText={onChangeEmail}
-        placeholderText="이메일"
-        iconType="user"
-        keyboardType="email-address"
+        labelValue={password}
+        onChangeText={onChangePassWord}
+        placeholderText="새 비빌번호"
+        iconType="lock"
         autoCapitalize="none"
         autoCorrect={false}
         onSubmitEditing={() => passwordRef.current?.focus()}
+        secureTextEntry={true}
         inputType="login"
       />
-      {emailChecked ? (
+      <FormInput
+        labelValue={confirmPassword}
+        onChangeText={onChangeConfirmPassWord}
+        placeholderText="새 비빌번호 확인"
+        iconType="lock"
+        autoCapitalize="none"
+        autoCorrect={false}
+        onSubmitEditing={() => passwordRef.current?.focus()}
+        secureTextEntry={true}
+        inputType="login"
+      />
+      {/* {emailChecked ? (
         <FormInput
           labelValue={password}
           onChangeText={onChangePassword}
@@ -136,18 +156,11 @@ function FindPassWordPage({navigation}: any) {
           secureTextEntry={true}
           inputType="login"
         />
-      ) : null}
-      {emailChecked ? (
-        <FormButton buttonTitle="로그인" onPress={onSubmit} />
-      ) : (
-        <FormButton
-          buttonTitle="임시 비밀번호 발송"
-          onPress={sendTempPassword}
-        />
-      )}
-      <TouchableOpacity onPress={toSignUpPage}>
+      ) : null} */}
+      <FormButton buttonTitle="비밀번호 변경" onPress={sendTempPassword} />
+      {/* <TouchableOpacity onPress={toSignUpPage}>
         <Text style={styles.navButtonText}>회원가입 하러가기</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 }
@@ -190,5 +203,4 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Regular',
   },
 });
-
-export default FindPassWordPage;
+export default ResetPasswordPage;

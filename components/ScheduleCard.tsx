@@ -104,7 +104,8 @@ function ScheduleCard({
             </View>
             <View style={styles.cardDateArea}>
               <Text style={styles.cardDateText}>
-                {startDate} ~ {endDate}
+                {/* {startDate} ~ {endDate} */}
+                2022-11-01 ~ 2022-11.03
               </Text>
             </View>
           </View>
@@ -172,7 +173,7 @@ function ScheduleCard({
               onPress={() => {
                 pressReceiptUpload();
               }}>
-              <Text style={styles.buttonText}>영수증 등록</Text>
+              <Text style={styles.buttonText}>지출 등록</Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -360,6 +361,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#21B8CD',
     justifyContent: 'center',
     alignItems: 'center',
+    // marginRight: 5,
   },
   buttonText: {
     color: '#FFFFFF',

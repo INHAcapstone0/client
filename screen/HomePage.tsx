@@ -132,7 +132,7 @@ function HomePage({navigation}: any) {
       <View style={styles.errScreen}>
         <Image
           style={styles.errImg}
-          source={require('../resources/icons/noSchedule.png')}
+          source={require('../resources/icons/LoginImage.png')}
         />
         <Text style={styles.errMsg}>{'\n'}보유하고 계신 일정이 없으시네요</Text>
         <Text style={styles.errMsg}>여행 일정을 등록해 보세요!{'\n'}</Text>
@@ -286,8 +286,8 @@ const styles = StyleSheet.create({
     elevation: 24,
   },
   errImg: {
-    height: 245,
-    width: 212,
+    height: 200,
+    width: 200,
   },
   errScreen: {
     flex: 1,

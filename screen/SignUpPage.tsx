@@ -110,9 +110,9 @@ function SignUpPage({navigation}: any) {
     if (loading) {
       return;
     }
-    if (!emailChecked) {
-      return Alert.alert('알림', '이메일을 입력해주세요.');
-    }
+    // if (!emailChecked) {
+    //   return Alert.alert('알림', '이메일을 입력해주세요.');
+    // }
     if (!nameChecked) {
       return Alert.alert('알림', '닉네임을 입력해주세요.');
     }
@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150,
     resizeMode: 'cover',
+    marginBottom: 30,
   },
   text: {
     fontFamily: 'Kufam-SemiBoldItalic',

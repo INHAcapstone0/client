@@ -131,13 +131,20 @@ function AccountCard({
         <View>
           <View>
             <Text style={styles.cardTitleText}>
-              <Image source={require('../resources/icons/KaKaoBank.png')} />
+              <Image
+                source={
+                  item.bank_name.includes('카카오')
+                    ? require('../resources/icons/KaKaoBank.png')
+                    : null
+                }
+              />
               &nbsp;{item.bank_name}
             </Text>
           </View>
           <View style={styles.cardDateArea}>
             <Text style={styles.cardDateText}>
-              {dateStart} ~ {dateEnd}
+              {/* {dateStart} ~ {dateEnd} */}
+              2022-11.01~2022-11.03
             </Text>
           </View>
         </View>
@@ -170,9 +177,8 @@ function AccountCard({
       </View>
       <View style={styles.cardBody}>
         <View style={styles.cardTotalPriceArea}>
-          <Text style={styles.cardTotalPriceComment}>지출 금액</Text>
-          <Text style={styles.cardTotalPrice}>0</Text>
-          <Text style={styles.cardTotalPriceWon}> 원</Text>
+          <Text style={styles.cardTotalPriceComment}>계좌번호</Text>
+          <Text style={styles.cardTotalPrice}>{item.account_num_masked}</Text>
         </View>
       </View>
     </View>

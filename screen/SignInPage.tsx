@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150,
     resizeMode: 'cover',
+    marginBottom: 30,
   },
   text: {
     fontFamily: 'Kufam-SemiBoldItalic',

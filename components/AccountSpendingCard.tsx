@@ -32,36 +32,37 @@ import {
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
 interface ReceiptCardProps {
-  item: any;
-  scheduleId: any;
+  // item: any;
+  // scheduleId: any;
   // category: any;
   navigation: any;
 }
 function AccountSpendingCard({
-  item,
-  scheduleId,
-  // category,
+  // item,
+  // scheduleId,
+  // // category,
   navigation: {navigate},
-}: ReceiptCardProps) {
+}: any) {
   const [payDate, setPayDate] = useState('2022-01-02T15:01:10.000Z');
   const pressReceipt = () => {
-    navigate('ReceiptInfoPage', {
-      receiptId: item.id,
-    });
+    // navigate('ReceiptInfoPage', {
+    //   receiptId: item.id,
+    // });
   };
-  const [totalPrice, setTotalPrice] = useState(
-    item.total_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-  );
+  // const [totalPrice, setTotalPrice] = useState(
+  //   item.total_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+  // );
   useEffect(() => {
-    setPayDate(item.payDate.substring(0, 10));
+    // setPayDate(item.payDate.substring(0, 10));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const moveToAccountReceiptUploadPage = () => {
-    navigate('AccountReceiptUploadPage', {
-      data: null,
-      scheduleId: scheduleId,
-    });
+    // navigate('AccountReceiptUploadPage', {
+    //   data: null,
+    //   // scheduleId: scheduleId,
+    // });
+    navigate('AccountReceiptUploadPage');
   };
 
   return (
@@ -76,12 +77,15 @@ function AccountSpendingCard({
       <View style={styles.card}>
         {/* <FontAwesomeIcon icon={faUtensils} style={styles.icon} size={35} /> */}
         <View style={styles.content}>
-          <Text style={styles.place}>{item.place}</Text>
+          {/* <Text style={styles.place}>{item.place}</Text> */}
+          <Text style={styles.place}>투썸플레이스 인하대</Text>
 
           <View style={styles.detailContent}>
-            <Text style={styles.date}>{payDate}</Text>
+            {/* <Text style={styles.date}>{payDate}</Text> */}
+            <Text style={styles.date}>2022-11-2</Text>
             <Text style={styles.price}>
-              {totalPrice} <Text style={styles.won}>원</Text>
+              {/* {totalPrice} <Text style={styles.won}>원</Text> */}
+              4500 <Text style={styles.won}>원</Text>
             </Text>
           </View>
         </View>

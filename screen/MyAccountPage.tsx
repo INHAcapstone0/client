@@ -40,14 +40,14 @@ function MyAccountPage({navigation, route}: any) {
   const [infoNumber, setInfoNumber] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
-  const [errFlag, setErrFlag] = useState(false);
+  const [errFlag, setErrFlag] = useState(true);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [bankAccount, setBankAccount] = useState<any>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [finNum, setFinNum] = useState(0);
 
   useEffect(() => {
-    getAllSchedules();
+    getAllAccount();
   }, [infoNumber]);
 
   const openBottomModal = () => {
@@ -104,16 +104,17 @@ function MyAccountPage({navigation, route}: any) {
           },
         },
       );
-      setBankAccount(response.data.res_list);
-
-      console.log('bank response', response.data.res_list);
-      // setInfo(response.data.res_list);
-      // setErrFlag(false);
+      console.log('response', response.data);
+      if (response?.data?.res_list) {
+        console.log('response', response.data.res_list);
+        setBankAccount([response.data.res_list[0]]);
+        setErrFlag(false);
+      }
     } catch (err: AxiosError | any) {
       console.log(err);
-      if (err.response.status === 404) {
-        // setErrFlag(true);
-      }
+      // if (err.response.status === 404) {
+      //   setErrFlag(true);
+      // }
     }
   };
 
@@ -204,6 +205,28 @@ function MyAccountPage({navigation, route}: any) {
   const closeModal = () => {
     setModalVisible(false);
   };
+
+  if (errFlag) {
+    //갖고있는 스케줄이 0개일 경우
+    return (
+      <View style={styles.errScreen}>
+        <Image
+          style={styles.errImg}
+          source={require('../resources/icons/LoginImage.png')}
+        />
+        <Text style={styles.errMsg}>{'\n'}등록된 계좌정보가 없으시네요</Text>
+        <Text style={styles.errMsg}>계좌정보를 등록해 보세요!{'\n'}</Text>
+        <Pressable
+          onPress={() => {
+            navigation.navigate('RegisterAccountPage');
+          }}>
+          <View style={styles.errButton}>
+            <Text style={styles.errButtonText}>계좌정보 등록하기</Text>
+          </View>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <BottomSheetModalProvider>
@@ -353,8 +376,8 @@ const styles = StyleSheet.create({
     elevation: 24,
   },
   errImg: {
-    height: 245,
-    width: 212,
+    height: 200,
+    width: 200,
   },
   errScreen: {
     flex: 1,

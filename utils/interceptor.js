@@ -10,7 +10,6 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async error => {
-    // console.log('error.response.status', error.response.status);
     const {
       config,
       response: {status},
@@ -33,23 +32,21 @@ axiosInstance.interceptors.response.use(
         },
       );
 
-      console.log('refresh response data', data);
+      console.log('data', data);
+
       const originalRequest = config;
       const newAccessToken = data.data.accessToken;
       const newRefreshToken = data.data.refreshToken;
-
       console.log('config', config);
-
       console.log('newAccessToken : ', data.data.accessToken);
       console.log('newRefreshToken : ', data.data.refreshToken);
 
       EncryptedStorage.setItem('accessToken', newAccessToken);
       EncryptedStorage.setItem('refreshToken', newRefreshToken);
 
-      // originalRequest.headers.authorization_access = newAccessToken;
-      originalRequest.headers.Authorization = newAccessToken;
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-      return axiosInstance(originalRequest);
+      return axios(originalRequest);
     }
     // console.log(error);
     return Promise.reject(error);

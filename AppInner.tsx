@@ -31,6 +31,7 @@ import MyAccountPage from './screen/MyAccountPage';
 import AccountHistoryPage from './screen/AccountHistoryPage';
 import AccountReceiptUploadPage from './screen/AccountReceiptUploadPage';
 import FindPassWordPage from './screen/FindPassWordPage';
+import ResetPasswordPage from './screen/ResetPasswordPage';
 
 const Stack = createStackNavigator();
 
@@ -129,6 +130,7 @@ function AppInner() {
           component={AccountReceiptUploadPage}
         />
         <Stack.Screen name="FindPassWordPage" component={FindPassWordPage} />
+        <Stack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

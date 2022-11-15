@@ -39,6 +39,7 @@ function AlarmPage({navigation}: any) {
   const [isInvitaionModalVisible, setInvitationModalVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
+  const [scheduleId, setScheduleId] = useState('');
 
   useEffect(() => {
     getAllAlarms();
@@ -59,6 +60,7 @@ function AlarmPage({navigation}: any) {
           },
         },
       );
+      console.log('response', response);
       setAllAlarms(response.data);
       console.log('getAllAlarms', response.data);
     } catch (err: AxiosError | any) {
@@ -90,7 +92,7 @@ function AlarmPage({navigation}: any) {
       const accessToken = await EncryptedStorage.getItem('accessToken');
 
       const response = await axiosInstance.patch(
-        `http://146.56.190.78/participants/${userId}/${alarmId}`,
+        `http://146.56.190.78/participants/${userId}/${scheduleId}`,
         {
           status: '승인',
         },
@@ -111,7 +113,7 @@ function AlarmPage({navigation}: any) {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
-        `http://146.56.190.78/participants/${userId}/${alarmId}`,
+        `http://146.56.190.78/participants/${userId}/${scheduleId}`,
         {
           status: '거절',
         },
@@ -130,7 +132,7 @@ function AlarmPage({navigation}: any) {
 
   const openInvitaionModal = (id: string) => (event: any) => {
     setInvitationModalVisible(true);
-    setAlarmId(id);
+    setScheduleId(id);
   };
 
   const closeInvitationModal = () => {
@@ -150,12 +152,12 @@ function AlarmPage({navigation}: any) {
     <SafeAreaView style={styles.alarmPage}>
       <ScrollView>
         {allAlarms.length > 0 ? (
-          allAlarms.map((alarm: alarmType) => {
+          allAlarms.map((alarm: any) => {
             if (alarm.alarm_type === '초대') {
               return (
                 <TouchableOpacity
                   style={styles.alarmWrapper}
-                  onPress={openInvitaionModal(alarm.id)}
+                  onPress={openInvitaionModal(alarm.data)}
                   key={alarm.id}>
                   <Image
                     source={require('../resources/icons/Invitation.png')}
@@ -272,8 +274,8 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   joinSchedule();
-                  // deleteAlarm();
                   closeInvitationModal();
+                  deleteAlarm();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
               </Pressable>
@@ -281,8 +283,8 @@ function AlarmPage({navigation}: any) {
                 style={styles.modalButton}
                 onPress={() => {
                   rejectSchedule();
-                  // deleteAlarm();
                   closeInvitationModal();
+                  deleteAlarm();
                 }}>
                 <Text style={styles.modalButtonText}>아니오</Text>
               </Pressable>
