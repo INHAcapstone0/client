@@ -11,6 +11,8 @@ import {
   ScrollView,
   Dimensions,
   Button,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -119,6 +121,12 @@ function ReceiptResultPage({route, navigation}: any) {
     setIsPayTimeModalVisible(state);
   };
 
+  useEffect(() => {
+    let dataTotalPrice = 0;
+    route.params.data.items.map((item: any) => (dataTotalPrice += item.price));
+    setTotalPrice(dataTotalPrice.toString());
+  }, []);
+
   const checkValidation = () => {
     if (placeAddress === '') {
       console.log('here1');
@@ -152,29 +160,29 @@ function ReceiptResultPage({route, navigation}: any) {
       });
     } else {
       console.log('here6');
-      uploadReceipt(
-        payDate.substring(0, payDate.indexOf('-')) +
-          payDate.substring(
-            payDate.indexOf('-') + 1,
-            payDate.indexOf('-') + 3,
-          ) +
-          payDate.substring(
-            payDate.lastIndexOf('-') + 1,
-            payDate.lastIndexOf('-') + 3,
-          ) +
-          payTime
-            .toISOString()
-            .substring(
-              payTime.toISOString().indexOf('T') + 1,
-              payTime.toISOString().indexOf('T') + 3,
-            ) +
-          payTime
-            .toISOString()
-            .substring(
-              payTime.toISOString().indexOf(':') + 1,
-              payTime.toISOString().indexOf(':') + 3,
-            ),
-      );
+      // uploadReceipt(
+      //   payDate.substring(0, payDate.indexOf('-')) +
+      //     payDate.substring(
+      //       payDate.indexOf('-') + 1,
+      //       payDate.indexOf('-') + 3,
+      //     ) +
+      //     payDate.substring(
+      //       payDate.lastIndexOf('-') + 1,
+      //       payDate.lastIndexOf('-') + 3,
+      //     ) +
+      //     payTime
+      //       .toISOString()
+      //       .substring(
+      //         payTime.toISOString().indexOf('T') + 1,
+      //         payTime.toISOString().indexOf('T') + 3,
+      //       ) +
+      //     payTime
+      //       .toISOString()
+      //       .substring(
+      //         payTime.toISOString().indexOf(':') + 1,
+      //         payTime.toISOString().indexOf(':') + 3,
+      //       ),
+      // );
     }
     //주소 날짜시간 가격
   };
@@ -297,22 +305,42 @@ function ReceiptResultPage({route, navigation}: any) {
     });
   };
 
-  const uploadReceipt = async (payDateParam: string) => {
+  const uploadReceipt = async () => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
+    console.log(1);
     try {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
 
       const body = {
-        schedule_id: scheduleId,
+        // schedule_id: scheduleId,
+        // poster_id: userId,
+        // payDate:
+        //   route.params.data.payDate.year +
+        //   route.params.data.payDate.month +
+        //   route.params.data.payDate.day +
+        //   route.params.data.payDate.hour +
+        //   route.params.data.payDate.minute,
+        // total_price: totalPrice,
+        // memo: memo,
+        // place: place,
+        // address: placeAddress,
+        // category: route.params.data.store.category,
+        // tel: placeTel,
+        schedule_id: route.params.scheduleId,
         poster_id: userId,
-        payDate: payDateParam,
+        payDate:
+          route.params.data.payDate.year +
+          route.params.data.payDate.month +
+          route.params.data.payDate.day +
+          route.params.data.payDate.hour +
+          route.params.data.payDate.minute,
         total_price: totalPrice,
         memo: memo,
-        place: place,
-        address: placeAddress,
-        category: category,
+        place: route.params.data.store.name,
+        address: route.params.data.store.addresses,
+        category: route.params.data.store.category,
         tel: placeTel,
       };
       const response = await axiosInstance.post(
@@ -322,6 +350,20 @@ function ReceiptResultPage({route, navigation}: any) {
           headers,
         },
       );
+
+      console.log('response upload', response);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        textBody: '지출정보 등록에 성공하였습니다',
+      });
+      Alert.alert('알림', '비밀번호 변경이 완료되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.navigate('HomePage');
+          },
+        },
+      ]);
 
       if (itemFlag) {
         uploadItems(response.data.id);
@@ -428,7 +470,7 @@ function ReceiptResultPage({route, navigation}: any) {
     } else {
       setTotalPriceValidationFlag(false);
     }
-    setTotalPrice(route.params.data.totalPrice.toString());
+    // setTotalPrice(route.params.data.totalPrice.toString());
     setPlaceTel(route.params.data.store.tel);
     setPlace(route.params.data.store.name);
     setPlaceAddress(route.params.data.store.addresses);
@@ -572,16 +614,16 @@ function ReceiptResultPage({route, navigation}: any) {
                 value={totalPrice}
               />
             </View>
-            {!totalPriceValidationFlag && (
+            {/* {!totalPriceValidationFlag && (
               <Text style={styles.totalPriceValidationError}>
                 결제한 금액과 결제 항목들이 일치하지 않습니다.
               </Text>
-            )}
+            )} */}
           </View>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>
-          <Calendar
+          {/* <Calendar
             style={styles.calendar}
             markedDates={selectedDate}
             theme={{
@@ -593,8 +635,8 @@ function ReceiptResultPage({route, navigation}: any) {
             onDayPress={day => {
               addSelectedDate(day.dateString);
             }}
-          />
-          <View style={{margin: 10}}>
+          /> */}
+          {/* <View style={{margin: 10}}>
             <Button
               color="#21B8CD"
               title="결제시각 선택하기"
@@ -616,10 +658,11 @@ function ReceiptResultPage({route, navigation}: any) {
                 togglePayTimeModal(false);
               }}
             />
-          </View>
-          <View style={styles.borderContainer}>
+          </View> */}
+          {/* <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
-          </View>
+          </View> */}
+          {/* <View style={styles.borderLine} /> */}
           <View style={styles.itemSection}>
             <View style={styles.itemComponent}>
               <View style={styles.itemTitleWithButton}>
@@ -1054,21 +1097,26 @@ function ReceiptResultPage({route, navigation}: any) {
               />
             </View>
           </View>
+          {/* <View style={styles.itemSection}>
+            <Pressable onPress={uploadReceipt}>
+              <Text style={styles.uploadButtonText}>등록하기</Text>
+            </Pressable>
+          </View> */}
           <View style={styles.itemSection}>
             <Pressable
               style={styles.uploadButton}
               onPress={() => {
-                checkValidation();
+                uploadReceipt();
               }}>
               <Text style={styles.uploadButtonText}>등록하기</Text>
             </Pressable>
-            <Pressable
+            {/* <Pressable
               style={styles.uploadButton}
               onPress={() => {
                 makeToast();
               }}>
               <Text style={styles.uploadButtonText}>토스트메세지</Text>
-            </Pressable>
+            </Pressable> */}
           </View>
         </ScrollView>
       </AlertNotificationRoot>

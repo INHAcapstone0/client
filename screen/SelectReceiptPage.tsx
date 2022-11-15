@@ -167,9 +167,9 @@ function SelectReceiptPage({navigation, route}: any) {
       } else {
         console.log(1);
         if (response !== undefined) {
-          console.log(2);
-          sendCameraScreenShot(response?.assets[0]);
-          setSelectImg({uri: response?.assets[0]?.uri});
+          console.log('response', response);
+          // sendCameraScreenShot(response?.assets[0]);
+          // setSelectImg({uri: response?.assets[0]?.uri});
         }
       }
     });

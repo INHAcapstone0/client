@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {useAppDispatch} from '../store/Store';
 import axios from 'axios';
 import {RootState} from '../store/Store';
@@ -63,6 +63,30 @@ function RegisterAccountPage({navigation}: any) {
   };
   const getTokenForOpenbanking = async () => {};
 
+  const refreshBankToken = async (call: any) => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      const bankAccessToken = await EncryptedStorage.getItem(
+        'accessTokenToBank',
+      );
+      const bankRefreshToken = await EncryptedStorage.getItem(
+        'refreshTokenToBank',
+      );
+      const response = await axios.get('http://146.56.190.78/extra/refresh', {
+        headers: {
+          'bank-authorization': `Bearer ${bankAccessToken}`,
+          Authorization: `Bearer ${accessToken}`,
+          refresh: `Bearer ${refreshToken}`,
+        },
+      });
+      console.log('response', response);
+      call();
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   const getToken = async () => {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
@@ -111,6 +135,7 @@ function RegisterAccountPage({navigation}: any) {
       setBankInfo(response.data.res_list);
     } catch (err: any) {
       console.log('err.response.msg', err.response);
+      refreshBankToken(getAccountInfo);
     }
   };
 
@@ -138,6 +163,7 @@ function RegisterAccountPage({navigation}: any) {
       );
     } catch (err: any) {
       console.log('err.response.msg', err.response);
+      refreshBankToken(deleteAccount);
     }
   };
 

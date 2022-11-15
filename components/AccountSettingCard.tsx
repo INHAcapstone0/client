@@ -602,14 +602,8 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     marginRight: 25,
     marginTop: 20,
-    shadowColor: '#bebaba',
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
+    borderColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1,
   },
   cardHeader: {
     height: 40,
