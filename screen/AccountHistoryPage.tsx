@@ -63,7 +63,7 @@ function AccountHistoryPage({route, navigation}: any) {
   });
   const [receiptsInfo, setReceiptsInfo] = useState([]);
 
-  const [errFlag, setErrFlag] = useState(false);
+  const [errFlag, setErrFlag] = useState(true);
   const [ownerFlag, setOwnerFlag] = useState(false);
 
   const [categoryList, setCategoryList] = useState<string[]>(['전체']);
@@ -76,7 +76,7 @@ function AccountHistoryPage({route, navigation}: any) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    getAllAccountTransfer();
+    // getAllAccountTransfer();
   });
 
   const getAllAccountTransfer = async () => {
@@ -109,7 +109,7 @@ function AccountHistoryPage({route, navigation}: any) {
       // console.log();
 
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${startAt}&to_date=${endAt}`,
+        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20221011}&to_date=${20221012}`,
         {
           headers: {
             'bank-authorization': `Bearer ${bankAccessTokenData}`,
@@ -264,14 +264,15 @@ function AccountHistoryPage({route, navigation}: any) {
     );
   } else {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.header}>
           <Text style={styles.scheduleName}>{name}</Text>
         </View>
 
         <View style={styles.receiptSection}>
           <ScrollView>
-            {receiptsInfo.map((item: any) => {
+            <AccountSpendingCard navigation={navigation} />
+            {/* {receiptsInfo.map((item: any) => {
               if (item != null) {
                 return (
                   <AccountSpendingCard
@@ -284,7 +285,7 @@ function AccountHistoryPage({route, navigation}: any) {
                   />
                 );
               }
-            })}
+            })} */}
           </ScrollView>
         </View>
 
@@ -394,8 +395,8 @@ const styles = StyleSheet.create({
   },
   errScreen: {
     flex: 1,
+    backgroundColor: 'white',
   },
-
   errScreen2: {
     flex: 1,
     alignItems: 'center',

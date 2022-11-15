@@ -81,20 +81,8 @@ function AccountReceiptUploadPage({navigation, route}: any) {
     {
       id: '1-1',
       name: '아메리카노',
-      quantity: '3',
-      price: '4000',
-    },
-    {
-      id: '2-1',
-      name: '카페라떼',
-      quantity: '3',
+      quantity: '1',
       price: '4500',
-    },
-    {
-      id: '3-1',
-      name: '플랫화이트',
-      quantity: '3',
-      price: '6000',
     },
   ]);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
@@ -302,7 +290,7 @@ function AccountReceiptUploadPage({navigation, route}: any) {
           <View style={styles.webviewContainer}>
             <WebView
               ref={mapViewRef}
-              source={{uri: 'http://192.168.35.192:3000/'}}
+              source={{uri: 'http://146.56.190.78/webview/'}}
               style={styles.webview}
             />
           </View>

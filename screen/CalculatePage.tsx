@@ -171,6 +171,7 @@ function CalculatePage({navigation}: any) {
         },
       );
       setAllSettlements(response.data);
+      console.log('response', response);
       console.log('response.data', response.data);
       console.log('response.data.Settlements', response.data.Settlements);
     } catch (err: AxiosError | any) {

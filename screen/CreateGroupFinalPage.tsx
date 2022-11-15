@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     borderRadius: 10,
-    marginTop: Dimensions.get('window').height / 5,
+    marginTop: Dimensions.get('window').height / 10,
   },
   bottomModal: {
     // backgroundColor: 'white',

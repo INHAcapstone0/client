@@ -62,9 +62,6 @@ function FindPassWordPage({navigation}: any) {
   };
 
   const onSubmit = async () => {
-    if (loading) {
-      return;
-    }
     if (!email || !email.trim()) {
       return Alert.alert('알림', '이메일을 입력해주세요.');
     }
@@ -72,7 +69,8 @@ function FindPassWordPage({navigation}: any) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
-      setLoading(true);
+      console.log(email);
+      console.log(password);
       const response = await axios.post('http://146.56.190.78/auth/login', {
         email: email,
         password: password,
@@ -97,7 +95,7 @@ function FindPassWordPage({navigation}: any) {
         }),
       );
 
-      navigation.navigate('InitialPage');
+      navigation.navigate('ResetPasswordPage');
     } catch (error: AxiosError | any) {
       console.log('login error', error);
       // Alert.alert(error.response);
@@ -159,7 +157,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 50,
+    // paddingTop: 50,
     backgroundColor: 'white',
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
@@ -168,6 +166,7 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150,
     resizeMode: 'cover',
+    marginBottom: 30,
   },
   text: {
     fontFamily: 'Kufam-SemiBoldItalic',

@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   nextButton: {
-    marginTop: Dimensions.get('window').height / 3,
+    marginTop: Dimensions.get('window').height / 10,
   },
 });
 export default CreateGroupPage;
