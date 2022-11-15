@@ -40,6 +40,7 @@ function AlarmPage({navigation}: any) {
   const [isModalVisible, setModalVisible] = useState(false);
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [scheduleId, setScheduleId] = useState('');
+  const [errFlag, setErrFlag] = useState(false);
 
   useEffect(() => {
     getAllAlarms();
@@ -65,6 +66,7 @@ function AlarmPage({navigation}: any) {
       console.log('getAllAlarms', response.data);
     } catch (err: AxiosError | any) {
       console.log(err.response);
+      setErrFlag(true);
     }
   };
 
@@ -148,109 +150,113 @@ function AlarmPage({navigation}: any) {
     setModalVisible(false);
   };
 
+  if (errFlag) {
+    return (
+      <View style={styles.emptyImg}>
+        <Image source={require('../resources/icons/alarmImg.png')} />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.alarmPage}>
       <ScrollView>
-        {allAlarms.length > 0 ? (
-          allAlarms.map((alarm: any) => {
-            if (alarm.alarm_type === '초대') {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openInvitaionModal(alarm.data)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/Invitation.png')}
-                    style={styles.alarmIcon}
-                  />
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}
-                  </Text>
-                </TouchableOpacity>
-              );
-            } else if (alarm.alarm_type === '영수증 업로드') {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openModal(alarm.id)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/AlarmReceipt.png')}
-                    style={styles.alarmIcon}
-                  />
-                  {/* <Ionicons name="receipt-outline" color="black" size={40} /> */}
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}
-                  </Text>
-                </TouchableOpacity>
-              );
-            } else if (alarm.alarm_type === '일정 시작') {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openModal(alarm.id)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/DateStart.png')}
-                    style={styles.alarmIcon}
-                  />
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}
-                  </Text>
-                </TouchableOpacity>
-              );
-            } else if (alarm.alarm_type === '일정 종료') {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openModal(alarm.id)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/DateEnd.png')}
-                    style={styles.alarmIcon}
-                  />
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}
-                  </Text>
-                </TouchableOpacity>
-              );
-            } else if (alarm.alarm_type === '정산 확인 요청') {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openModal(alarm.id)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/CalculateRequestCheck.png')}
-                    style={styles.alarmIcon}
-                  />
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}
-                  </Text>
-                </TouchableOpacity>
-              );
-            } else {
-              return (
-                <TouchableOpacity
-                  style={styles.alarmWrapper}
-                  onPress={openModal(alarm.id)}
-                  key={alarm.id}>
-                  <Image
-                    source={require('../resources/icons/CalculateCheck.png')}
-                    style={styles.alarmIcon}
-                  />
-                  <Text style={styles.alarmText} key={alarm.id}>
-                    {alarm.message}.
-                  </Text>
-                </TouchableOpacity>
-              );
-            }
-          })
-        ) : (
-          <View style={styles.emptyImg}>
-            <Image source={require('../resources/icons/alarmImg.png')} />
-          </View>
-        )}
+        {allAlarms.length > 0
+          ? allAlarms.map((alarm: any) => {
+              if (alarm.alarm_type === '초대') {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openInvitaionModal(alarm.data)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/Invitation.png')}
+                      style={styles.alarmIcon}
+                    />
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else if (alarm.alarm_type === '영수증 업로드') {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openModal(alarm.id)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/AlarmReceipt.png')}
+                      style={styles.alarmIcon}
+                    />
+                    {/* <Ionicons name="receipt-outline" color="black" size={40} /> */}
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else if (alarm.alarm_type === '일정 시작') {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openModal(alarm.id)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/DateStart.png')}
+                      style={styles.alarmIcon}
+                    />
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else if (alarm.alarm_type === '일정 종료') {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openModal(alarm.id)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/DateEnd.png')}
+                      style={styles.alarmIcon}
+                    />
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else if (alarm.alarm_type === '정산 확인 요청') {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openModal(alarm.id)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/CalculateRequestCheck.png')}
+                      style={styles.alarmIcon}
+                    />
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else {
+                return (
+                  <TouchableOpacity
+                    style={styles.alarmWrapper}
+                    onPress={openModal(alarm.id)}
+                    key={alarm.id}>
+                    <Image
+                      source={require('../resources/icons/CalculateCheck.png')}
+                      style={styles.alarmIcon}
+                    />
+                    <Text style={styles.alarmText} key={alarm.id}>
+                      {alarm.message}.
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+            })
+          : null}
       </ScrollView>
       <Modal
         isVisible={isInvitaionModalVisible}
@@ -363,7 +369,6 @@ const styles = StyleSheet.create({
     height: 55,
   },
   emptyImg: {
-    marginTop: Dimensions.get('window').height / 5,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

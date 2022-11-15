@@ -220,7 +220,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
           <View style={styles.errScreen2}>
             <Image
               style={styles.errImg}
-              source={require('../resources/icons/noReceipt.png')}
+              source={require('../resources/icons/LoginImage.png')}
             />
             <Text style={styles.errMsg}>지출 내역이 없습니다.</Text>
           </View>
@@ -363,8 +363,8 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.7,
   },
   errImg: {
-    height: 298,
-    width: 304,
+    height: 200,
+    width: 200,
   },
   errMsg: {
     fontSize: 18,
