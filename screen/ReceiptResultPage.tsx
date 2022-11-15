@@ -352,24 +352,25 @@ function ReceiptResultPage({route, navigation}: any) {
       );
 
       console.log('response upload', response);
-      Toast.show({
-        type: ALERT_TYPE.SUCCESS,
-        textBody: '지출정보 등록에 성공하였습니다',
-      });
-      Alert.alert('알림', '비밀번호 변경이 완료되었습니다.', [
-        {
-          text: '확인',
-          onPress: () => {
-            navigation.navigate('HomePage');
-          },
-        },
-      ]);
+      // Toast.show({
+      //   type: ALERT_TYPE.SUCCESS,
+      //   textBody: '지출정보 등록에 성공하였습니다',
+      // });
+      // Alert.alert('알림', '지출정보 등록에 성공하였습니다.', [
+      //   {
+      //     text: '확인',
+      //     onPress: () => {
+      //       navigation.reset({routes: [{name: 'HomePage'}]});
+      //     },
+      //   },
+      // ]);
+      uploadItems(response.data.id);
 
-      if (itemFlag) {
-        uploadItems(response.data.id);
-      } else {
-        uploadImage(response.data.id);
-      }
+      // if (itemFlag) {
+      //   uploadItems(response.data.id);
+      // } else {
+      //   uploadImage(response.data.id);
+      // }
     } catch (err: AxiosError | any) {
       console.log(err);
       Toast.show({
