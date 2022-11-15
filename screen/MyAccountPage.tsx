@@ -40,7 +40,7 @@ function MyAccountPage({navigation, route}: any) {
   const [infoNumber, setInfoNumber] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
-  const [errFlag, setErrFlag] = useState(true);
+  const [errFlag, setErrFlag] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [bankAccount, setBankAccount] = useState<any>([]);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -107,68 +107,38 @@ function MyAccountPage({navigation, route}: any) {
       console.log('response', response.data);
       if (response?.data?.res_list) {
         console.log('response', response.data.res_list);
-        setBankAccount([response.data.res_list[0]]);
+        setBankAccount(response.data.res_list);
         setErrFlag(false);
       }
     } catch (err: AxiosError | any) {
       console.log(err);
+      refreshBankToken();
       // if (err.response.status === 404) {
       //   setErrFlag(true);
       // }
     }
   };
 
-  const getAllSchedules = async () => {
+  const refreshBankToken = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
-      const params = {
-        status: '승인',
-      };
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const response = await axiosInstance.get(
-        'http://146.56.190.78/schedules/status',
-        {params, headers},
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      const bankAccessToken = await EncryptedStorage.getItem(
+        'accessTokenToBank',
       );
-      setInfo(response.data);
-      setErrFlag(false);
+      const bankRefreshToken = await EncryptedStorage.getItem(
+        'refreshTokenToBank',
+      );
+      const response = await axios.get('http://146.56.190.78/extra/refresh', {
+        headers: {
+          'bank-authorization': `Bearer ${bankAccessToken}`,
+          Authorization: `Bearer ${accessToken}`,
+          refresh: `Bearer ${refreshToken}`,
+        },
+      });
+      console.log('response', response);
+      getAllAccount();
     } catch (err: AxiosError | any) {
-      console.log(err);
-      if (err.response.status === 404) {
-        setErrFlag(true);
-      }
-    }
-  };
-
-  const deleteSchedule = async () => {
-    try {
-      const accessToken = await EncryptedStorage.getItem('accessToken');
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const response = await axiosInstance.delete(
-        `http://146.56.190.78/schedules/${selectedScheduleId}`,
-        {headers},
-      );
-      setInfoNumber(infoNumber - 1);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const deleteParticipant = async () => {
-    try {
-      const accessToken = await EncryptedStorage.getItem('accessToken');
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const response = await axiosInstance.delete(
-        `http://146.56.190.78/participants/${userId}/${selectedScheduleId}`,
-        {headers},
-      );
-      setInfoNumber(infoNumber - 1);
-    } catch (err) {
       console.log(err);
     }
   };
@@ -269,35 +239,6 @@ function MyAccountPage({navigation, route}: any) {
               />
             </BottomSheetScrollView>
           </BottomSheetModal>
-          <Modal
-            isVisible={isModalVisibleForMember}
-            animationIn={'slideInUp'}
-            animationOut={'slideOutDown'}
-            style={styles.modalContainer}>
-            <View style={styles.modalContainerForMember}>
-              <View style={styles.modalInnerContainer}>
-                <Text style={styles.modalComment}>
-                  정말 스케줄을 떠나시겠습니까?
-                </Text>
-                <View style={styles.modalButtonArea}>
-                  <Pressable
-                    style={styles.modalButton}
-                    onPress={closeDeleteModalForMember}>
-                    <Text style={styles.modalButtonText}>아니오</Text>
-                  </Pressable>
-                  <Pressable
-                    style={styles.modalButton}
-                    onPress={() => {
-                      deleteParticipant();
-                      closeDeleteModalForMember();
-                      getAllSchedules();
-                    }}>
-                    <Text style={styles.modalButtonText}>예</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </Modal>
           <Modal
             isVisible={isModalVisible}
             animationIn={'slideInUp'}

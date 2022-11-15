@@ -76,7 +76,7 @@ function AccountHistoryPage({route, navigation}: any) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    // getAllAccountTransfer();
+    getAllAccountTransfer();
   });
 
   const getAllAccountTransfer = async () => {
@@ -109,7 +109,7 @@ function AccountHistoryPage({route, navigation}: any) {
       // console.log();
 
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20221011}&to_date=${20221012}`,
+        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20190101}&to_date=${endAt}`,
         {
           headers: {
             'bank-authorization': `Bearer ${bankAccessTokenData}`,
@@ -117,7 +117,7 @@ function AccountHistoryPage({route, navigation}: any) {
           },
         },
       );
-      console.log('response', response);
+      console.log('response', response.data);
       // setInfo(response.data.res_list);
       // setErrFlag(false);
     } catch (err: AxiosError | any) {

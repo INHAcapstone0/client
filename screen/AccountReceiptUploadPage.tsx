@@ -79,10 +79,10 @@ function AccountReceiptUploadPage({navigation, route}: any) {
   */
   const [data, setData] = useState([
     {
-      id: '1-1',
-      name: '아메리카노',
-      quantity: '1',
-      price: '4500',
+      receipt_id: '',
+      name: '',
+      quantity: '',
+      price: '',
     },
   ]);
   const [searchedPlaces, setSearchedPlaces] = useState([]);
@@ -146,7 +146,7 @@ function AccountReceiptUploadPage({navigation, route}: any) {
     setTotalPriceValidationFlag(false);
     setData([
       {
-        id: emptyInputNumber.toString(),
+        receipt_id: emptyInputNumber.toString(),
         name: '',
         quantity: '',
         price: '',
@@ -157,7 +157,7 @@ function AccountReceiptUploadPage({navigation, route}: any) {
 
   //결제항목 삭제 함수
   const deleteItem = (id: string) => {
-    setData(data.filter(item => item.id !== id));
+    setData(data.filter(item => item.receipt_id !== id));
   };
 
   //결제항목 생략 함수

@@ -269,14 +269,8 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: 210,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
+    borderColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1,
   },
   cardHeader: {
     borderTopLeftRadius: 20,

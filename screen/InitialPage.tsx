@@ -20,6 +20,7 @@ import CalculatePage from './CalculatePage';
 import CreateGroupPage from './CreateGroupPage';
 import AlarmPage from './AlarmPage';
 import SettingPage from './SettingPage';
+import SignInPage from './SignInPage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -50,28 +51,29 @@ function InitialPage({navigation}: any) {
   // }, [isLoggedIn]);
 
   return isLoggedIn === '' ? (
-    <SafeAreaView>
-      <StatusBar />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.container}>
-          <Text style={styles.text}>어플을 처음 이용하시나요?</Text>
-          <CustomButton
-            title={'회원가입'}
-            onPress={() => navigation.navigate('SignUpPage')}
-          />
-          <Text style={styles.text}>계정을 이미 등록하셨나요?</Text>
-          <CustomButton
-            title={'로그인'}
-            onPress={() => navigation.navigate('SignInPage')}
-          />
-          <Text style={styles.text}>비밀번호를 잊으셨나요?</Text>
-          <CustomButton
-            title={'비밀번호 찾기'}
-            onPress={() => navigation.navigate('FindPassWordPage')}
-          />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    // <SafeAreaView>
+    //   <StatusBar />
+    //   <ScrollView contentInsetAdjustmentBehavior="automatic">
+    //     <View style={styles.container}>
+    //       <Text style={styles.text}>어플을 처음 이용하시나요?</Text>
+    //       <CustomButton
+    //         title={'회원가입'}
+    //         onPress={() => navigation.navigate('SignUpPage')}
+    //       />
+    //       <Text style={styles.text}>계정을 이미 등록하셨나요?</Text>
+    //       <CustomButton
+    //         title={'로그인'}
+    //         onPress={() => navigation.navigate('SignInPage')}
+    //       />
+    //       <Text style={styles.text}>비밀번호를 잊으셨나요?</Text>
+    //       <CustomButton
+    //         title={'비밀번호 찾기'}
+    //         onPress={() => navigation.navigate('FindPassWordPage')}
+    //       />
+    //     </View>
+    //   </ScrollView>
+    // </SafeAreaView>
+    <SignInPage />
   ) : (
     <Tab.Navigator
       screenOptions={{

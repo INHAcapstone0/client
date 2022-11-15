@@ -135,7 +135,21 @@ function AccountCard({
                 source={
                   item.bank_name.includes('카카오')
                     ? require('../resources/icons/KaKaoBank.png')
-                    : null
+                    : item.bank_name.includes('하나')
+                    ? require('../resources/bankIcon/Hana.png')
+                    : item.bank_name.includes('신한')
+                    ? require('../resources/bankIcon/Shinhan.png')
+                    : item.bank_name.includes('우리')
+                    ? require('../resources/bankIcon/Woori.png')
+                    : item.bank_name.includes('우체')
+                    ? require('../resources/bankIcon/Epost.png')
+                    : item.bank_name.includes('국민')
+                    ? require('../resources/bankIcon/KbStar.png')
+                    : item.bank_name.includes('농협')
+                    ? require('../resources/bankIcon/NH.png')
+                    : item.bank_name.includes('기업')
+                    ? require('../resources/bankIcon/IBK.png')
+                    : require('../resources/bankIcon/IBK.png')
                 }
               />
               &nbsp;{item.bank_name}
@@ -143,8 +157,7 @@ function AccountCard({
           </View>
           <View style={styles.cardDateArea}>
             <Text style={styles.cardDateText}>
-              {/* {dateStart} ~ {dateEnd} */}
-              2022-11.01~2022-11.03
+              {dateStart} ~ {dateEnd}
             </Text>
           </View>
         </View>
@@ -224,14 +237,8 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     marginRight: 25,
     marginTop: 20,
-    shadowColor: '#bebaba',
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
+    borderColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1,
   },
   cardHeader: {
     height: 60,
