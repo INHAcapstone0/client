@@ -17,10 +17,20 @@ import {persistStore} from 'redux-persist';
 import store from './store/Store';
 import AppInner from './AppInner';
 import ForegroundHandler from './utils/foreground_handler';
+import SplashScreen from 'react-native-splash-screen';
 
 const persistor = persistStore(store);
 
 function App() {
+  useEffect(() => {
+    try {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  });
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
