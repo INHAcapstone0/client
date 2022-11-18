@@ -335,29 +335,51 @@ function ReceiptUploadPage({route, navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const items: itemData[] = [];
+      if (data.length > 1) {
+        const items: itemData[] = [];
 
-      data.filter(item =>
-        itemData.push({
+        data.filter(item =>
+          itemData.push({
+            receipt_id: receiptId,
+            quantity: item.quantity,
+            price: item.price,
+            name: item.name,
+          }),
+        );
+
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items/many`,
+          itemData,
+          {
+            headers,
+          },
+        );
+        Toast.show({
+          type: ALERT_TYPE.SUCCESS,
+          textBody: '지출정보 등록이 완료되었습니다',
+        });
+        moveToHomePage();
+      } else {
+        const body = {
           receipt_id: receiptId,
-          quantity: item.quantity,
-          price: item.price,
-          name: item.name,
-        }),
-      );
+          quantity: data[0].quantity,
+          price: data[0].price,
+          name: data[0].name,
+        };
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items`,
+          body,
+          {
+            headers,
+          },
+        );
+        Toast.show({
+          type: ALERT_TYPE.SUCCESS,
+          textBody: '지출정보 등록이 완료되었습니다',
+        });
 
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/items/many`,
-        itemData,
-        {
-          headers,
-        },
-      );
-      Toast.show({
-        type: ALERT_TYPE.SUCCESS,
-        textBody: '지출정보 등록이 완료되었습니다',
-      });
-      moveToHomePage();
+        moveToHomePage();
+      }
     } catch (err: AxiosError | any) {
       console.log(err);
       Toast.show({

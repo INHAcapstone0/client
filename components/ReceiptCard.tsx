@@ -538,11 +538,7 @@ function ReceiptCard({
     );
   } else {
     //기타
-    return (
-      <View>
-        <Text>error</Text>
-      </View>
-    );
+    return <View />;
   }
 }
 

@@ -78,7 +78,6 @@ function ScheduleCard({
   };
 
   useEffect(() => {
-    console.log('item.id', item.id);
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
@@ -94,11 +93,7 @@ function ScheduleCard({
     const endTime = new Date(item.endAt);
     const currentTime = new Date();
 
-    console.log('endDate : ', endTime);
-    console.log('currentDate : ', currentTime);
-
     if (endTime < currentTime) {
-      console.log(item.name);
       setValidFlag(true);
     }
   }, []);

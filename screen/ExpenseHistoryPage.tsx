@@ -70,8 +70,6 @@ function ExpenseHistoryPage({route, navigation}: any) {
   const [totalPrice, setTotalPrice] = useState('0');
 
   const renderScene = ({route}: any) => {
-    console.log('render');
-    console.log('render receipts ', receiptsInfo);
     return (
       <View style={styles.receiptSection}>
         <ScrollView>
@@ -143,7 +141,6 @@ function ExpenseHistoryPage({route, navigation}: any) {
           },
         );
 
-        console.log('expense history receipts : ', response.data);
         setReceiptsInfo(response.data);
         return response.data;
       } catch (err: AxiosError | any) {
@@ -199,14 +196,12 @@ function ExpenseHistoryPage({route, navigation}: any) {
     getReceiptsInfo('전체')
       .then(receipts => {
         var stores: {key: string; title: string}[] = [];
-        console.log('useEffect ', receipts);
         receipts.map((item: {category: string}) => {
           if (!categoryList.includes(item.category)) {
             categoryList.push(item.category);
           }
         });
         categoryList.map((item: string) => {
-          console.log('category list ', item);
           stores.push({key: item, title: item});
         });
         setRoutes(stores);

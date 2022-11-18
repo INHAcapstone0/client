@@ -73,7 +73,6 @@ function HomePage({navigation}: any) {
   const getAllSchedules = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
-      console.log('accessToken', accessToken);
       const params = {
         status: '승인',
       };
