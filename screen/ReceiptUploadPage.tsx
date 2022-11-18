@@ -608,7 +608,7 @@ function ReceiptUploadPage({route, navigation}: any) {
                                 onPress={() => {
                                   setPlace(item.place_name);
                                   setPlaceAddress(item.road_address_name);
-                                  setCategory(item.category_group_name);
+                                  setCategory(item.category_group_name.trim());
                                   setPlaceTel(item.phone);
                                   drawMap(item.road_address_name);
                                   setPlaceModalVisible(false);

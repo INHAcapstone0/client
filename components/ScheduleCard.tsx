@@ -308,6 +308,7 @@ const styles = StyleSheet.create({
   },
   cardMenuItem: {
     fontFamily: 'Roboto',
+    color: '#000000',
   },
   cardHostIcon: {
     color: '#FFB900',

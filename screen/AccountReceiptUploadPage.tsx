@@ -43,6 +43,10 @@ function AccountReceiptUploadPage({navigation, route}: any) {
   //장소 변수
   const [place, setPlace] = useState('찾아보기 버튼을 눌러주세요.');
 
+  const [placeAddress, setPlaceAddress] = useState('');
+
+  const [placeTel, setPlaceTel] = useState('');
+
   //장소 검색어
   const [placeKeyword, setPlaceKeyword] = useState('');
 
@@ -352,6 +356,9 @@ function AccountReceiptUploadPage({navigation, route}: any) {
                               style={styles.placeSelectButton}
                               onPress={() => {
                                 setPlace(item.place_name);
+                                setPlaceAddress(item.road_address_name);
+                                setCategory(item.category_group_name.trim());
+                                setPlaceTel(item.phone);
                                 drawMap(item.road_address_name);
                                 setPlaceModalVisible(false);
                               }}>
@@ -518,14 +525,14 @@ function AccountReceiptUploadPage({navigation, route}: any) {
                 <View style={styles.categorySection}>
                   <Pressable
                     style={
-                      selectedCategory === '주유소, 충전소'
+                      selectedCategory === '주유소,충전소'
                         ? styles.selectedCategoryButton
                         : styles.unselectedCategoryButton
                     }
-                    onPress={() => setSelectedCategory('주유소, 충전소')}>
+                    onPress={() => setSelectedCategory('주유소,충전소')}>
                     <Text
                       style={
-                        selectedCategory === '주유소, 충전소'
+                        selectedCategory === '주유소,충전소'
                           ? styles.selectedCategoryText
                           : styles.unselectedCategoryText
                       }>

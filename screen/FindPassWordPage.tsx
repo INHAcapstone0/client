@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,

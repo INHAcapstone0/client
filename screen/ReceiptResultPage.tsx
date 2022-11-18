@@ -746,7 +746,7 @@ function ReceiptResultPage({route, navigation}: any) {
                                 onPress={() => {
                                   setPlace(item.place_name);
                                   setPlaceAddress(item.road_address_name);
-                                  setCategory(item.category_group_name);
+                                  setCategory(item.category_group_name.trim());
                                   setPlaceTel(item.phone);
                                   drawMap(item.road_address_name);
                                   setPlaceModalVisible(false);
@@ -916,18 +916,18 @@ function ReceiptResultPage({route, navigation}: any) {
                   <View style={styles.categorySection}>
                     <Pressable
                       style={
-                        selectedCategory === '주유소, 충전소'
+                        selectedCategory === '주유소,충전소'
                           ? styles.selectedCategoryButton
                           : styles.unselectedCategoryButton
                       }
-                      onPress={() => setSelectedCategory('주유소, 충전소')}>
+                      onPress={() => setSelectedCategory('주유소,충전소')}>
                       <Text
                         style={
-                          selectedCategory === '주유소, 충전소'
+                          selectedCategory === '주유소,충전소'
                             ? styles.selectedCategoryText
                             : styles.unselectedCategoryText
                         }>
-                        주유소, 충전소
+                        주유소,충전소
                       </Text>
                     </Pressable>
 
