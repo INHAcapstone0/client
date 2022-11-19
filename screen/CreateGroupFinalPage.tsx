@@ -160,7 +160,7 @@ function CreateGroupFinalPage({navigation}: any) {
         navigation.reset({
           routes: [
             {
-              name: 'HomePage',
+              name: 'InitialPage',
             },
           ],
         });

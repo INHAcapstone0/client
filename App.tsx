@@ -18,11 +18,15 @@ import store from './store/Store';
 import AppInner from './AppInner';
 import ForegroundHandler from './utils/foreground_handler';
 import SplashScreen from 'react-native-splash-screen';
-
+import {
+  requestUserPermission,
+  notificationListner,
+} from './utils/push_notification_helper';
 const persistor = persistStore(store);
 
 function App() {
   useEffect(() => {
+    requestUserPermission();
     try {
       setTimeout(() => {
         SplashScreen.hide();
@@ -30,7 +34,7 @@ function App() {
     } catch (error) {
       console.log(error);
     }
-  });
+  }, []);
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

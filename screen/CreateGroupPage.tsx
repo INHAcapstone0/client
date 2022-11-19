@@ -89,7 +89,7 @@ function CreateGroupPage({navigation}: any) {
   }, [selectedStartTime, selectedEndTime]);
 
   const onChangeGroupName = useCallback((text: string) => {
-    setGroupName(text.trim());
+    setGroupName(text);
   }, []);
 
   const moveToNextStep = () => {

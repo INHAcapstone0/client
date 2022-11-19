@@ -85,6 +85,7 @@ function InitialPage({navigation}: any) {
         name="HomePage"
         component={HomePage}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
@@ -96,13 +97,10 @@ function InitialPage({navigation}: any) {
         name="CalculatePage"
         component={CalculatePage}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <Image
-            //   source={require('../resources/icons/Calculator.png')}
-            //   style={styles.alarmIcon}
-            // />
             <MaterialCommunityIcons
               name="calculator-variant"
               size={30}
@@ -115,10 +113,10 @@ function InitialPage({navigation}: any) {
         name="CreateGroupPage"
         component={CreateGroupPage}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
-            // <AntDesign name="plus" size={30} color={color} />
             <Image
               source={require('../resources/icons/add.png')}
               style={styles.alarmIcon}
@@ -130,14 +128,11 @@ function InitialPage({navigation}: any) {
         name="AlarmPage"
         component={AlarmPage}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
             <FontAwesome name="bell" size={20} color={color} />
-            // <Image
-            //   source={require('../resources/icons/Notification.png')}
-            //   style={styles.alarmIcon}
-            // />
           ),
         }}
       />
@@ -145,14 +140,11 @@ function InitialPage({navigation}: any) {
         name="SettingPage"
         component={SettingPage}
         options={{
+          unmountOnBlur: true,
           headerShown: false,
           tabBarLabel: '',
           tabBarIcon: ({color}: any) => (
             <Ionicons name="settings" size={25} color={color} />
-            // <Image
-            //   source={require('../resources/icons/Setting.png')}
-            //   style={styles.alarmIcon}
-            // />
           ),
         }}
       />

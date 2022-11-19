@@ -21,6 +21,7 @@ import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,
+  getFCMToken,
 } from '../utils/push_notification_helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormInput from '../components/FormInput';
@@ -61,12 +62,15 @@ function SignInPage({navigation}: any) {
         password: password,
       });
 
+      console.log('response', response);
+
       console.log('log in - ', response.data.data.accessToken);
       console.log('log in - ', response.data.data.refreshToken);
 
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
-      requestUserPermission();
+      // requestUserPermission();
+      getFCMToken();
       notificationListner();
 
       AsyncStorage.setItem('PushNotification', 'true');
@@ -83,8 +87,8 @@ function SignInPage({navigation}: any) {
 
       navigation.navigate('InitialPage');
     } catch (error: AxiosError | any) {
-      console.log('login error', error);
-      // Alert.alert(error.response);
+      console.log('login error', error.response.data.msg);
+      Alert.alert('알림', error?.response?.data?.msg);
     } finally {
       setLoading(false);
     }
