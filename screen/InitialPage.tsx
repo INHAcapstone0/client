@@ -73,7 +73,7 @@ function InitialPage({navigation}: any) {
     //     </View>
     //   </ScrollView>
     // </SafeAreaView>
-    <SignInPage />
+    <SignInPage navigation={navigation} />
   ) : (
     <Tab.Navigator
       screenOptions={{

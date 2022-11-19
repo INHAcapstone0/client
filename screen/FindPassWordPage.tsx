@@ -17,7 +17,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
 import {useAppDispatch} from '../store/Store';
-import {userActions} from '../slices/user';
+import {userActions} from '../slices/User';
 import {
   requestUserPermission,
   notificationListner,
@@ -80,8 +80,8 @@ function FindPassWordPage({navigation}: any) {
 
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
-      requestUserPermission();
-      notificationListner();
+      // requestUserPermission();
+      // notificationListner();
 
       AsyncStorage.setItem('PushNotification', 'true');
       AsyncStorage.setItem('SoundNotification', 'true');
