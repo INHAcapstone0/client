@@ -16,7 +16,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {WebView} from 'react-native-webview';
 import Modal from 'react-native-modal';
-import PurchaseItem from '../components/PurchaseItem';
+import PurchaseItem2 from '../components/PurchaseItem2';
 import {faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import KakaoMap from '../components/KakaoMap';
@@ -122,108 +122,102 @@ function ReceiptResultPage({route, navigation}: any) {
     setTotalPrice(dataTotalPrice.toString());
   }, []);
 
+  const calculateTotalPrice = () => {
+    let dataTotalPrice = 0;
+    data.map(
+      (item: any) => (dataTotalPrice += item.quantity * Number(item.price)),
+    );
+    console.log('dataTotalPrice', dataTotalPrice);
+    setTotalPrice(dataTotalPrice.toString());
+  };
+
   const togglePayTimeModal = (state: boolean) => {
     setIsPayTimeModalVisible(state);
   };
 
-  // const checkValidation = () => {
-  //   if (placeAddress === '') {
-  //     console.log('here1');
-  //     Toast.show({
-  //       type: ALERT_TYPE.WARNING,
-  //       textBody: '결제처를 입력해주세요',
-  //     });
-  //   } else if (totalPrice === '') {
-  //     console.log('here2');
-  //     Toast.show({
-  //       type: ALERT_TYPE.WARNING,
-  //       textBody: '결제한 금액을 입력해주세요',
-  //     });
-  //   } else if (!totalPriceValidationFlag) {
-  //     console.log('here3');
-  //     Toast.show({
-  //       type: ALERT_TYPE.WARNING,
-  //       textBody: '결제 항목과 결제 금액이 일치하지 않습니다',
-  //     });
-  //   } else if (payDate === '') {
-  //     console.log('here4');
-  //     Toast.show({
-  //       type: ALERT_TYPE.WARNING,
-  //       textBody: '결제 날짜를 선택해주세요',
-  //     });
-  //   } else if (category.length > 10) {
-  //     console.log('here5');
-  //     Toast.show({
-  //       type: ALERT_TYPE.WARNING,
-  //       textBody: '결제처 구분을 선택해주세요',
-  //     });
-  //   } else {
-  //     console.log('here6');
-  //     uploadReceipt(
-  //       payDate.substring(0, payDate.indexOf('-')) +
-  //         payDate.substring(
-  //           payDate.indexOf('-') + 1,
-  //           payDate.indexOf('-') + 3,
-  //         ) +
-  //         payDate.substring(
-  //           payDate.lastIndexOf('-') + 1,
-  //           payDate.lastIndexOf('-') + 3,
-  //         ) +
-  //         payTime
-  //           .toISOString()
-  //           .substring(
-  //             payTime.toISOString().indexOf('T') + 1,
-  //             payTime.toISOString().indexOf('T') + 3,
-  //           ) +
-  //         payTime
-  //           .toISOString()
-  //           .substring(
-  //             payTime.toISOString().indexOf(':') + 1,
-  //             payTime.toISOString().indexOf(':') + 3,
-  //           ),
-  //     );
-  //   }
-  //   //주소 날짜시간 가격
-  // };
+  const checkValidation = () => {
+    if (placeAddress === '') {
+      console.log('here1');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제처를 입력해주세요',
+      });
+    } else if (totalPrice === '') {
+      console.log('here2');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제한 금액을 입력해주세요',
+      });
+    }
+    // } else if (!totalPriceValidationFlag) {
+    //   console.log('here3');
+    //   Toast.show({
+    //     type: ALERT_TYPE.WARNING,
+    //     textBody: '결제 항목과 결제 금액이 일치하지 않습니다',
+    //   });
+    // }
+    else if (payDate === '') {
+      console.log('here4');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제 날짜를 선택해주세요',
+      });
+    } else if (category.length === 0) {
+      console.log('here5');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '결제처 구분을 선택해주세요',
+      });
+    } else {
+      console.log('here6');
+      uploadReceipt();
+    }
+    //주소 날짜시간 가격
+  };
 
   //결제항목과 결제금액 유효성 검사 함수
   const checkPriceValidation = () => {
     //결제항목을 입력한 경우에만 검사
+    var calculatedTotalPrice = 0;
+    data.map((item: any) => {
+      calculatedTotalPrice += Number(item.price) * Number(item.quantity);
+    });
+    console.log('calculatedTotalPrice', calculatedTotalPrice);
 
-    if (itemFlag) {
-      data.map((item: any) => {
-        if (!item.name || !item.name.trim()) {
-          setItemValidation(false);
-        }
-        if (!item.quantity || !item.quantity.trim() || isNaN(item.quantity)) {
-          setItemValidation(false);
-        }
-        if (!item.price || !item.price.trim() || isNaN(item.price)) {
-          setItemValidation(false);
-        }
-      });
+    // if (itemFlag) {
+    //   data.map((item: any) => {
+    //     if (!item.name || !item.name.trim()) {
+    //       setItemValidation(false);
+    //     }
+    //     if (!item.quantity || !item.quantity.trim() || isNaN(item.quantity)) {
+    //       setItemValidation(false);
+    //     }
+    //     if (!item.price || !item.price.trim() || isNaN(item.price)) {
+    //       setItemValidation(false);
+    //     }
+    //   });
 
-      if (itemValidation) {
-        var calculatedTotalPrice = 0;
-        data.map((item: any) => {
-          calculatedTotalPrice += Number(item.price) * Number(item.quantity);
-        });
-        if (calculatedTotalPrice.toString() === totalPrice) {
-          console.log('totalPrice', totalPrice);
-          console.log(
-            'calculatedTotalPrice.toString()',
-            calculatedTotalPrice.toString(),
-          );
-          setTotalPriceValidationFlag(true);
-        } else {
-          setTotalPriceValidationFlag(false);
-        }
-      } else {
-        setTotalPriceValidationFlag(false);
-      }
-    } else {
-      setTotalPriceValidationFlag(true);
-    }
+    //   if (itemValidation) {
+    //     var calculatedTotalPrice = 0;
+    //     data.map((item: any) => {
+    //       calculatedTotalPrice += Number(item.price) * Number(item.quantity);
+    //     });
+    //     if (calculatedTotalPrice.toString() === totalPrice) {
+    //       console.log('totalPrice', totalPrice);
+    //       console.log(
+    //         'calculatedTotalPrice.toString()',
+    //         calculatedTotalPrice.toString(),
+    //       );
+    //       setTotalPriceValidationFlag(true);
+    //     } else {
+    //       setTotalPriceValidationFlag(false);
+    //     }
+    //   } else {
+    //     setTotalPriceValidationFlag(false);
+    //   }
+    // } else {
+    //   setTotalPriceValidationFlag(true);
+    // }
   };
 
   //결제항목 빈칸 추가 함수
@@ -261,7 +255,16 @@ function ReceiptResultPage({route, navigation}: any) {
 
   //결제항목 삭제 함수
   const deleteItem = (id: string) => {
-    setData(data.filter(item => item.id !== id));
+    const newData = data.filter(item => item.id !== id);
+
+    // const 결제데이터 = data.find(item => item.id === id);
+    // console.log('결제데이터', 결제데이터);
+
+    let dataTotalPrice = 0;
+    newData.map((item: any) => (dataTotalPrice += Number(item.price)));
+    console.log('dataTotalPrice', dataTotalPrice);
+    setTotalPrice(dataTotalPrice.toString());
+    setData(newData);
   };
 
   //결제항목 생략 함수
@@ -430,7 +433,7 @@ function ReceiptResultPage({route, navigation}: any) {
   const moveToHomePage = () => {
     setTimeout(() => {
       navigation.navigate('InitialPage');
-    }, 3000);
+    }, 1000);
   };
 
   const loadReceiptData = () => {
@@ -448,11 +451,15 @@ function ReceiptResultPage({route, navigation}: any) {
       arr.push(newItem);
     });
     setData(arr);
-    if (receiptTotalPrice === route.params.data.totalPrice) {
-      setTotalPriceValidationFlag(true);
-    } else {
-      setTotalPriceValidationFlag(false);
-    }
+    // let dataTotalPrice = 0;
+    // route.params.data.items.map((item: any) => (dataTotalPrice += item.price));
+    // setTotalPrice(dataTotalPrice.toString());
+
+    // if (receiptTotalPrice === route.params.data.totalPrice) {
+    //   setTotalPriceValidationFlag(true);
+    // } else {
+    //   setTotalPriceValidationFlag(false);
+    // }
     // setTotalPrice(route.params.data.totalPrice.toString());
     setPlaceTel(route.params.data.store.tel);
     setPlace(route.params.data.store.name);
@@ -545,10 +552,13 @@ function ReceiptResultPage({route, navigation}: any) {
             </View>
             {data.map((item: any) => {
               return (
-                <PurchaseItem
+                <PurchaseItem2
                   key={item.id}
                   item={item}
                   deleteItem={deleteItem}
+                  setTotalPrice={setTotalPrice}
+                  totalPrice={totalPrice}
+                  calculateTotalPrice={calculateTotalPrice}
                 />
               );
             })}
@@ -586,22 +596,24 @@ function ReceiptResultPage({route, navigation}: any) {
             </View>
             <View style={styles.itemContainer}>
               <TextInput
-                onChangeText={text => {
-                  setTotalPrice(text);
-                }}
-                onBlur={() => {
-                  checkPriceValidation();
-                }}
+                // onChangeText={text => {
+                //   setTotalPrice(text);
+                // }}
+                // onBlur={() => {
+                //   checkPriceValidation();
+                // }}
                 placeholder="숫자만 입력해주세요."
                 style={styles.itemContent}
                 value={totalPrice}
+                editable={false}
+                selectTextOnFocus={false}
               />
             </View>
-            {!totalPriceValidationFlag && (
+            {/* {!totalPriceValidationFlag && (
               <Text style={styles.totalPriceValidationError}>
                 결제한 금액과 결제 항목들이 일치하지 않습니다.
               </Text>
-            )}
+            )} */}
           </View>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
@@ -1080,16 +1092,9 @@ function ReceiptResultPage({route, navigation}: any) {
             </View>
           </View>
           <View style={styles.itemSection}>
-            <Pressable style={styles.uploadButton} onPress={uploadReceipt}>
+            <Pressable style={styles.uploadButton} onPress={checkValidation}>
               <Text style={styles.uploadButtonText}>등록하기</Text>
             </Pressable>
-            {/* <Pressable
-              style={styles.uploadButton}
-              onPress={() => {
-                makeToast();
-              }}>
-              <Text style={styles.uploadButtonText}>토스트메세지</Text>
-            </Pressable> */}
           </View>
         </ScrollView>
       </AlertNotificationRoot>
