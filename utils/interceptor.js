@@ -22,31 +22,35 @@ axiosInstance.interceptors.response.use(
       console.log('refreshToken', refreshToken);
       console.log('accessToken', accessToken);
 
-      const {data} = await axios.get(
-        `http://146.56.190.78/users/auth/refresh`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Refresh: `${refreshToken}`,
+      try {
+        const {data} = await axios.get(
+          `http://146.56.190.78/users/auth/refresh`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Refresh: `${refreshToken}`,
+            },
           },
-        },
-      );
+        );
 
-      console.log('data', data);
+        console.log('data', data);
 
-      const originalRequest = config;
-      const newAccessToken = data.data.accessToken;
-      const newRefreshToken = data.data.refreshToken;
-      console.log('config', config);
-      console.log('newAccessToken : ', data.data.accessToken);
-      console.log('newRefreshToken : ', data.data.refreshToken);
+        const originalRequest = config;
+        const newAccessToken = data.data.accessToken;
+        const newRefreshToken = data.data.refreshToken;
+        console.log('config', config);
+        console.log('newAccessToken : ', data.data.accessToken);
+        console.log('newRefreshToken : ', data.data.refreshToken);
 
-      EncryptedStorage.setItem('accessToken', newAccessToken);
-      EncryptedStorage.setItem('refreshToken', newRefreshToken);
+        EncryptedStorage.setItem('accessToken', newAccessToken);
+        EncryptedStorage.setItem('refreshToken', newRefreshToken);
 
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-      return axios(originalRequest);
+        return axios(originalRequest);
+      } catch (err) {
+        console.log(err);
+      }
     }
     // console.log(error);
     return Promise.reject(error);

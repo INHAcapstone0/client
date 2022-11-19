@@ -168,7 +168,7 @@ function SelectReceiptPage({navigation, route}: any) {
         console.log(1);
         if (response !== undefined) {
           console.log('response', response);
-          // sendCameraScreenShot(response?.assets[0]);
+          sendCameraScreenShot(response?.assets[0]);
           // setSelectImg({uri: response?.assets[0]?.uri});
         }
       }
@@ -231,7 +231,6 @@ function SelectReceiptPage({navigation, route}: any) {
             style={styles.imageWrapper}
             onPress={requestCameraPermission}>
             <Image
-              // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
               source={require('../resources/icons/camera.png')}
               style={styles.imageIcon}
             />

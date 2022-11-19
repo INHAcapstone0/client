@@ -34,16 +34,16 @@ function SettingPage({navigation}: any) {
     const accessToken = await EncryptedStorage.getItem('accessToken');
     console.log('accessToken:', accessToken);
     try {
-      // const result = await axiosInstance.post(
-      //   'http://146.56.190.78/auth/logout',
-      //   null,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   },
-      // );
-      // console.log('/auth/logout', result);
+      const result = await axiosInstance.post(
+        'http://146.56.190.78/auth/logout',
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log('/auth/logout', result);
       EncryptedStorage.removeItem('refreshToken');
       EncryptedStorage.removeItem('accessToken');
       AsyncStorage.removeItem('fcmToken');
@@ -52,7 +52,9 @@ function SettingPage({navigation}: any) {
       AsyncStorage.removeItem('ReceiptNotification');
       AsyncStorage.removeItem('ScheduleNotification');
       AsyncStorage.removeItem('CalculateNotification');
-      dispatch(userActions.signout());
+      setTimeout(() => {
+        dispatch(userActions.signout());
+      }, 200);
     } catch (err: any) {
       console.log('logout error:', err.response.data.msg);
     }
@@ -113,7 +115,6 @@ function SettingPage({navigation}: any) {
               <Pressable
                 style={styles.modalButton}
                 onPress={() => {
-                  setModalVisible(false);
                   signOut();
                 }}>
                 <Text style={styles.modalButtonText}>예</Text>
