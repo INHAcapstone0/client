@@ -133,19 +133,27 @@ function SelectReceiptPage({navigation, route}: any) {
       //   routes: [
       //     {
       //       name: 'ReceiptResultPage',
-      //       params: {data: response.data.data},
+      //       params: {
+      //         data: response.data.data,
+      //         scheduleId: route.params.scheduleId,
+      //         screenShot: photo,
+      //       },
       //     },
       //   ],
       // });
-      setShowSpinner(false);
+      // setShowSpinner(false);
     } catch (err: any) {
       setShowSpinner(false);
-      setTimeout(() => {
-        Toast.show({
-          type: ALERT_TYPE.WARNING,
-          textBody: err.response.data.msg,
-        });
-      }, 1000);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: err.response.data.msg,
+      });
+      // setTimeout(() => {
+      //   Toast.show({
+      //     type: ALERT_TYPE.WARNING,
+      //     textBody: err.response.data.msg,
+      //   });
+      // }, 1000);
       console.log('err', err.response.data.msg);
     }
   };
