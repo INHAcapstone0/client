@@ -39,7 +39,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 
 function ReceiptInfoPage(route: any) {
-  const [accessToken, setAccessToken] = useState<string | null>('');
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [modalVisible, setModalVisible] = useState(false);
   const [receiptId, setReceiptId] = useState(route.route.params.receiptId);
@@ -63,24 +62,19 @@ function ReceiptInfoPage(route: any) {
     img_url: '', //대체 이미지 추가
   });
 
+  const [itemInfo, setItemInfo] = useState([]);
+
   const [totalPrice, setTotalPrice] = useState('0');
 
   useEffect(() => {
-    loadAccessToken();
-  }, []);
-
-  const loadAccessToken = async () => {
-    const accessTokenData = await EncryptedStorage.getItem('accessToken');
-    setAccessToken(accessTokenData);
-  };
-
-  useEffect(() => {
     getReceiptInfo();
-    setTimeout(() => drawMap(receiptInfo.address), 500);
-  }, [receiptInfo.address, accessToken]);
+    getItemInfo();
+    //setTimeout(() => drawMap(receiptInfo.address), 1000);
+  }, []);
 
   const getReceiptInfo = async () => {
     try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -90,6 +84,7 @@ function ReceiptInfoPage(route: any) {
           headers,
         },
       );
+      console.log('receipt info ', response.data);
       setReceiptInfo(response.data);
       setTotalPrice(
         response.data.total_price
@@ -98,22 +93,39 @@ function ReceiptInfoPage(route: any) {
       );
       drawMap(response.data.address);
     } catch (err: AxiosError | any) {
-      console.log('receipt error');
       console.log(err);
     }
   };
-  /*
-            <AutoHeightImage
-              width={Dimensions.get('window').width * 0.7}
-              source={{uri: receiptInfo.img_url}}
-            /> */
+
+  const getItemInfo = async () => {
+    try {
+      console.log('receiptId is ', receiptId);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const params = {
+        receipt_id: receiptId,
+      };
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axiosInstance.get('http://146.56.190.78/items', {
+        params,
+        headers,
+      });
+      console.log('item data ', response.data);
+      setItemInfo(response.data);
+    } catch (err: AxiosError | any) {
+      console.log('item error');
+      console.log(err);
+    }
+  };
+
   const mapViewRef = useRef<WebView>(null);
   const drawMap = (address: string) => {
-    mapViewRef.current?.postMessage(address);
+    setTimeout(() => mapViewRef.current?.postMessage(address), 500);
   };
 
   return (
-    <View style={styles.window}>
+    <ScrollView style={styles.window}>
       <View style={styles.titleSection}>
         <View style={styles.titleTextSection}>
           <Text style={styles.itemTitle}>{receiptInfo.place}</Text>
@@ -149,7 +161,9 @@ function ReceiptInfoPage(route: any) {
           </View>
         </View>
       </Modal>
-      <View style={styles.borderLine} />
+      <View style={styles.centerSection}>
+        <View style={styles.borderLine} />
+      </View>
       <View style={styles.itemSection}>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제 시각</Text>
@@ -167,7 +181,9 @@ function ReceiptInfoPage(route: any) {
           </View>
         </View>
       </View>
-      <View style={styles.borderLine} />
+      <View style={styles.centerSection}>
+        <View style={styles.borderLine} />
+      </View>
       <View style={styles.itemSection}>
         <View style={styles.itemAlign}>
           <Text style={styles.itemText}>결제처</Text>
@@ -194,25 +210,61 @@ function ReceiptInfoPage(route: any) {
           </View>
         </View>
       </View>
-      <View
-        style={{
-          borderWidth: 2,
-          borderRadius: 3,
-          borderColor: '#21B8CD',
-          width: Dimensions.get('window').width * 0.9,
-          height: 195,
-        }}>
-        <WebView
-          ref={mapViewRef}
-          source={{uri: 'http://146.56.190.78/webview/'}}
+      <View style={styles.centerSection}>
+        <View
           style={{
+            borderWidth: 2,
+            borderRadius: 3,
+            borderColor: '#21B8CD',
             width: Dimensions.get('window').width * 0.9,
-            height: 200,
-            opacity: 0.99,
-          }}
-        />
+            height: 195,
+            marginBottom: 20,
+          }}>
+          <WebView
+            ref={mapViewRef}
+            source={{uri: 'http://146.56.190.78/webview/'}}
+            style={{
+              width: Dimensions.get('window').width * 0.9,
+              height: 200,
+              opacity: 0.99,
+            }}
+          />
+        </View>
       </View>
-    </View>
+      <View style={styles.centerSection}>
+        <View style={styles.borderLine} />
+      </View>
+      {itemInfo.length != 0 && (
+        <View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>구매 목록</Text>
+          </View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>품명</Text>
+            <Text style={styles.itemText}>수량</Text>
+            <Text style={styles.itemText}>가격</Text>
+          </View>
+          <View style={styles.receiptItemSection}>
+            {itemInfo.map((item: any) => {
+              return (
+                <View
+                  key={item.name + item.quantity + item.price}
+                  style={styles.receiptItemRight}>
+                  <View style={styles.receiptItemLeft}>
+                    <Text style={styles.itemText}>{item.name}</Text>
+                    <Text style={styles.itemText}>{item.quantity}</Text>
+                  </View>
+                  <Text style={styles.itemText}>{item.price}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      )}
+      <View style={styles.centerSection}>
+        <View style={styles.borderLine} />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -222,7 +274,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     flex: 1,
-    alignItems: 'center',
   },
   titleSection: {
     width: Dimensions.get('window').width,
@@ -243,6 +294,9 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginTop: 20,
     marginBottom: 20,
+  },
+  centerSection: {
+    alignItems: 'center',
   },
   borderLine: {
     height: 1,
@@ -273,6 +327,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#000000',
     textAlign: 'right',
+  },
+  receiptItemSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  receiptItemLeft: {
+    width: Dimensions.get('window').width * 0.5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  receiptItemRight: {
+    width: Dimensions.get('window').width * 0.9,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 5,
   },
   memo: {
     fontFamily: 'Roboto',

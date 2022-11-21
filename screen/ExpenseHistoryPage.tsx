@@ -140,6 +140,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
             headers,
           },
         );
+
         setReceiptsInfo(response.data);
         return response.data;
       } catch (err: AxiosError | any) {
@@ -194,15 +195,19 @@ function ExpenseHistoryPage({route, navigation}: any) {
     getScheduleInfo();
     getReceiptsInfo('전체')
       .then(receipts => {
-        var stores: string[] = [];
         receipts.map((item: {category: string}) => {
           if (!categoryList.includes(item.category)) {
             categoryList.push(item.category);
           }
         });
+
+        var stores: {key: string; title: string}[] = [];
+
         categoryList.map((item: string) => {
-          routes.push({key: item, title: item});
+          stores.push({key: item, title: item});
         });
+
+        setRoutes(stores);
       })
       .catch(err => {
         console.log(err);

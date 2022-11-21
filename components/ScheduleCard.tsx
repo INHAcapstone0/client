@@ -59,6 +59,8 @@ function ScheduleCard({
   };
   const [ownerFlag, setOwnerFlag] = useState(false);
 
+  const [validFlag, setValidFlag] = useState(false);
+
   const [visible, setVisible] = useState(false);
 
   const pressExpenseHistory = () => {
@@ -76,7 +78,6 @@ function ScheduleCard({
   };
 
   useEffect(() => {
-    console.log('item.id', item.id);
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
@@ -88,6 +89,13 @@ function ScheduleCard({
     }
     setStartDate(item.startAt.substring(0, 10));
     setEndDate(item.endAt.substring(0, 10));
+
+    const endTime = new Date(item.endAt);
+    const currentTime = new Date();
+
+    if (endTime < currentTime) {
+      setValidFlag(true);
+    }
   }, []);
 
   if (ownerFlag) {
@@ -104,8 +112,7 @@ function ScheduleCard({
             </View>
             <View style={styles.cardDateArea}>
               <Text style={styles.cardDateText}>
-                {/* {startDate} ~ {endDate} */}
-                2022-11-01 ~ 2022-11.03
+                {startDate} ~ {endDate}
               </Text>
             </View>
           </View>
@@ -126,8 +133,14 @@ function ScheduleCard({
                 setSelectedScheduleId(item.id);
                 setBottomModalType('멤버목록_호스트');
                 openBottomModal();
-              }}>
-              <Text style={styles.cardMenuItem}>멤버 추가하기</Text>
+              }}
+              disabled={validFlag}>
+              <Text
+                style={
+                  !validFlag ? styles.cardMenuItem : styles.disabledCardMenuItem
+                }>
+                멤버 추가하기
+              </Text>
             </MenuItem>
             <MenuItem
               onPress={() => {
@@ -142,18 +155,15 @@ function ScheduleCard({
               onPress={() => {
                 closeMenu();
                 setSelectedScheduleId(item.id);
-                setBottomModalType('정산');
-                Alert.alert('추후 업데이트 예정입니다');
-              }}>
-              <Text style={styles.cardMenuItem}>정산하기</Text>
-            </MenuItem>
-            <MenuItem
-              onPress={() => {
-                closeMenu();
-                setSelectedScheduleId(item.id);
                 openDeleteModalForHost();
-              }}>
-              <Text style={styles.cardMenuItem}>그룹 떠나기</Text>
+              }}
+              disabled={validFlag}>
+              <Text
+                style={
+                  !validFlag ? styles.cardMenuItem : styles.disabledCardMenuItem
+                }>
+                그룹 떠나기
+              </Text>
             </MenuItem>
           </Menu>
         </View>
@@ -167,22 +177,21 @@ function ScheduleCard({
           </View>
           <View style={styles.borderLine} />
           <View style={styles.buttonArea}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.button}
+            <Pressable
+              style={!validFlag ? styles.button : styles.disabledButton}
               onPress={() => {
                 pressReceiptUpload();
-              }}>
+              }}
+              disabled={validFlag}>
               <Text style={styles.buttonText}>지출 등록</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
+            </Pressable>
+            <Pressable
               style={styles.button}
               onPress={() => {
                 pressExpenseHistory();
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -224,8 +233,14 @@ function ScheduleCard({
                 closeMenu();
                 setSelectedScheduleId(item.id);
                 openDeleteModalForMember();
-              }}>
-              <Text style={styles.cardMenuItem}>그룹 떠나기</Text>
+              }}
+              disabled={validFlag}>
+              <Text
+                style={
+                  !validFlag ? styles.cardMenuItem : styles.disabledCardMenuItem
+                }>
+                그룹 떠나기
+              </Text>
             </MenuItem>
           </Menu>
         </View>
@@ -239,22 +254,21 @@ function ScheduleCard({
           </View>
           <View style={styles.borderLine} />
           <View style={styles.buttonArea}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.button}
+            <Pressable
+              style={!validFlag ? styles.button : styles.disabledButton}
               onPress={() => {
                 pressReceiptUpload();
-              }}>
-              <Text style={styles.buttonText}>영수증 등록</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
+              }}
+              disabled={validFlag}>
+              <Text style={styles.buttonText}>지출 등록</Text>
+            </Pressable>
+            <Pressable
               style={styles.button}
               onPress={() => {
                 pressExpenseHistory();
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -291,7 +305,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto',
     color: '#000000',
-    marginLeft: 7,
+    marginLeft: 15,
     marginTop: 10,
     fontWeight: 'bold',
   },
@@ -299,7 +313,7 @@ const styles = StyleSheet.create({
   cardDateText: {
     fontSize: 13,
     fontFamily: 'Roboto',
-    marginLeft: 7,
+    marginLeft: 15,
     color: '#4D483D',
   },
   cardMenu: {
@@ -308,6 +322,11 @@ const styles = StyleSheet.create({
   },
   cardMenuItem: {
     fontFamily: 'Roboto',
+    color: '#000000',
+  },
+  disabledCardMenuItem: {
+    fontFamily: 'Roboto',
+    color: '#BBBBBB',
   },
   cardHostIcon: {
     color: '#FFB900',
@@ -355,7 +374,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#21B8CD',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginRight: 5,
+  },
+  disabledButton: {
+    width: 140,
+    height: 42,
+    borderRadius: 8,
+    backgroundColor: '#9C9C9C',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',

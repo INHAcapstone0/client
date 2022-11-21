@@ -236,8 +236,8 @@ function ReceiptCard({
       </Pressable>
     );
   } else if (
-    (category === '전체' || category === '주유소, 충전소') &&
-    item.category === '주유소, 충전소'
+    (category === '전체' || category === '주유소,충전소') &&
+    item.category === '주유소,충전소'
   ) {
     return (
       <Pressable

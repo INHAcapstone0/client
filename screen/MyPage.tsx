@@ -23,9 +23,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {any} from 'prop-types';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
-function MyPage() {
+function MyPage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
+  const [password, setPassword] = useState('');
+  const [validPassword, setValidPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
   const [myInfo, setMyInfo] = useState<{
@@ -39,9 +41,37 @@ function MyPage() {
   });
 
   useEffect(() => {
-    getMyInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myInfo]);
+  }, [validPassword, myInfo]);
+
+  const checkPassword = async () => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const body = {
+        password: password,
+      };
+      const response = await axiosInstance.post(
+        'http://146.56.190.78/users/password/check',
+        body,
+        {headers},
+      );
+      if (response.data.isMatch) {
+        setValidPassword(true);
+        getMyInfo();
+      } else {
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          textBody: '비밀번호가 일치하지 않습니다',
+          autoClose: 800,
+        });
+      }
+    } catch (err: AxiosError | any) {
+      console.log(err);
+    }
+  };
 
   const getMyInfo = async () => {
     try {
@@ -179,82 +209,125 @@ function MyPage() {
             warning: 'gray',
           },
         ]}>
-        <View style={styles.myPageHeader}>
-          <Text style={styles.myPageHeaderTitle}>개인정보 설정</Text>
-        </View>
-        <View style={styles.profileSection}>
-          <View style={styles.profileInfoSection}>
-            <View style={styles.profileImageSection}>
-              <Image
-                style={styles.userImage}
-                source={
-                  myInfo.img_url === ''
-                    ? require('../resources/icons/noReceiptImage.png')
-                    : {uri: myInfo.img_url}
-                }
-              />
-            </View>
-            <View style={styles.profileTextInfo}>
+        <>
+          {!validPassword && (
+            <>
+              <View style={styles.myPageHeader}>
+                <Text style={styles.myPageHeaderTitle}>개인정보 설정</Text>
+              </View>
+              <View style={styles.commentSection}>
+                <Text style={styles.comment}>본인 확인을 위해</Text>
+                <Text style={styles.comment}>비밀번호를 입력해주세요</Text>
+                <View style={styles.passwordInput}>
+                  <TextInput
+                    onChangeText={text => {
+                      setPassword(text);
+                    }}
+                    placeholder="비밀번호"
+                    value={password}
+                    secureTextEntry={true}
+                  />
+                </View>
+                <View style={styles.checkButtonSection}>
+                  <Pressable
+                    onPress={() => {
+                      checkPassword();
+                    }}>
+                    <View style={styles.checkButton}>
+                      <Text style={styles.checkButtonText}>확인</Text>
+                    </View>
+                  </Pressable>
+                </View>
+              </View>
+            </>
+          )}
+        </>
+        <>
+          {validPassword && (
+            <>
+              <View style={styles.myPageHeader}>
+                <Text style={styles.myPageHeaderTitle}>개인정보 설정</Text>
+              </View>
+              <View style={styles.profileSection}>
+                <View style={styles.profileInfoSection}>
+                  <View style={styles.profileImageSection}>
+                    <Image
+                      style={styles.userImage}
+                      source={
+                        myInfo.img_url === ''
+                          ? require('../resources/icons/noReceiptImage.png')
+                          : {uri: myInfo.img_url}
+                      }
+                    />
+                  </View>
+                  <View style={styles.profileTextInfo}>
+                    <View>
+                      <Text style={styles.profileInfoName}>{myInfo.name}</Text>
+                    </View>
+                    <View style={styles.profileInfoIdSection}>
+                      <Text style={styles.profileInfoId}>
+                        계정{'  '}
+                        {myInfo.email}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.changeProfileImageSection}>
+                  <Pressable
+                    onPress={() => {
+                      getGranted();
+                      //selectImage();
+                    }}>
+                    <View style={styles.changeProfileImageButton}>
+                      <Text style={styles.changeProfileImageButtonText}>
+                        변경
+                      </Text>
+                    </View>
+                  </Pressable>
+                </View>
+              </View>
+              <View style={styles.borderLine} />
               <View>
-                <Text style={styles.profileInfoName}>{myInfo.name}</Text>
-              </View>
-              <View style={styles.profileInfoIdSection}>
-                <Text style={styles.profileInfoId}>
-                  계정{'  '}
-                  {myInfo.email}
+                <Text style={styles.changePasswordTitle}>
+                  비밀번호 변경하기
                 </Text>
+                <View style={styles.passwordInput}>
+                  <TextInput
+                    onChangeText={text => {
+                      setNewPassword(text);
+                    }}
+                    placeholder="새 비밀번호"
+                    value={newPassword}
+                    secureTextEntry={true}
+                  />
+                </View>
+                <View style={styles.passwordInput}>
+                  <TextInput
+                    onChangeText={text => {
+                      setNewPasswordCheck(text);
+                    }}
+                    placeholder="새 비밀번호 확인"
+                    value={newPasswordCheck}
+                    secureTextEntry={true}
+                  />
+                </View>
+                <Text style={styles.changePasswordComment}>
+                  최소 8자 문자, 숫자, 특수문자를 조합해주세요.
+                </Text>
+                <View style={styles.changePasswordButtonSection}>
+                  <Pressable
+                    onPress={() => {
+                      changePassword();
+                    }}>
+                    <View style={styles.changePasswordButton}>
+                      <Text style={styles.changePasswordButtonText}>변경</Text>
+                    </View>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </View>
-          <View style={styles.changeProfileImageSection}>
-            <Pressable
-              onPress={() => {
-                getGranted();
-                //selectImage();
-              }}>
-              <View style={styles.changeProfileImageButton}>
-                <Text style={styles.changeProfileImageButtonText}>변경</Text>
-              </View>
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.borderLine} />
-        <View>
-          <Text style={styles.changePasswordTitle}>비밀번호 변경하기</Text>
-          <View style={styles.passwordInput}>
-            <TextInput
-              onChangeText={text => {
-                setNewPassword(text);
-              }}
-              placeholder="새 비밀번호"
-              value={newPassword}
-              secureTextEntry={true}
-            />
-          </View>
-          <View style={styles.passwordInput}>
-            <TextInput
-              onChangeText={text => {
-                setNewPasswordCheck(text);
-              }}
-              placeholder="새 비밀번호 확인"
-              value={newPasswordCheck}
-              secureTextEntry={true}
-            />
-          </View>
-          <Text style={styles.changePasswordComment}>
-            최소 8자 문자, 숫자, 특수문자를 조합해주세요.
-          </Text>
-          <View style={styles.changePasswordButtonSection}>
-            <Pressable
-              onPress={() => {
-                changePassword();
-              }}>
-              <View style={styles.changePasswordButton}>
-                <Text style={styles.changePasswordButtonText}>변경</Text>
-              </View>
-            </Pressable>
-          </View>
-        </View>
+            </>
+          )}
+        </>
       </AlertNotificationRoot>
     </View>
   );
@@ -358,6 +431,33 @@ const styles = StyleSheet.create({
   changeProfileImageButtonText: {
     color: 'white',
     fontSize: 12,
+    fontFamily: 'Roboto',
+  },
+  commentSection: {
+    alignItems: 'center',
+    marginTop: Dimensions.get('window').height * 0.1,
+  },
+  comment: {
+    color: 'black',
+    fontSize: 15,
+    fontFamily: 'Roboto',
+  },
+  checkButtonSection: {
+    flexDirection: 'row-reverse',
+    width: Dimensions.get('window').width * 0.8,
+  },
+  checkButton: {
+    width: 60,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#21B8CD',
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  checkButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontFamily: 'Roboto',
   },
 });

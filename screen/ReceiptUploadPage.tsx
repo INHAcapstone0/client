@@ -28,6 +28,7 @@ import {Calendar} from 'react-native-calendars';
 import {
   AlertNotificationRoot,
   ALERT_TYPE,
+  Dialog,
   Toast,
 } from 'react-native-alert-notification';
 
@@ -335,29 +336,51 @@ function ReceiptUploadPage({route, navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const items: itemData[] = [];
+      if (data.length > 1) {
+        const items: itemData[] = [];
 
-      data.filter(item =>
-        itemData.push({
+        data.filter(item =>
+          items.push({
+            receipt_id: receiptId,
+            quantity: item.quantity,
+            price: item.price,
+            name: item.name,
+          }),
+        );
+
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items/many`,
+          items,
+          {
+            headers,
+          },
+        );
+        Toast.show({
+          type: ALERT_TYPE.SUCCESS,
+          textBody: '지출정보 등록이 완료되었습니다',
+        });
+        moveToHomePage();
+      } else {
+        const body = {
           receipt_id: receiptId,
-          quantity: item.quantity,
-          price: item.price,
-          name: item.name,
-        }),
-      );
+          quantity: data[0].quantity,
+          price: data[0].price,
+          name: data[0].name,
+        };
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items`,
+          body,
+          {
+            headers,
+          },
+        );
+        Toast.show({
+          type: ALERT_TYPE.SUCCESS,
+          textBody: '지출정보 등록이 완료되었습니다',
+        });
 
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/items/many`,
-        itemData,
-        {
-          headers,
-        },
-      );
-      Toast.show({
-        type: ALERT_TYPE.SUCCESS,
-        textBody: '지출정보 등록이 완료되었습니다',
-      });
-      moveToHomePage();
+        moveToHomePage();
+      }
     } catch (err: AxiosError | any) {
       console.log(err);
       Toast.show({
@@ -408,6 +431,41 @@ function ReceiptUploadPage({route, navigation}: any) {
               </View>
             </View>
           </View>
+          <Pressable
+            onPress={() => {
+              console.log('토스트 메세지 테스트');
+              Toast.show({
+                type: ALERT_TYPE.SUCCESS,
+                textBody: '지출정보 등록이 완료되었습니다',
+              });
+            }}>
+            <Text>토스트메세지 테스트</Text>
+          </Pressable>
+          <AlertNotificationRoot>
+            <View>
+              <Button
+                title={'dialog box'}
+                onPress={() =>
+                  Dialog.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is dialog box success',
+                    button: 'close',
+                  })
+                }
+              />
+              <Button
+                title={'toast notification'}
+                onPress={() =>
+                  Toast.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is toast notification success',
+                  })
+                }
+              />
+            </View>
+          </AlertNotificationRoot>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>
@@ -608,7 +666,7 @@ function ReceiptUploadPage({route, navigation}: any) {
                                 onPress={() => {
                                   setPlace(item.place_name);
                                   setPlaceAddress(item.road_address_name);
-                                  setCategory(item.category_group_name);
+                                  setCategory(item.category_group_name.trim());
                                   setPlaceTel(item.phone);
                                   drawMap(item.road_address_name);
                                   setPlaceModalVisible(false);

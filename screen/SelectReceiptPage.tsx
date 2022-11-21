@@ -124,7 +124,7 @@ function SelectReceiptPage({navigation, route}: any) {
         },
       );
       console.log('response.data.data', response.data.data);
-      navigation.navigate('ReceiptResultPage', {
+      navigation.push('ReceiptResultPage', {
         data: response.data.data,
         scheduleId: route.params.scheduleId,
         screenShot: photo,
@@ -144,6 +144,7 @@ function SelectReceiptPage({navigation, route}: any) {
       // setShowSpinner(false);
     } catch (err: any) {
       setShowSpinner(false);
+
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: err.response.data.msg,
@@ -154,6 +155,7 @@ function SelectReceiptPage({navigation, route}: any) {
       //     textBody: err.response.data.msg,
       //   });
       // }, 1000);
+
       console.log('err', err.response.data.msg);
     }
   };
@@ -214,63 +216,44 @@ function SelectReceiptPage({navigation, route}: any) {
   }
   return (
     <View style={styles.receiptPage}>
-      <AlertNotificationRoot
-        colors={[
-          {
-            label: '',
-            card: '#e5e8e8',
-            overlay: '',
-            success: '',
-            danger: '',
-            warning: '',
-          },
-          {
-            label: 'gray',
-            card: 'gray',
-            overlay: 'gray',
-            success: 'gray',
-            danger: 'gray',
-            warning: 'gray',
-          },
-        ]}>
-        <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
-        <View style={styles.imageContainer}>
-          <Pressable
-            style={styles.imageWrapper}
-            onPress={requestCameraPermission}>
-            <Image
-              source={require('../resources/icons/camera.png')}
-              style={styles.imageIcon}
-            />
-          </Pressable>
-          <Pressable style={styles.imageWrapper} onPress={onLaunchImageLibrary}>
-            <Image
-              source={require('../resources/icons/gallery.png')}
-              style={styles.imageIcon}
-            />
-          </Pressable>
-        </View>
-        <View style={styles.borderLine} />
-        {/* <Text style={styles.manualFirstText}>
+      <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
+      <View style={styles.imageContainer}>
+        <Pressable
+          style={styles.imageWrapper}
+          onPress={requestCameraPermission}>
+          <Image
+            // source={require(`${process.env.PUBLIC_URL}/assets/dog-img.png`)}
+            source={require('../resources/icons/camera.png')}
+            style={styles.imageIcon}
+          />
+        </Pressable>
+        <Pressable style={styles.imageWrapper} onPress={onLaunchImageLibrary}>
+          <Image
+            source={require('../resources/icons/gallery.png')}
+            style={styles.imageIcon}
+          />
+        </Pressable>
+      </View>
+      <View style={styles.borderLine} />
+      {/* <Text style={styles.manualFirstText}>
         영수증이 없다면 [다음]을 누르신 후
       </Text>
       <Text style={styles.manualSecondText}>지출 정보를 직접 입력하세요</Text> */}
-        {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
-        <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
-          <Button
-            color="#21B8CD"
-            title="계좌에서 가져오기"
-            onPress={moveToyMyAccountPage}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
-          <Button
-            color="#21B8CD"
-            title="영수증 수동입력"
-            onPress={moveToNextStep}
-          />
-        </TouchableOpacity>
-      </AlertNotificationRoot>
+      {/* <Image source={selectImg} style={{height: 300, width: 1000}} /> */}
+      <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
+        <Button
+          color="#21B8CD"
+          title="계좌에서 가져오기"
+          onPress={moveToyMyAccountPage}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity activeOpacity={0.8} style={styles.nextButton}>
+        <Button
+          color="#21B8CD"
+          title="영수증 수동입력"
+          onPress={moveToNextStep}
+        />
+      </TouchableOpacity>
     </View>
   );
 }

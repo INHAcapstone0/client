@@ -22,7 +22,6 @@ import CreateGroupSecondPage from './screen/CreateGroupSecondPage';
 import CreateGroupFinalPage from './screen/CreateGroupFinalPage';
 import NotificationSettingPage from './screen/NotificationSettingPage';
 import RegisterAccountPage from './screen/RegisterAccountPage';
-import PreMyPage from './screen/PreMyPage';
 import MyPage from './screen/MyPage';
 import {useAppDispatch} from './store/Store';
 import {userActions} from './slices/User';
@@ -113,7 +112,6 @@ function AppInner() {
           name="NotificationSettingPage"
           component={NotificationSettingPage}
         />
-        <Stack.Screen name="PreMyPage" component={PreMyPage} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="ReceiptResultPage" component={ReceiptResultPage} />
         <Stack.Screen
