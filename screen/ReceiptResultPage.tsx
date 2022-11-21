@@ -351,7 +351,7 @@ function ReceiptResultPage({route, navigation}: any) {
         },
       );
 
-      console.log('response upload', response);
+      console.log('response upload1', response.data);
       // Toast.show({
       //   type: ALERT_TYPE.SUCCESS,
       //   textBody: '지출정보 등록에 성공하였습니다',
@@ -366,13 +366,15 @@ function ReceiptResultPage({route, navigation}: any) {
       // ]);
       uploadItems(response.data.id);
 
+      console.log('receipt item ', response.data.id);
+
       // if (itemFlag) {
       //   uploadItems(response.data.id);
       // } else {
       //   uploadImage(response.data.id);
       // }
     } catch (err: AxiosError | any) {
-      console.log(err);
+      console.log('uploadReceipt ', err);
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: '지출정보 등록에 실패하였습니다',
@@ -387,28 +389,46 @@ function ReceiptResultPage({route, navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const items: itemData[] = [];
+      if (data.length > 1) {
+        const items: itemData[] = [];
 
-      data.filter(item =>
-        items.push({
+        data.filter(item =>
+          items.push({
+            receipt_id: receiptId,
+            quantity: item.quantity,
+            price: item.price,
+            name: item.name,
+          }),
+        );
+
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items/many`,
+          items,
+          {
+            headers,
+          },
+        );
+        console.log('response upload2-1', response.data);
+        uploadImage(response.data.receipt_id);
+      } else {
+        const body = {
           receipt_id: receiptId,
-          quantity: item.quantity,
-          price: item.price,
-          name: item.name,
-        }),
-      );
-
-      const response = await axiosInstance.post(
-        `http://146.56.190.78/items/many`,
-        items,
-        {
-          headers,
-        },
-      );
-
-      uploadImage(response.data.id);
+          quantity: data[0].quantity,
+          price: data[0].price,
+          name: data[0].name,
+        };
+        const response = await axiosInstance.post(
+          `http://146.56.190.78/items`,
+          body,
+          {
+            headers,
+          },
+        );
+        console.log('response upload2-2', response.data);
+        uploadImage(response.data.receipt_id);
+      }
     } catch (err: AxiosError | any) {
-      console.log(err);
+      console.log('uploadItem ', err);
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: '지출정보 등록에 실패하였습니다',
@@ -423,7 +443,8 @@ function ReceiptResultPage({route, navigation}: any) {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${accessToken}`,
       };
-
+      console.log('receipt id', receiptId);
+      console.log('screenShot', screenShot._parts);
       const response = await axiosInstance.patch(
         `http://146.56.190.78/receipts/img/upload/${receiptId}`,
         screenShot,
@@ -431,13 +452,14 @@ function ReceiptResultPage({route, navigation}: any) {
           headers,
         },
       );
+      console.log('response upload3', response);
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         textBody: '지출정보 등록이 완료되었습니다',
       });
       moveToHomePage();
     } catch (err: AxiosError | any) {
-      console.log(err);
+      console.log('uploadImg ', err);
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: '지출정보 등록에 실패하였습니다',
@@ -511,26 +533,26 @@ function ReceiptResultPage({route, navigation}: any) {
   }, []);
 
   return (
-    <View style={styles.window}>
-      <AlertNotificationRoot
-        colors={[
-          {
-            label: '',
-            card: '#e5e8e8',
-            overlay: '',
-            success: '',
-            danger: '',
-            warning: '',
-          },
-          {
-            label: 'gray',
-            card: 'gray',
-            overlay: 'gray',
-            success: 'gray',
-            danger: 'gray',
-            warning: 'gray',
-          },
-        ]}>
+    <AlertNotificationRoot
+      colors={[
+        {
+          label: '',
+          card: '#e5e8e8',
+          overlay: '',
+          success: '',
+          danger: '',
+          warning: '',
+        },
+        {
+          label: 'gray',
+          card: 'gray',
+          overlay: 'gray',
+          success: 'gray',
+          danger: 'gray',
+          warning: 'gray',
+        },
+      ]}>
+      <View style={styles.window}>
         <View style={styles.header}>
           <Text style={styles.headerText}>지출정보 등록</Text>
         </View>
@@ -545,6 +567,41 @@ function ReceiptResultPage({route, navigation}: any) {
               </View>
             </View>
           </View>
+          <Pressable
+            onPress={() => {
+              console.log('토스트 메세지 테스트');
+              Toast.show({
+                type: ALERT_TYPE.SUCCESS,
+                textBody: '지출정보 등록이 완료되었습니다',
+              });
+            }}>
+            <Text>토스트메세지 테스트</Text>
+          </Pressable>
+          <AlertNotificationRoot>
+            <View>
+              <Button
+                title={'dialog box'}
+                onPress={() =>
+                  Dialog.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is dialog box success',
+                    button: 'close',
+                  })
+                }
+              />
+              <Button
+                title={'toast notification'}
+                onPress={() =>
+                  Toast.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is toast notification success',
+                  })
+                }
+              />
+            </View>
+          </AlertNotificationRoot>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>
@@ -1120,8 +1177,8 @@ function ReceiptResultPage({route, navigation}: any) {
             </Pressable> */}
           </View>
         </ScrollView>
-      </AlertNotificationRoot>
-    </View>
+      </View>
+    </AlertNotificationRoot>
   );
 }
 

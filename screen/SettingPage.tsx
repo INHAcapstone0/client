@@ -23,7 +23,7 @@ function SettingPage({navigation}: any) {
     navigation.navigate('NotificationSettingPage');
   };
   const pressMyPage = () => {
-    navigation.navigate('PreMyPage');
+    navigation.navigate('MyPage');
   };
 
   const pressAccountPage = () => {

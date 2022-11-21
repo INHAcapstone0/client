@@ -28,6 +28,7 @@ import {Calendar} from 'react-native-calendars';
 import {
   AlertNotificationRoot,
   ALERT_TYPE,
+  Dialog,
   Toast,
 } from 'react-native-alert-notification';
 
@@ -339,7 +340,7 @@ function ReceiptUploadPage({route, navigation}: any) {
         const items: itemData[] = [];
 
         data.filter(item =>
-          itemData.push({
+          items.push({
             receipt_id: receiptId,
             quantity: item.quantity,
             price: item.price,
@@ -349,7 +350,7 @@ function ReceiptUploadPage({route, navigation}: any) {
 
         const response = await axiosInstance.post(
           `http://146.56.190.78/items/many`,
-          itemData,
+          items,
           {
             headers,
           },
@@ -430,6 +431,41 @@ function ReceiptUploadPage({route, navigation}: any) {
               </View>
             </View>
           </View>
+          <Pressable
+            onPress={() => {
+              console.log('토스트 메세지 테스트');
+              Toast.show({
+                type: ALERT_TYPE.SUCCESS,
+                textBody: '지출정보 등록이 완료되었습니다',
+              });
+            }}>
+            <Text>토스트메세지 테스트</Text>
+          </Pressable>
+          <AlertNotificationRoot>
+            <View>
+              <Button
+                title={'dialog box'}
+                onPress={() =>
+                  Dialog.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is dialog box success',
+                    button: 'close',
+                  })
+                }
+              />
+              <Button
+                title={'toast notification'}
+                onPress={() =>
+                  Toast.show({
+                    type: ALERT_TYPE.SUCCESS,
+                    title: 'Success',
+                    textBody: 'Congrats! this is toast notification success',
+                  })
+                }
+              />
+            </View>
+          </AlertNotificationRoot>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>

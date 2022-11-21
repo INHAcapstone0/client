@@ -195,15 +195,18 @@ function ExpenseHistoryPage({route, navigation}: any) {
     getScheduleInfo();
     getReceiptsInfo('전체')
       .then(receipts => {
-        var stores: {key: string; title: string}[] = [];
         receipts.map((item: {category: string}) => {
           if (!categoryList.includes(item.category)) {
             categoryList.push(item.category);
           }
         });
+
+        var stores: {key: string; title: string}[] = [];
+
         categoryList.map((item: string) => {
           stores.push({key: item, title: item});
         });
+
         setRoutes(stores);
       })
       .catch(err => {

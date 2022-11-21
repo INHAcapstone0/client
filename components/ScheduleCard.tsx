@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto',
     color: '#000000',
-    marginLeft: 7,
+    marginLeft: 15,
     marginTop: 10,
     fontWeight: 'bold',
   },
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   cardDateText: {
     fontSize: 13,
     fontFamily: 'Roboto',
-    marginLeft: 7,
+    marginLeft: 15,
     color: '#4D483D',
   },
   cardMenu: {

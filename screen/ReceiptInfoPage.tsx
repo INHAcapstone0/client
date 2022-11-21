@@ -247,7 +247,9 @@ function ReceiptInfoPage(route: any) {
           <View style={styles.receiptItemSection}>
             {itemInfo.map((item: any) => {
               return (
-                <View style={styles.receiptItemRight}>
+                <View
+                  key={item.name + item.quantity + item.price}
+                  style={styles.receiptItemRight}>
                   <View style={styles.receiptItemLeft}>
                     <Text style={styles.itemText}>{item.name}</Text>
                     <Text style={styles.itemText}>{item.quantity}</Text>
