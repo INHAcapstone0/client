@@ -166,7 +166,7 @@ function AlarmPage({navigation}: any) {
           ? allAlarms.map((alarm: any) => {
               if (alarm.alarm_type === '초대') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openInvitaionModal(alarm.data, alarm.id)}
@@ -184,7 +184,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '영수증 업로드') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -203,7 +203,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '일정 시작') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -221,7 +221,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '일정 종료') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -239,7 +239,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '정산 확인 요청') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -257,7 +257,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
