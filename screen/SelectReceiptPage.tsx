@@ -124,6 +124,7 @@ function SelectReceiptPage({navigation, route}: any) {
         },
       );
       console.log('response.data.data', response.data.data);
+      setShowSpinner(false);
       navigation.navigate('ReceiptResultPage', {
         data: response.data.data,
         scheduleId: route.params.scheduleId,
@@ -141,7 +142,6 @@ function SelectReceiptPage({navigation, route}: any) {
       //     },
       //   ],
       // });
-      // setShowSpinner(false);
     } catch (err: any) {
       setShowSpinner(false);
       Toast.show({
