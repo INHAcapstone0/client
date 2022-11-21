@@ -104,7 +104,7 @@ function AlarmPage({navigation}: any) {
           },
         },
       );
-      getAllAlarms();
+      deleteAlarm();
       console.log('joinSchedule response', response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
@@ -125,16 +125,17 @@ function AlarmPage({navigation}: any) {
           },
         },
       );
-      getAllAlarms();
+      deleteAlarm();
       console.log(response);
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }
   };
 
-  const openInvitaionModal = (id: string) => (event: any) => {
+  const openInvitaionModal = (id: string, alarmsId: string) => (event: any) => {
     setInvitationModalVisible(true);
     setScheduleId(id);
+    setAlarmId(alarmsId);
   };
 
   const closeInvitationModal = () => {
@@ -165,94 +166,112 @@ function AlarmPage({navigation}: any) {
           ? allAlarms.map((alarm: any) => {
               if (alarm.alarm_type === '초대') {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openInvitaionModal(alarm.data)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/Invitation.png')}
-                      style={styles.alarmIcon}
-                    />
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openInvitaionModal(alarm.data, alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/Invitation.png')}
+                        style={styles.alarmIcon}
+                      />
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               } else if (alarm.alarm_type === '영수증 업로드') {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openModal(alarm.id)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/AlarmReceipt.png')}
-                      style={styles.alarmIcon}
-                    />
-                    {/* <Ionicons name="receipt-outline" color="black" size={40} /> */}
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openModal(alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/AlarmReceipt.png')}
+                        style={styles.alarmIcon}
+                      />
+                      {/* <Ionicons name="receipt-outline" color="black" size={40} /> */}
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               } else if (alarm.alarm_type === '일정 시작') {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openModal(alarm.id)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/DateStart.png')}
-                      style={styles.alarmIcon}
-                    />
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openModal(alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/DateStart.png')}
+                        style={styles.alarmIcon}
+                      />
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               } else if (alarm.alarm_type === '일정 종료') {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openModal(alarm.id)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/DateEnd.png')}
-                      style={styles.alarmIcon}
-                    />
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openModal(alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/DateEnd.png')}
+                        style={styles.alarmIcon}
+                      />
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               } else if (alarm.alarm_type === '정산 확인 요청') {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openModal(alarm.id)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/CalculateRequestCheck.png')}
-                      style={styles.alarmIcon}
-                    />
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openModal(alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/CalculateRequestCheck.png')}
+                        style={styles.alarmIcon}
+                      />
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               } else {
                 return (
-                  <TouchableOpacity
-                    style={styles.alarmWrapper}
-                    onPress={openModal(alarm.id)}
-                    key={alarm.id}>
-                    <Image
-                      source={require('../resources/icons/CalculateCheck.png')}
-                      style={styles.alarmIcon}
-                    />
-                    <Text style={styles.alarmText} key={alarm.id}>
-                      {alarm.message}.
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.alarmWrapper}
+                      onPress={openModal(alarm.id)}
+                      key={alarm.id}>
+                      <Image
+                        source={require('../resources/icons/CalculateCheck.png')}
+                        style={styles.alarmIcon}
+                      />
+                      <Text style={styles.alarmText} key={alarm.id}>
+                        {alarm.message}.
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.borderLine} />
+                  </View>
                 );
               }
             })
@@ -340,6 +359,11 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     backgroundColor: 'white',
+  },
+  borderLine: {
+    height: 1,
+    backgroundColor: '#b7d3d6',
+    width: Dimensions.get('window').width * 0.9,
   },
   alarmWrapper: {
     paddingTop: 8,

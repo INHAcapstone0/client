@@ -16,7 +16,7 @@ import {
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {REACT_APP_API_URL} from '@env';
-import {useAppDispatch} from '../store/Store';
+import {RootState, useAppDispatch} from '../store/Store';
 import {userActions} from '../slices/User';
 import {
   requestUserPermission,
@@ -25,6 +25,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
+import {useSelector} from 'react-redux';
 
 function ResetPasswordPage({navigation}: any) {
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ function ResetPasswordPage({navigation}: any) {
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
   const dispatch = useAppDispatch();
+  const id = useSelector((state: RootState) => state.persist.user.id);
 
   useEffect(() => {
     emailRef.current?.focus();
@@ -73,39 +75,50 @@ function ResetPasswordPage({navigation}: any) {
   };
 
   const onSubmit = async () => {
-    if (loading) {
+    if (!password || !password.trim()) {
+      Alert.alert('알림', '비밀번호를 입력해주세요.');
       return;
     }
-    if (!password || !password.trim()) {
-      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+    if (password !== confirmPassword) {
+      Alert.alert('알림', '비밀번호가 일치하지 않습니다');
+      return;
     }
     try {
-      setLoading(true);
-      const response = await axios.post('http://146.56.190.78/auth/login', {
-        // email: email,
-        password: password,
-      });
+      // setLoading(true);
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const response = await axios.patch(
+        `http://146.56.190.78/users/${id}`,
+        {
+          // email: email,
+          password: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
 
       console.log(response);
 
-      EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
-      EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
-      requestUserPermission();
-      notificationListner();
+      // EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
+      // EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
+      // // requestUserPermission();
+      // // notificationListner();
 
-      AsyncStorage.setItem('PushNotification', 'true');
-      AsyncStorage.setItem('SoundNotification', 'true');
-      AsyncStorage.setItem('VibrationNotification', 'true');
+      // AsyncStorage.setItem('PushNotification', 'true');
+      // AsyncStorage.setItem('SoundNotification', 'true');
+      // AsyncStorage.setItem('VibrationNotification', 'true');
 
-      dispatch(
-        userActions.setUser({
-          name: response.data.user,
-          id: response.data.user_id,
-          accessToken: response.data.data.accessToken,
-        }),
-      );
+      // dispatch(
+      //   userActions.setUser({
+      //     name: response.data.user,
+      //     id: response.data.user_id,
+      //     accessToken: response.data.data.accessToken,
+      //   }),
+      // );
 
-      navigation.navigate('InitialPage');
+      navigation.navigate('SignInPage');
     } catch (error: AxiosError | any) {
       console.log('login error', error);
       // Alert.alert(error.response);
@@ -157,7 +170,7 @@ function ResetPasswordPage({navigation}: any) {
           inputType="login"
         />
       ) : null} */}
-      <FormButton buttonTitle="비밀번호 변경" onPress={sendTempPassword} />
+      <FormButton buttonTitle="비밀번호 변경" onPress={onSubmit} />
       {/* <TouchableOpacity onPress={toSignUpPage}>
         <Text style={styles.navButtonText}>회원가입 하러가기</Text>
       </TouchableOpacity> */}
