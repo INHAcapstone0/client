@@ -109,7 +109,7 @@ function AccountHistoryPage({route, navigation}: any) {
       // console.log();
 
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20190101}&to_date=${endAt}`,
+        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${startAt}&to_date=${endAt}`,
         {
           headers: {
             'bank-authorization': `Bearer ${bankAccessTokenData}`,
