@@ -112,7 +112,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 15,
                   height: 15,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/Hana.png')}
@@ -164,7 +164,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 15,
                   height: 15,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/KakaoBank.png')}
@@ -216,7 +216,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 20,
                   height: 10,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/Epost.png')}
@@ -268,7 +268,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 20,
                   height: 20,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/IBK.png')}
@@ -320,7 +320,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 18,
                   height: 12,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/KbStar.png')}
@@ -372,7 +372,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 24,
                   height: 8,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/NH.png')}
@@ -424,7 +424,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 15,
                   height: 15,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/Shinhan.png')}
@@ -476,7 +476,7 @@ AccountSettingCardProps) {
                 style={{
                   width: 15,
                   height: 15,
-                  marginLeft: 7,
+                  marginLeft: 15,
                   marginTop: 10,
                 }}
                 source={require('../resources/bankIcon/Woori.png')}
@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
   cardOtherAccountIcon: {
     color: '#4D483D',
     marginTop: 12,
-    marginLeft: 7,
+    marginLeft: 15,
   },
   buttonArea: {
     width: Dimensions.get('window').width * 0.75,
