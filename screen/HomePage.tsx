@@ -257,6 +257,8 @@ const styles = StyleSheet.create({
   inputWrapper: {
     padding: 20,
     backgroundColor: 'white',
+    textAlign: 'center',
+    width: Dimensions.get('window').width,
   },
   label: {
     fontWeight: 'bold',

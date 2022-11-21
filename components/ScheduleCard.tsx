@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
     backgroundColor: 'white',
-    width: Dimensions.get('window').width * 0.9,
+    width: Dimensions.get('window').width * 0.89,
     height: 210,
     marginBottom: 20,
     borderColor: 'rgba(0, 0, 0, 0.25)',
@@ -361,14 +361,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   buttonArea: {
-    width: Dimensions.get('window').width * 0.75,
+    width: Dimensions.get('window').width * 0.7,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   button: {
-    width: 140,
+    width: 120,
     height: 42,
     borderRadius: 8,
     backgroundColor: '#21B8CD',
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   disabledButton: {
-    width: 140,
+    width: 120,
     height: 42,
     borderRadius: 8,
     backgroundColor: '#9C9C9C',
