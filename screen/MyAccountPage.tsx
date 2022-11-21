@@ -112,6 +112,7 @@ function MyAccountPage({navigation, route}: any) {
       }
     } catch (err: AxiosError | any) {
       console.log(err);
+      setErrFlag(true);
       refreshBankToken();
       // if (err.response.status === 404) {
       //   setErrFlag(true);

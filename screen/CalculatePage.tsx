@@ -206,7 +206,7 @@ function CalculatePage({navigation}: any) {
     }
   };
   return (
-    <View style={styles.calculatePage}>
+    <ScrollView style={styles.calculatePage}>
       <View style={styles.calculateTab}>
         <Pressable
           style={
@@ -241,11 +241,11 @@ function CalculatePage({navigation}: any) {
           </Text>
         </Pressable>
       </View>
-      <ScrollView>
+      <View style={styles.calculateHistory}>
         {currentTab === 0 ? (
           dummyData1.length > 0 ? (
             dummyData1.map((data: any) => (
-              <View style={styles.calculateWrapper} key={data.id}>
+              <View style={styles.calculateWrapper}>
                 <Text style={styles.calculateText} key={data.id}>
                   {data.name}
                 </Text>
@@ -347,21 +347,36 @@ function CalculatePage({navigation}: any) {
             <Image source={require('../resources/icons/calculateSend.png')} />
           </View>
         )}
-      </ScrollView>
+      </View>
       <View style={styles.calculateBorder} />
-    </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
+  coinView: {
+    width: '100%',
+    flex: 1,
+    flexDirection: 'column', // row
+    backgroundColor: 'white',
+    // alignItems: 'center',
+    // justifyContent: 'flex-start' // center, space-around
+  },
   calculatePage: {
     // paddingLeft: 20,
     // paddingRight: 20,
+    // paddingBottom: 100,
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     backgroundColor: 'white',
   },
+  calculateHistory: {
+    // height: Dimensions.get('window').height,
+    // width: Dimensions.get('window').width,
+    paddingBottom: 100,
+    backgroundColor: 'white',
+  },
   calculateTab: {
-    paddingTop: 30,
+    // paddingTop: 30,
     display: 'flex',
     flexDirection: 'row',
   },
