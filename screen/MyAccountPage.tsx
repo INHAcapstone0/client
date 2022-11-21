@@ -109,6 +109,8 @@ function MyAccountPage({navigation, route}: any) {
         console.log('response', response.data.res_list);
         setBankAccount(response.data.res_list);
         setErrFlag(false);
+      } else {
+        setErrFlag(true);
       }
     } catch (err: AxiosError | any) {
       console.log(err);
