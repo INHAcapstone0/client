@@ -207,6 +207,9 @@ function CalculatePage({navigation}: any) {
   };
   return (
     <ScrollView style={styles.calculatePage}>
+      <View style={styles.settingHeader}>
+        <Text style={styles.settingHeaderTitle}>정산관리</Text>
+      </View>
       <View style={styles.calculateTab}>
         <Pressable
           style={
@@ -353,13 +356,16 @@ function CalculatePage({navigation}: any) {
   );
 }
 const styles = StyleSheet.create({
-  coinView: {
-    width: '100%',
-    flex: 1,
-    flexDirection: 'column', // row
-    backgroundColor: 'white',
-    // alignItems: 'center',
-    // justifyContent: 'flex-start' // center, space-around
+  settingHeader: {
+    paddingTop: 20,
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
   },
   calculatePage: {
     // paddingLeft: 20,
@@ -379,6 +385,7 @@ const styles = StyleSheet.create({
     // paddingTop: 30,
     display: 'flex',
     flexDirection: 'row',
+    paddingTop: 10,
   },
   calculateActiveTabLabel: {
     backgroundColor: '#21B8CD',

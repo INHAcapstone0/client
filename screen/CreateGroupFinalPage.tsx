@@ -197,6 +197,9 @@ function CreateGroupFinalPage({navigation}: any) {
                 warning: 'gray',
               },
             ]}>
+            <View style={styles.settingHeader}>
+              <Text style={styles.settingHeaderTitle}>알람내역</Text>
+            </View>
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
@@ -321,6 +324,16 @@ function CreateGroupFinalPage({navigation}: any) {
   );
 }
 const styles = StyleSheet.create({
+  settingHeader: {
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+  },
   stepWrapper: {
     display: 'flex',
     flexDirection: 'row',

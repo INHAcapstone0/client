@@ -38,8 +38,8 @@ interface ReceiptCardProps {
   navigation: any;
 }
 function AccountSpendingCard({
-  // item,
-  // scheduleId,
+  item,
+  scheduleId,
   // // category,
   navigation: {navigate},
 }: any) {
@@ -62,7 +62,10 @@ function AccountSpendingCard({
     //   data: null,
     //   // scheduleId: scheduleId,
     // });
-    navigate('AccountReceiptUploadPage');
+    navigate('AccountReceiptUploadPage', {
+      item: item,
+      scheduleId: scheduleId,
+    });
   };
 
   return (
@@ -78,14 +81,21 @@ function AccountSpendingCard({
         {/* <FontAwesomeIcon icon={faUtensils} style={styles.icon} size={35} /> */}
         <View style={styles.content}>
           {/* <Text style={styles.place}>{item.place}</Text> */}
-          <Text style={styles.place}>투썸플레이스 인하대</Text>
+          <Text style={styles.place}>{item.branch_name}</Text>
 
           <View style={styles.detailContent}>
             {/* <Text style={styles.date}>{payDate}</Text> */}
-            <Text style={styles.date}>2022-11-2</Text>
+            <Text style={styles.date}>
+              {item.tran_date.substring(0, 4) +
+                '-' +
+                item.tran_date.substring(4, 6) +
+                '-' +
+                item.tran_date.substring(6, 8)}
+            </Text>
             <Text style={styles.price}>
               {/* {totalPrice} <Text style={styles.won}>원</Text> */}
-              4500 <Text style={styles.won}>원</Text>
+              {item.tran_amt}
+              <Text style={styles.won}>원</Text>
             </Text>
           </View>
         </View>

@@ -183,20 +183,29 @@ function MyAccountPage({navigation, route}: any) {
     //갖고있는 스케줄이 0개일 경우
     return (
       <View style={styles.errScreen}>
-        <Image
-          style={styles.errImg}
-          source={require('../resources/icons/LoginImage.png')}
-        />
-        <Text style={styles.errMsg}>{'\n'}등록된 계좌정보가 없으시네요</Text>
-        <Text style={styles.errMsg}>계좌정보를 등록해 보세요!{'\n'}</Text>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('RegisterAccountPage');
-          }}>
-          <View style={styles.errButton}>
-            <Text style={styles.errButtonText}>계좌정보 등록하기</Text>
+        <View style={styles.header}>
+          <Text style={styles.scheduleName}>계좌 정보</Text>
+        </View>
+        <ScrollView>
+          <View style={styles.errScreen2}>
+            <Image
+              style={styles.errImg}
+              source={require('../resources/icons/LoginImage.png')}
+            />
+            <Text style={styles.errMsg}>
+              {'\n'}등록된 계좌정보가 없으시네요
+            </Text>
+            <Text style={styles.errMsg}>계좌정보를 등록해 보세요!{'\n'}</Text>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('RegisterAccountPage');
+              }}>
+              <View style={styles.errButton}>
+                <Text style={styles.errButtonText}>계좌정보 등록하기</Text>
+              </View>
+            </Pressable>
           </View>
-        </Pressable>
+        </ScrollView>
       </View>
     );
   }
@@ -204,6 +213,9 @@ function MyAccountPage({navigation, route}: any) {
   return (
     <BottomSheetModalProvider>
       <ScrollView style={styles.inputWrapper}>
+        <View style={styles.header}>
+          <Text style={styles.scheduleName}>계좌 정보</Text>
+        </View>
         {bankAccount.map((item: any) => {
           if (item != null) {
             return (
@@ -221,6 +233,7 @@ function MyAccountPage({navigation, route}: any) {
                 dateStart={route.params.dateStart}
                 dateEnd={route.params.dateEnd}
                 setFinNum={setFinNum}
+                scheduleId={route.params.scheduleId}
               />
             );
           }
@@ -287,6 +300,25 @@ function MyAccountPage({navigation, route}: any) {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    width: Dimensions.get('window').width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#21B8CD',
+    height: 60,
+  },
+  errScreen2: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: Dimensions.get('window').height * 0.7,
+  },
+  scheduleName: {
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
   inputWrapper: {
     // padding: 20,
     backgroundColor: 'white',
@@ -325,9 +357,9 @@ const styles = StyleSheet.create({
   },
   errScreen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // backgroundColor: 'white',
   },
   errMsg: {
     fontSize: 20,
