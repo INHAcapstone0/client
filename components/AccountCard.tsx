@@ -39,6 +39,7 @@ interface ScheduleCardProps {
   navigation: any;
   dateStart: any;
   dateEnd: any;
+  scheduleId: any;
   setFinNum: (finNum: any) => void;
 }
 function AccountCard({
@@ -54,6 +55,7 @@ function AccountCard({
   navigation: {navigate},
   dateStart,
   dateEnd,
+  scheduleId,
 }: ScheduleCardProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -91,7 +93,9 @@ function AccountCard({
       }),
     );
     setTimeout(() => {
-      navigate('AccountHistoryPage');
+      navigate('AccountHistoryPage', {
+        scheduleId: scheduleId,
+      });
     }, 1000);
   };
 
