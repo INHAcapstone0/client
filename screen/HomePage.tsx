@@ -33,10 +33,15 @@ import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 
+interface schedule {
+  startAt: string;
+  endAt: string;
+}
+
 function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
 
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState<schedule[]>([]);
   const [infoNumber, setInfoNumber] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
@@ -83,7 +88,8 @@ function HomePage({navigation}: any) {
         'http://146.56.190.78/schedules/status',
         {params, headers},
       );
-      setInfo(response.data);
+      //setInfo(response.data);
+      sortAllSchedules(response.data);
       setErrFlag(false);
     } catch (err: AxiosError | any) {
       console.log(err);
@@ -104,6 +110,7 @@ function HomePage({navigation}: any) {
         {headers},
       );
       setInfoNumber(infoNumber - 1);
+      getAllSchedules();
     } catch (err) {
       console.log(err);
     }
@@ -119,10 +126,46 @@ function HomePage({navigation}: any) {
         `http://146.56.190.78/participants/${userId}/${selectedScheduleId}`,
         {headers},
       );
-      setInfoNumber(infoNumber - 1);
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const sortAllSchedules = (unsortedSchedules: schedule[]) => {
+    const today = new Date().toISOString();
+    var validSchedules: schedule[] = [];
+    var invalidSchedules: schedule[] = [];
+    unsortedSchedules.map(item => {
+      var endAt = new Date(item.endAt);
+      if (today < item.endAt) {
+        //진행~예정된 스케줄
+        validSchedules.push(item);
+      } else {
+        //끝난 스케줄
+        invalidSchedules.push(item);
+      }
+    });
+
+    validSchedules.sort(function (a: schedule, b: schedule) {
+      if (a.startAt > b.startAt) {
+        return 1;
+      } else if (a.startAt < b.startAt) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+    invalidSchedules.sort(function (a: schedule, b: schedule) {
+      if (a.startAt > b.startAt) {
+        return 1;
+      } else if (a.startAt < b.startAt) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+    setInfo([...validSchedules, ...invalidSchedules]);
+    setInfoNumber(validSchedules.length + invalidSchedules.length);
   };
 
   if (errFlag) {
