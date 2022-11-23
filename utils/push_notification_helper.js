@@ -51,6 +51,7 @@ const notificationOff = async () => {
 
 const notificationListner = async () => {
   const push = await AsyncStorage.getItem('PushNotification');
+  console.log('push', push);
 
   if (push === 'true') {
     console.log('fcm background 수신');

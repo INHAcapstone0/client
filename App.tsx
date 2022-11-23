@@ -26,6 +26,7 @@ const persistor = persistStore(store);
 
 function App() {
   useEffect(() => {
+    console.log(1);
     requestUserPermission();
     try {
       setTimeout(() => {
