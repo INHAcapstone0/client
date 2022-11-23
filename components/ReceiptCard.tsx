@@ -207,8 +207,8 @@ function ReceiptCard({
       </Pressable>
     );
   } else if (
-    (category === '전체' || category === '어린이집, 유치원') &&
-    item.category === '어린이집, 유치원'
+    (category === '전체' || category === '학교') &&
+    item.category === '학교'
   ) {
     return (
       <Pressable
@@ -236,8 +236,70 @@ function ReceiptCard({
       </Pressable>
     );
   } else if (
-    (category === '전체' || category === '주유소,충전소') &&
-    item.category === '주유소,충전소'
+    (category === '전체' || category === '학원') &&
+    item.category === '학원'
+  ) {
+    return (
+      <Pressable
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => {
+          pressReceipt();
+        }}>
+        <View style={styles.card}>
+          <FontAwesomeIcon icon={faSchool} style={styles.icon} size={35} />
+          <View style={styles.content}>
+            <Text style={styles.place}>{item.place}</Text>
+
+            <View style={styles.detailContent}>
+              <Text style={styles.date}>{payDate}</Text>
+              <Text style={styles.price}>
+                {totalPrice} <Text style={styles.won}>원</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.borderLine} />
+      </Pressable>
+    );
+  } else if (
+    (category === '전체' ||
+      category === '어린이집,유치원' ||
+      category === '어린이집, 유치원') &&
+    (item.category === '어린이집,유치원' || category === '어린이집, 유치원')
+  ) {
+    return (
+      <Pressable
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => {
+          pressReceipt();
+        }}>
+        <View style={styles.card}>
+          <FontAwesomeIcon icon={faSchool} style={styles.icon} size={35} />
+          <View style={styles.content}>
+            <Text style={styles.place}>{item.place}</Text>
+
+            <View style={styles.detailContent}>
+              <Text style={styles.date}>{payDate}</Text>
+              <Text style={styles.price}>
+                {totalPrice} <Text style={styles.won}>원</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.borderLine} />
+      </Pressable>
+    );
+  } else if (
+    (category === '전체' ||
+      category === '주유소,충전소' ||
+      category === '주유소, 충전소') &&
+    (item.category === '주유소,충전소' || item.category === '주유소, 충전소')
   ) {
     return (
       <Pressable
@@ -385,10 +447,36 @@ function ReceiptCard({
       </Pressable>
     );
   } else if (
-    ((category === '전체' ||
-      category === '중개업소' ||
-      category === '공공기관') &&
-      item.category === '중개업소') ||
+    (category === '전체' || category === '중개업소') &&
+    item.category === '중개업소'
+  ) {
+    return (
+      <Pressable
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => {
+          pressReceipt();
+        }}>
+        <View style={styles.card}>
+          <FontAwesomeIcon icon={faBuilding} style={styles.icon} size={35} />
+          <View style={styles.content}>
+            <Text style={styles.place}>{item.place}</Text>
+
+            <View style={styles.detailContent}>
+              <Text style={styles.date}>{payDate}</Text>
+              <Text style={styles.price}>
+                {totalPrice} <Text style={styles.won}>원</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.borderLine} />
+      </Pressable>
+    );
+  } else if (
+    (category === '전체' || category === '공공기관') &&
     item.category === '공공기관'
   ) {
     return (

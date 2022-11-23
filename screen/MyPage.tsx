@@ -140,6 +140,7 @@ function MyPage({navigation}: any) {
       await axiosInstance.patch('http://146.56.190.78/users/img/upload', body, {
         headers: headers,
       });
+      getMyInfo();
     } catch (err: AxiosError | any) {
       console.log(err.response);
     }

@@ -180,7 +180,7 @@ function MyAccountPage({navigation, route}: any) {
   };
 
   if (errFlag) {
-    //갖고있는 스케줄이 0개일 경우
+    //갖고있는 영수증이 0개일 경우
     return (
       <View style={styles.errScreen}>
         <View style={styles.header}>

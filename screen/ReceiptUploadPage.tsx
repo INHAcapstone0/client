@@ -431,41 +431,6 @@ function ReceiptUploadPage({route, navigation}: any) {
               </View>
             </View>
           </View>
-          <Pressable
-            onPress={() => {
-              console.log('토스트 메세지 테스트');
-              Toast.show({
-                type: ALERT_TYPE.SUCCESS,
-                textBody: '지출정보 등록이 완료되었습니다',
-              });
-            }}>
-            <Text>토스트메세지 테스트</Text>
-          </Pressable>
-          <AlertNotificationRoot>
-            <View>
-              <Button
-                title={'dialog box'}
-                onPress={() =>
-                  Dialog.show({
-                    type: ALERT_TYPE.SUCCESS,
-                    title: 'Success',
-                    textBody: 'Congrats! this is dialog box success',
-                    button: 'close',
-                  })
-                }
-              />
-              <Button
-                title={'toast notification'}
-                onPress={() =>
-                  Toast.show({
-                    type: ALERT_TYPE.SUCCESS,
-                    title: 'Success',
-                    textBody: 'Congrats! this is toast notification success',
-                  })
-                }
-              />
-            </View>
-          </AlertNotificationRoot>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>
@@ -752,18 +717,18 @@ function ReceiptUploadPage({route, navigation}: any) {
                     </Pressable>
                     <Pressable
                       style={
-                        selectedCategory === '어린이집, 유치원'
+                        selectedCategory === '어린이집,유치원'
                           ? styles.selectedCategoryButton
                           : styles.unselectedCategoryButton
                       }
-                      onPress={() => setSelectedCategory('어린이집, 유치원')}>
+                      onPress={() => setSelectedCategory('어린이집,유치원')}>
                       <Text
                         style={
-                          selectedCategory === '어린이집, 유치원'
+                          selectedCategory === '어린이집,유치원'
                             ? styles.selectedCategoryText
                             : styles.unselectedCategoryText
                         }>
-                        어린이집, 유치원
+                        어린이집,유치원
                       </Text>
                     </Pressable>
                   </View>
@@ -836,14 +801,14 @@ function ReceiptUploadPage({route, navigation}: any) {
                   <View style={styles.categorySection}>
                     <Pressable
                       style={
-                        selectedCategory === '주유소, 충전소'
+                        selectedCategory === '주유소,충전소'
                           ? styles.selectedCategoryButton
                           : styles.unselectedCategoryButton
                       }
-                      onPress={() => setSelectedCategory('주유소, 충전소')}>
+                      onPress={() => setSelectedCategory('주유소,충전소')}>
                       <Text
                         style={
-                          selectedCategory === '주유소, 충전소'
+                          selectedCategory === '주유소,충전소'
                             ? styles.selectedCategoryText
                             : styles.unselectedCategoryText
                         }>
@@ -1042,7 +1007,6 @@ const styles = StyleSheet.create({
   window: {
     backgroundColor: 'white',
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
   header: {

@@ -762,18 +762,18 @@ function AccountReceiptUploadPage({route, navigation}: any) {
                     </Pressable>
                     <Pressable
                       style={
-                        selectedCategory === '어린이집, 유치원'
+                        selectedCategory === '어린이집,유치원'
                           ? styles.selectedCategoryButton
                           : styles.unselectedCategoryButton
                       }
-                      onPress={() => setSelectedCategory('어린이집, 유치원')}>
+                      onPress={() => setSelectedCategory('어린이집,유치원')}>
                       <Text
                         style={
-                          selectedCategory === '어린이집, 유치원'
+                          selectedCategory === '어린이집,유치원'
                             ? styles.selectedCategoryText
                             : styles.unselectedCategoryText
                         }>
-                        어린이집, 유치원
+                        어린이집,유치원
                       </Text>
                     </Pressable>
                   </View>
@@ -846,18 +846,18 @@ function AccountReceiptUploadPage({route, navigation}: any) {
                   <View style={styles.categorySection}>
                     <Pressable
                       style={
-                        selectedCategory === '주유소, 충전소'
+                        selectedCategory === '주유소,충전소'
                           ? styles.selectedCategoryButton
                           : styles.unselectedCategoryButton
                       }
-                      onPress={() => setSelectedCategory('주유소, 충전소')}>
+                      onPress={() => setSelectedCategory('주유소,충전소')}>
                       <Text
                         style={
-                          selectedCategory === '주유소, 충전소'
+                          selectedCategory === '주유소,충전소'
                             ? styles.selectedCategoryText
                             : styles.unselectedCategoryText
                         }>
-                        주유소, 충전소
+                        주유소,충전소
                       </Text>
                     </Pressable>
 

@@ -41,6 +41,10 @@ import {any, string} from 'prop-types';
 import axiosInstance from '../utils/interceptor';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
+interface receipt {
+  payDate: string;
+}
+
 function ExpenseHistoryPage({route, navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const saveRoute = useState(route);
@@ -58,7 +62,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
     owner_id: '',
     total_pay: 0,
   });
-  const [receiptsInfo, setReceiptsInfo] = useState([]);
+  const [receiptsInfo, setReceiptsInfo] = useState<receipt[]>([]);
 
   const [errFlag, setErrFlag] = useState(false);
   const [ownerFlag, setOwnerFlag] = useState(false);
@@ -141,7 +145,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
           },
         );
 
-        setReceiptsInfo(response.data);
+        sortReceipts(response.data);
         return response.data;
       } catch (err: AxiosError | any) {
         console.log(err);
@@ -164,7 +168,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
             headers,
           },
         );
-        setReceiptsInfo(response.data);
+        sortReceipts(response.data);
       } catch (err: AxiosError | any) {
         console.log(err);
         if (err.response.status === 404) {
@@ -172,6 +176,19 @@ function ExpenseHistoryPage({route, navigation}: any) {
         }
       }
     }
+  };
+
+  const sortReceipts = (unsortedReceipts: receipt[]) => {
+    unsortedReceipts.sort(function (a: receipt, b: receipt) {
+      if (a.payDate > b.payDate) {
+        return 1;
+      } else if (a.payDate < b.payDate) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+    setReceiptsInfo(unsortedReceipts);
   };
 
   const renderTabBar = (props: any) => (

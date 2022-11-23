@@ -185,65 +185,79 @@ function RegisterAccountPage({navigation}: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <ScrollView
-      style={{
-        backgroundColor: 'white',
-      }}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: 20,
-        }}>
-        <Pressable
-          style={styles.addButton}
-          onPress={() => {
-            //리다이렉션 시키기
-            redirectToOpenbanking();
-          }}>
-          <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
-        </Pressable>
+    <>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>계좌 관리하기</Text>
       </View>
-      {bankInfo.map((item: any) => {
-        return (
-          <AccountSettingCard
-            key={item.fintech_use_num}
-            item={item}
-            setSelectedFinNum={setSelectedFinNum}
-            openDeleteModal={openDeleteModal}
-          />
-        );
-      })}
-      <Modal
-        isVisible={isDeleteModalVisible}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        style={styles.modalContainer}>
-        <View style={styles.modalContainerForDelete}>
-          <View style={styles.modalInnerContainer}>
-            <Text style={styles.modalComment}>계좌를 삭제하시겠습니까?</Text>
-            <View style={styles.modalButtonArea}>
-              <Pressable style={styles.modalButton} onPress={closeDeleteModal}>
-                <Text style={styles.modalButtonText}>아니오</Text>
-              </Pressable>
-              <Pressable
-                style={styles.modalButton}
-                onPress={() => {
-                  deleteAccount();
-                  closeDeleteModal();
-                  getAccountInfo();
-                }}>
-                <Text style={styles.modalButtonText}>예</Text>
-              </Pressable>
+      <ScrollView
+        style={{
+          backgroundColor: 'white',
+        }}>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: 20,
+          }}>
+          <Pressable
+            style={styles.addButton}
+            onPress={() => {
+              //리다이렉션 시키기
+              redirectToOpenbanking();
+            }}>
+            <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
+          </Pressable>
+        </View>
+        {bankInfo.map((item: any) => {
+          return (
+            <AccountSettingCard
+              key={item.fintech_use_num}
+              item={item}
+              setSelectedFinNum={setSelectedFinNum}
+              openDeleteModal={openDeleteModal}
+            />
+          );
+        })}
+        <Modal
+          isVisible={isDeleteModalVisible}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          style={styles.modalContainer}>
+          <View style={styles.modalContainerForDelete}>
+            <View style={styles.modalInnerContainer}>
+              <Text style={styles.modalComment}>계좌를 삭제하시겠습니까?</Text>
+              <View style={styles.modalButtonArea}>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={closeDeleteModal}>
+                  <Text style={styles.modalButtonText}>아니오</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    deleteAccount();
+                    closeDeleteModal();
+                    getAccountInfo();
+                  }}>
+                  <Text style={styles.modalButtonText}>예</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </ScrollView>
+        </Modal>
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  headerTitle: {color: 'black', fontSize: 16, fontFamily: 'Roboto'},
   addButton: {
     width: Dimensions.get('window').width * 0.9,
     height: 50,
