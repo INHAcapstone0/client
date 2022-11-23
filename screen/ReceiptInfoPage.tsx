@@ -134,14 +134,15 @@ function ReceiptInfoPage(route: any) {
             {receiptInfo.memo}
           </Text>
         </View>
-        <Pressable onPress={() => setModalVisible(true)}>
+        <Pressable
+          onPress={() => {
+            if (receiptInfo.img_url != null) {
+              setModalVisible(true);
+            }
+          }}>
           <Image
             style={styles.receiptImage}
-            source={
-              receiptInfo.img_url === ''
-                ? require('../resources/icons/noReceiptImage.png')
-                : {uri: receiptInfo.img_url}
-            }
+            source={{uri: receiptInfo.img_url}}
           />
         </Pressable>
       </View>
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalHeader: {
-    width: Dimensions.get('window').width * 0.725,
+    width: Dimensions.get('window').width * 0.7,
     flexDirection: 'row-reverse',
   },
   modalCloseButton: {
