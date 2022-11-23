@@ -40,7 +40,7 @@ interface schedule {
 
 function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
-
+  const userName = useSelector((state: RootState) => state.persist.user.name);
   const [info, setInfo] = useState<schedule[]>([]);
   const [infoNumber, setInfoNumber] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
@@ -191,6 +191,9 @@ function HomePage({navigation}: any) {
   } else {
     return (
       <BottomSheetModalProvider>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{userName}의 일정 목록</Text>
+        </View>
         <ScrollView style={styles.inputWrapper}>
           {info.map((item: any) => {
             if (item != null) {
@@ -297,6 +300,18 @@ function HomePage({navigation}: any) {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#21B8CD',
+  },
+  headerTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: 'bold',
+  },
   inputWrapper: {
     padding: 20,
     backgroundColor: 'white',

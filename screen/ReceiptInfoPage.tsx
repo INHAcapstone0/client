@@ -125,151 +125,163 @@ function ReceiptInfoPage(route: any) {
   };
 
   return (
-    <ScrollView style={styles.window}>
-      <View style={styles.titleSection}>
-        <View style={styles.titleTextSection}>
-          <Text style={styles.itemTitle}>{receiptInfo.place}</Text>
-          <Text style={styles.memo}>
-            {'\n'}
-            {receiptInfo.memo}
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => {
-            if (receiptInfo.img_url != null) {
-              setModalVisible(true);
-            }
-          }}>
-          <Image
-            style={styles.receiptImage}
-            source={{uri: receiptInfo.img_url}}
-          />
-        </Pressable>
+    <>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>지출 상세정보</Text>
       </View>
-      <Modal isVisible={modalVisible}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalHeader}>
-              <Pressable onPress={() => setModalVisible(false)}>
-                <FontAwesomeIcon
-                  style={styles.modalCloseButton}
-                  icon={faXmark}
-                  size={30}
-                />
-              </Pressable>
-            </View>
-            <AutoHeightImage path={receiptInfo.img_url} />
-          </View>
-        </View>
-      </Modal>
-      <View style={styles.centerSection}>
-        <View style={styles.borderLine} />
-      </View>
-      <View style={styles.itemSection}>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>결제 시각</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>
-              {receiptInfo.payDate.substring(0, 10)}{' '}
-              {receiptInfo.payDate.substring(11, 19)}
+      <ScrollView style={styles.window}>
+        <View style={styles.titleSection}>
+          <View style={styles.titleTextSection}>
+            <Text style={styles.itemTitle}>{receiptInfo.place}</Text>
+            <Text style={styles.memo}>
+              {'\n'}
+              {receiptInfo.memo}
             </Text>
           </View>
+          <Pressable
+            onPress={() => {
+              if (receiptInfo.img_url != null) {
+                setModalVisible(true);
+              }
+            }}>
+            <Image
+              style={styles.receiptImage}
+              source={{uri: receiptInfo.img_url}}
+            />
+          </Pressable>
         </View>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>결제 금액</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{totalPrice}원</Text>
+        <Modal isVisible={modalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={styles.modalHeader}>
+                <Pressable onPress={() => setModalVisible(false)}>
+                  <FontAwesomeIcon
+                    style={styles.modalCloseButton}
+                    icon={faXmark}
+                    size={30}
+                  />
+                </Pressable>
+              </View>
+              <AutoHeightImage path={receiptInfo.img_url} />
+            </View>
+          </View>
+        </Modal>
+        <View style={styles.centerSection}>
+          <View style={styles.borderLine} />
+        </View>
+        <View style={styles.itemSection}>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>결제 시각</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>
+                {receiptInfo.payDate.substring(0, 10)}{' '}
+                {receiptInfo.payDate.substring(11, 19)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>결제 금액</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>{totalPrice}원</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <View style={styles.centerSection}>
-        <View style={styles.borderLine} />
-      </View>
-      <View style={styles.itemSection}>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>결제처</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{receiptInfo.place}</Text>
+        <View style={styles.centerSection}>
+          <View style={styles.borderLine} />
+        </View>
+        <View style={styles.itemSection}>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>결제처</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>{receiptInfo.place}</Text>
+            </View>
+          </View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>결제처 구분</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>{receiptInfo.category}</Text>
+            </View>
+          </View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>주소</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>{receiptInfo.address}</Text>
+            </View>
+          </View>
+          <View style={styles.itemAlign}>
+            <Text style={styles.itemText}>전화번호</Text>
+            <View style={styles.item}>
+              <Text style={styles.itemText}>{receiptInfo.tel}</Text>
+            </View>
           </View>
         </View>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>결제처 구분</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{receiptInfo.category}</Text>
-          </View>
-        </View>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>주소</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{receiptInfo.address}</Text>
-          </View>
-        </View>
-        <View style={styles.itemAlign}>
-          <Text style={styles.itemText}>전화번호</Text>
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{receiptInfo.tel}</Text>
-          </View>
-        </View>
-      </View>
-      <View style={styles.centerSection}>
-        <View
-          style={{
-            borderWidth: 2,
-            borderRadius: 3,
-            borderColor: '#21B8CD',
-            width: Dimensions.get('window').width * 0.9,
-            height: 195,
-            marginBottom: 20,
-          }}>
-          <WebView
-            ref={mapViewRef}
-            source={{uri: 'http://146.56.190.78/webview/'}}
+        <View style={styles.centerSection}>
+          <View
             style={{
+              borderWidth: 2,
+              borderRadius: 3,
+              borderColor: '#21B8CD',
               width: Dimensions.get('window').width * 0.9,
-              height: 200,
-              opacity: 0.99,
-            }}
-          />
+              height: 195,
+              marginBottom: 20,
+            }}>
+            <WebView
+              ref={mapViewRef}
+              source={{uri: 'http://146.56.190.78/webview/'}}
+              style={{
+                width: Dimensions.get('window').width * 0.9,
+                height: 200,
+                opacity: 0.99,
+              }}
+            />
+          </View>
         </View>
-      </View>
-      <View style={styles.centerSection}>
-        <View style={styles.borderLine} />
-      </View>
-      {itemInfo.length != 0 && (
-        <View>
-          <View style={styles.itemAlign}>
-            <Text style={styles.itemText}>구매 목록</Text>
-          </View>
-          <View style={styles.itemAlign}>
-            <Text style={styles.itemText}>품명</Text>
-            <Text style={styles.itemText}>수량</Text>
-            <Text style={styles.itemText}>가격</Text>
-          </View>
-          <View style={styles.receiptItemSection}>
-            {itemInfo.map((item: any) => {
-              return (
-                <View
-                  key={item.name + item.quantity + item.price}
-                  style={styles.receiptItemRight}>
-                  <View style={styles.receiptItemLeft}>
-                    <Text style={styles.itemText}>{item.name}</Text>
-                    <Text style={styles.itemText}>{item.quantity}</Text>
+        <View style={styles.centerSection}>
+          <View style={styles.borderLine} />
+        </View>
+        {itemInfo.length != 0 && (
+          <View>
+            <View style={styles.itemAlign}>
+              <Text style={styles.itemText}>구매 목록</Text>
+            </View>
+            <View style={styles.itemAlign}>
+              <Text style={styles.itemText}>품명</Text>
+              <Text style={styles.itemText}>수량</Text>
+              <Text style={styles.itemText}>가격</Text>
+            </View>
+            <View style={styles.receiptItemSection}>
+              {itemInfo.map((item: any) => {
+                return (
+                  <View
+                    key={item.name + item.quantity + item.price}
+                    style={styles.receiptItemRight}>
+                    <View style={styles.receiptItemLeft}>
+                      <Text style={styles.itemText}>{item.name}</Text>
+                      <Text style={styles.itemText}>{item.quantity}</Text>
+                    </View>
+                    <Text style={styles.itemText}>{item.price}</Text>
                   </View>
-                  <Text style={styles.itemText}>{item.price}</Text>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
+        )}
+        <View style={styles.centerSection}>
+          <View style={styles.borderLine} />
         </View>
-      )}
-      <View style={styles.centerSection}>
-        <View style={styles.borderLine} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  headerTitle: {color: 'black', fontSize: 16, fontFamily: 'Roboto'},
   window: {
     backgroundColor: '#FFFFFF',
     width: Dimensions.get('window').width,
