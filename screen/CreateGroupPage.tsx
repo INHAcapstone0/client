@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderColor: '#D9D9D9',
     fontFamily: 'Roboto',
     fontSize: 12,
-    fontWeight: '400',
+    fontWeight: '700',
   },
   stepWrapper: {
     display: 'flex',
