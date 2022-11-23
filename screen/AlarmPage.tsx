@@ -162,11 +162,14 @@ function AlarmPage({navigation}: any) {
   return (
     <SafeAreaView style={styles.alarmPage}>
       <ScrollView>
+        <View style={styles.settingHeader}>
+          <Text style={styles.settingHeaderTitle}>알람내역</Text>
+        </View>
         {allAlarms.length > 0
           ? allAlarms.map((alarm: any) => {
               if (alarm.alarm_type === '초대') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openInvitaionModal(alarm.data, alarm.id)}
@@ -184,7 +187,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '영수증 업로드') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -203,7 +206,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '일정 시작') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -221,7 +224,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '일정 종료') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -239,7 +242,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else if (alarm.alarm_type === '정산 확인 요청') {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -257,7 +260,7 @@ function AlarmPage({navigation}: any) {
                 );
               } else {
                 return (
-                  <View>
+                  <View key={alarm.id}>
                     <TouchableOpacity
                       style={styles.alarmWrapper}
                       onPress={openModal(alarm.id)}
@@ -354,11 +357,20 @@ function AlarmPage({navigation}: any) {
 const styles = StyleSheet.create({
   alarmPage: {
     padding: 20,
-    paddingTop: 30,
     paddingBottom: 100,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     backgroundColor: 'white',
+  },
+  settingHeader: {
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
   },
   borderLine: {
     height: 1,

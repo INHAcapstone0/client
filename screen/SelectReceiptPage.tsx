@@ -124,6 +124,7 @@ function SelectReceiptPage({navigation, route}: any) {
         },
       );
       console.log('response.data.data', response.data.data);
+      setShowSpinner(false);
       navigation.navigate('ReceiptResultPage', {
         data: response.data.data,
         scheduleId: route.params.scheduleId,
@@ -141,7 +142,6 @@ function SelectReceiptPage({navigation, route}: any) {
       //     },
       //   ],
       // });
-      // setShowSpinner(false);
     } catch (err: any) {
       setShowSpinner(false);
       Toast.show({
@@ -213,7 +213,7 @@ function SelectReceiptPage({navigation, route}: any) {
     );
   }
   return (
-    <View style={styles.receiptPage}>
+    <ScrollView style={styles.receiptPage}>
       <AlertNotificationRoot
         colors={[
           {
@@ -233,6 +233,9 @@ function SelectReceiptPage({navigation, route}: any) {
             warning: 'gray',
           },
         ]}>
+        <View style={styles.header}>
+          <Text style={styles.scheduleName}>영수증 등록</Text>
+        </View>
         <Text style={styles.text}>영수증을 등록할 수단을 선택해주세요</Text>
         <View style={styles.imageContainer}>
           <Pressable
@@ -271,11 +274,24 @@ function SelectReceiptPage({navigation, route}: any) {
           />
         </TouchableOpacity>
       </AlertNotificationRoot>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    width: Dimensions.get('window').width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#21B8CD',
+    height: 60,
+  },
+  scheduleName: {
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
   receiptPage: {
     backgroundColor: 'white',
     height: Dimensions.get('window').height,

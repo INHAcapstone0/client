@@ -314,6 +314,17 @@ function ReceiptResultPage({route, navigation}: any) {
   };
 
   const uploadReceipt = async () => {
+    const date = Object.keys(selectedDate);
+    console.log('selectedDat11e', date[0].substring(0, 4));
+    console.log('selectedDat11e', date[0].substring(5, 7));
+    console.log('selectedDat11e', date[0].substring(8, 11));
+
+    console.log('paytime', payTime);
+    console.log(
+      'paytime',
+      String(payTime.getHours()).padStart(2, '0') +
+        String(payTime.getMinutes()).padStart(2, '0'),
+    );
     const accessToken = await EncryptedStorage.getItem('accessToken');
     try {
       const headers = {
@@ -324,11 +335,11 @@ function ReceiptResultPage({route, navigation}: any) {
         schedule_id: scheduleId,
         poster_id: userId,
         payDate:
-          route.params.data.payDate.year +
-          route.params.data.payDate.month +
-          route.params.data.payDate.day +
-          route.params.data.payDate.hour +
-          route.params.data.payDate.minute,
+          date[0].substring(0, 4) +
+          date[0].substring(5, 7) +
+          date[0].substring(8, 11) +
+          String(payTime.getHours()).padStart(2, '0') +
+          String(payTime.getMinutes()).padStart(2, '0'),
         total_price: totalPrice,
         memo: memo,
         place: place,
@@ -420,7 +431,9 @@ function ReceiptResultPage({route, navigation}: any) {
         type: ALERT_TYPE.SUCCESS,
         textBody: '지출정보 등록이 완료되었습니다',
       });
-      moveToHomePage();
+      setTimeout(() => {
+        moveToHomePage();
+      }, 1000);
     } catch (err: AxiosError | any) {
       console.log(err);
       Toast.show({
@@ -464,19 +477,20 @@ function ReceiptResultPage({route, navigation}: any) {
     setPlaceTel(route.params.data.store.tel);
     setPlace(route.params.data.store.name);
     setPlaceAddress(route.params.data.store.addresses);
+
+    console.log(
+      'route.params.data.payDate.minute',
+      Number(route.params.data.payDate.hour),
+    );
+
     setPayTime(
       new Date(
-        route.params.data.payDate.year +
-          '-' +
-          route.params.data.payDate.month +
-          '-' +
-          route.params.data.payDate.day +
-          'T' +
-          route.params.data.payDate.hour +
-          ':' +
-          route.params.data.payDate.minute +
-          ':' +
-          route.params.data.payDate.second,
+        route.params.data.payDate.year,
+        route.params.data.payDate.month,
+        route.params.data.payDate.day,
+        route.params.data.payDate.hour,
+        route.params.data.payDate.minute,
+        route.params.data.payDate.second,
       ),
     );
     addSelectedDate(
@@ -618,9 +632,10 @@ function ReceiptResultPage({route, navigation}: any) {
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>
-          {/* <Calendar
+          <Calendar
             style={styles.calendar}
             markedDates={selectedDate}
+            initialDate={`${route.params.data.payDate.year}-${route.params.data.payDate.month}-${route.params.data.payDate.day}`}
             theme={{
               selectedDayBackgroundColor: '#21B8CD',
               arrowColor: '#21B8CD',
@@ -645,6 +660,7 @@ function ReceiptResultPage({route, navigation}: any) {
               date={payTime}
               confirmText={'선택'}
               cancelText={'취소'}
+              is24hourSource={'device'}
               onConfirm={date => {
                 togglePayTimeModal(false);
                 setPayTime(date);
@@ -653,7 +669,7 @@ function ReceiptResultPage({route, navigation}: any) {
                 togglePayTimeModal(false);
               }}
             />
-          </View> */}
+          </View>
           <View style={styles.borderContainer}>
             <View style={styles.borderLine} />
           </View>

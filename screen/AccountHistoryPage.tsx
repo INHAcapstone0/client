@@ -47,7 +47,6 @@ function AccountHistoryPage({route, navigation}: any) {
     (state: RootState) => state.persist.account,
   );
   // const saveRoute = useState(route);
-  const [scheduleId, setScheduleId] = useState(0);
   const [scheduleInfo, setScheduleInfo] = useState<{
     name: string;
     startAt: string;
@@ -63,7 +62,7 @@ function AccountHistoryPage({route, navigation}: any) {
   });
   const [receiptsInfo, setReceiptsInfo] = useState([]);
 
-  const [errFlag, setErrFlag] = useState(true);
+  const [errFlag, setErrFlag] = useState(false);
   const [ownerFlag, setOwnerFlag] = useState(false);
 
   const [categoryList, setCategoryList] = useState<string[]>(['전체']);
@@ -74,10 +73,11 @@ function AccountHistoryPage({route, navigation}: any) {
   const layout = useWindowDimensions();
 
   const [index, setIndex] = useState(0);
+  const [transactions, setTransactions] = useState<any>([]);
 
   useEffect(() => {
     getAllAccountTransfer();
-  });
+  }, []);
 
   const getAllAccountTransfer = async () => {
     try {
@@ -109,7 +109,7 @@ function AccountHistoryPage({route, navigation}: any) {
       // console.log();
 
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20190101}&to_date=${endAt}`,
+        `http://146.56.190.78/extra/account/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20211129}&to_date=${20221122}`,
         {
           headers: {
             'bank-authorization': `Bearer ${bankAccessTokenData}`,
@@ -117,113 +117,46 @@ function AccountHistoryPage({route, navigation}: any) {
           },
         },
       );
-      console.log('response', response.data);
+      console.log('response', response.data.res_list);
+      if (response?.data?.res_list) {
+        console.log('response', response.data.res_list);
+        setTransactions(response.data.res_list);
+        setErrFlag(false);
+      } else {
+        setErrFlag(true);
+      }
       // setInfo(response.data.res_list);
       // setErrFlag(false);
     } catch (err: AxiosError | any) {
       console.log('err', err.response);
-      if (err.response.status === 404) {
-        setErrFlag(true);
-      }
+      setErrFlag(true);
+      refreshBankToken();
     }
   };
 
-  const getScheduleInfo = async () => {
+  const refreshBankToken = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const response = await axiosInstance.get(
-        `http://146.56.190.78/schedules/${scheduleId}`,
-        {headers},
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      const bankAccessToken = await EncryptedStorage.getItem(
+        'accessTokenToBank',
       );
-      setScheduleInfo(response.data);
-      if (userId === scheduleInfo.owner_id) {
-        setOwnerFlag(true);
-      }
-
-      if (response.data.total_pay != null) {
-        setTotalPrice(
-          response.data.total_pay
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-        );
-      }
+      const bankRefreshToken = await EncryptedStorage.getItem(
+        'refreshTokenToBank',
+      );
+      const response = await axios.get('http://146.56.190.78/extra/refresh', {
+        headers: {
+          'bank-authorization': `Bearer ${bankAccessToken}`,
+          Authorization: `Bearer ${accessToken}`,
+          refresh: `Bearer ${refreshToken}`,
+        },
+      });
+      console.log('response', response);
+      getAllAccountTransfer();
     } catch (err: AxiosError | any) {
-      console.log(err.response.data.msg);
       console.log(err);
     }
   };
-
-  const getReceiptsInfo = async (category: string) => {
-    const accessToken = await EncryptedStorage.getItem('accessToken');
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-    };
-    if (category === '전체') {
-      const params = {
-        schedule_id: scheduleId,
-      };
-
-      try {
-        const response = await axiosInstance.get(
-          'http://146.56.190.78/receipts',
-          {
-            params,
-            headers,
-          },
-        );
-        setReceiptsInfo(response.data);
-        console.log('response.data', response.data);
-        return response.data;
-      } catch (err: AxiosError | any) {
-        console.log(err);
-        if (err.response.status === 404) {
-          setErrFlag(true);
-        }
-        return Promise.reject;
-      }
-    } else {
-      const params = {
-        schedule_id: scheduleId,
-        category: category,
-      };
-
-      try {
-        const response = await axiosInstance.get(
-          'http://146.56.190.78/receipts',
-          {
-            params,
-            headers,
-          },
-        );
-        setReceiptsInfo(response.data);
-      } catch (err: AxiosError | any) {
-        console.log(err);
-        if (err.response.status === 404) {
-          setErrFlag(true);
-        }
-      }
-    }
-  };
-
-  const renderTabBar = (props: any) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{backgroundColor: '#21B8CD'}}
-      pressColor={'#21B8CD'}
-      scrollEnabled={true}
-      style={{backgroundColor: 'white'}}
-      //tabStyle={route.title.length > 4 ? {width: 90} : {width: 140}}
-      tabStyle={{width: 90}}
-      renderLabel={({route, focused, color}) => (
-        <Text style={[focused ? {color: '#21B8CD'} : {color: '#7C7C7C'}]}>
-          {route.title}
-        </Text>
-      )}
-    />
-  );
 
   // useEffect(() => {
   //   getScheduleInfo();
@@ -244,7 +177,7 @@ function AccountHistoryPage({route, navigation}: any) {
   //     });
   // }, []);
 
-  if (errFlag === false) {
+  if (errFlag === true) {
     //등록된 영수증이 0개일 경우
     return (
       <View style={styles.errScreen}>
@@ -255,7 +188,7 @@ function AccountHistoryPage({route, navigation}: any) {
           <View style={styles.errScreen2}>
             <Image
               style={styles.errImg}
-              source={require('../resources/icons/noReceipt.png')}
+              source={require('../resources/icons/LoginImage.png')}
             />
             <Text style={styles.errMsg}>지출 내역이 없습니다.</Text>
           </View>
@@ -271,7 +204,19 @@ function AccountHistoryPage({route, navigation}: any) {
 
         <View style={styles.receiptSection}>
           <ScrollView>
-            <AccountSpendingCard navigation={navigation} />
+            {transactions.map((item: any, idx: number) => {
+              if (item != null) {
+                return (
+                  <AccountSpendingCard
+                    navigation={navigation}
+                    item={item}
+                    key={idx}
+                    scheduleId={route.params.scheduleId}
+                  />
+                );
+              }
+            })}
+            {/* <AccountSpendingCard navigation={navigation} /> */}
             {/* {receiptsInfo.map((item: any) => {
               if (item != null) {
                 return (

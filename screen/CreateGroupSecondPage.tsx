@@ -165,47 +165,6 @@ function CreateGroupSecondPage({navigation}: any) {
   };
 
   const moveToNextStep = () => {
-    let today = new Date();
-    let year = today.getFullYear(); // 년도
-    let month = today.getMonth() + 1; // 월
-    let date = today.getDate(); // 날짜
-    let hours = today.getHours();
-    let minutes = today.getMinutes();
-
-    const orderedDate = Object.keys(selectedDate).sort(
-      (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
-    );
-
-    const currentDate =
-      year.toString() +
-      month.toString().padStart(2, '0') +
-      date.toString().padStart(2, '0') +
-      hours.toString().padStart(2, '0') +
-      minutes.toString().padStart(2, '0');
-
-    console.log('currentDate', currentDate);
-
-    const selectDate =
-      orderedDate[0].replace(/\-/g, '') +
-      String(selectedStartTime.getHours()).padStart(2, '0') +
-      String(selectedStartTime.getMinutes()).padStart(2, '0');
-
-    if (currentDate >= selectDate) {
-      Toast.show({
-        type: ALERT_TYPE.WARNING,
-        textBody: '현재시각 이전인 스케줄은 생성할 수 없습니다',
-      });
-      return;
-    }
-
-    if (Object.keys(selectedDate).length < 2) {
-      Toast.show({
-        type: ALERT_TYPE.WARNING,
-        textBody: '시작일과 종료일을 선택해주세요',
-      });
-      return;
-    }
-
     if (Object.keys(selectedDate).length < 2) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
@@ -216,6 +175,39 @@ function CreateGroupSecondPage({navigation}: any) {
       // const orderedDate = Object.keys(selectedDate).sort(
       //   (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
       // );
+
+      let today = new Date();
+      let year = today.getFullYear(); // 년도
+      let month = today.getMonth() + 1; // 월
+      let date = today.getDate(); // 날짜
+      let hours = today.getHours();
+      let minutes = today.getMinutes();
+
+      const orderedDate = Object.keys(selectedDate).sort(
+        (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
+      );
+
+      const currentDate =
+        year.toString() +
+        month.toString().padStart(2, '0') +
+        date.toString().padStart(2, '0') +
+        hours.toString().padStart(2, '0') +
+        minutes.toString().padStart(2, '0');
+
+      console.log('currentDate', currentDate);
+
+      const selectDate =
+        orderedDate[0].replace(/\-/g, '') +
+        String(selectedStartTime.getHours()).padStart(2, '0') +
+        String(selectedStartTime.getMinutes()).padStart(2, '0');
+
+      if (currentDate >= selectDate) {
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          textBody: '현재시각 이전인 스케줄은 생성할 수 없습니다',
+        });
+        return;
+      }
 
       dispatch(
         scheduleAction.setDate({
@@ -256,6 +248,9 @@ function CreateGroupSecondPage({navigation}: any) {
                 warning: 'gray',
               },
             ]}>
+            <View style={styles.settingHeader}>
+              <Text style={styles.settingHeaderTitle}>알람내역</Text>
+            </View>
             <View style={styles.stepWrapper}>
               <View style={styles.stepImg}>
                 <Image source={require('../resources/icons/check.png')} />
@@ -383,9 +378,9 @@ function CreateGroupSecondPage({navigation}: any) {
                 }}
               />
             </View>
-            <View style={styles.nextButton}>
+            <TouchableOpacity style={styles.nextButton}>
               <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
-            </View>
+            </TouchableOpacity>
           </AlertNotificationRoot>
         </ScrollView>
       </BottomSheetModalProvider>
@@ -393,6 +388,16 @@ function CreateGroupSecondPage({navigation}: any) {
   );
 }
 const styles = StyleSheet.create({
+  settingHeader: {
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+  },
   stepWrapper: {
     display: 'flex',
     flexDirection: 'row',

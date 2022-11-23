@@ -60,21 +60,21 @@ const dummyData1 = [
         money: '123.400',
         send: false,
         src: require('../resources/icons/3.png'),
-        giver_id: 6,
+        giver_id: 4,
       },
       {
         giver: '김연주',
         money: '131.400',
         send: true,
         src: require('../resources/icons/1.png'),
-        giver_id: 4,
+        giver_id: 5,
       },
       {
         giver: '이창현',
         money: '2.200',
         send: true,
         src: require('../resources/icons/2.png'),
-        giver_id: 5,
+        giver_id: 6,
       },
     ],
     id: 2,
@@ -91,24 +91,24 @@ const dummyData2 = [
         money: '421.200',
         send: false,
         src: require('../resources/icons/2.png'),
-        giver_id: 2,
+        giver_id: 7,
       },
       {
         giver: '김연주',
         money: '15.400',
         send: false,
         src: require('../resources/icons/1.png'),
-        giver_id: 1,
+        giver_id: 8,
       },
       {
         giver: '이지은',
         money: '400',
         send: false,
         src: require('../resources/icons/3.png'),
-        giver_id: 3,
+        giver_id: 9,
       },
     ],
-    id: 1,
+    id: 3,
   },
   {
     name: '자전거 동호회',
@@ -119,24 +119,24 @@ const dummyData2 = [
         money: '999.123.400',
         send: true,
         src: require('../resources/icons/3.png'),
-        giver_id: 6,
+        giver_id: 11,
       },
       {
         giver: '이창현',
         money: '423.200',
         send: false,
         src: require('../resources/icons/2.png'),
-        giver_id: 5,
+        giver_id: 12,
       },
       {
         giver: '김연주',
         money: '312.131.400',
         send: false,
         src: require('../resources/icons/1.png'),
-        giver_id: 4,
+        giver_id: 13,
       },
     ],
-    id: 2,
+    id: 4,
   },
 ];
 interface alarmType {
@@ -206,7 +206,10 @@ function CalculatePage({navigation}: any) {
     }
   };
   return (
-    <View style={styles.calculatePage}>
+    <ScrollView style={styles.calculatePage}>
+      <View style={styles.settingHeader}>
+        <Text style={styles.settingHeaderTitle}>정산관리</Text>
+      </View>
       <View style={styles.calculateTab}>
         <Pressable
           style={
@@ -241,11 +244,11 @@ function CalculatePage({navigation}: any) {
           </Text>
         </Pressable>
       </View>
-      <ScrollView>
+      <View style={styles.calculateHistory}>
         {currentTab === 0 ? (
           dummyData1.length > 0 ? (
             dummyData1.map((data: any) => (
-              <View style={styles.calculateWrapper} key={data.id}>
+              <View style={styles.calculateWrapper}>
                 <Text style={styles.calculateText} key={data.id}>
                   {data.name}
                 </Text>
@@ -347,23 +350,42 @@ function CalculatePage({navigation}: any) {
             <Image source={require('../resources/icons/calculateSend.png')} />
           </View>
         )}
-      </ScrollView>
+      </View>
       <View style={styles.calculateBorder} />
-    </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
+  settingHeader: {
+    paddingTop: 20,
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+  },
   calculatePage: {
     // paddingLeft: 20,
     // paddingRight: 20,
+    // paddingBottom: 100,
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     backgroundColor: 'white',
   },
+  calculateHistory: {
+    // height: Dimensions.get('window').height,
+    // width: Dimensions.get('window').width,
+    paddingBottom: 100,
+    backgroundColor: 'white',
+  },
   calculateTab: {
-    paddingTop: 30,
+    // paddingTop: 30,
     display: 'flex',
     flexDirection: 'row',
+    paddingTop: 10,
   },
   calculateActiveTabLabel: {
     backgroundColor: '#21B8CD',
@@ -479,7 +501,7 @@ const styles = StyleSheet.create({
   },
   calculateButtonActive: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    width: 64,
+    width: 75,
     height: 26,
     borderRadius: 4,
     display: 'flex',

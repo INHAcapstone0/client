@@ -136,6 +136,9 @@ function CreateGroupPage({navigation}: any) {
               warning: 'gray',
             },
           ]}>
+          <View style={styles.settingHeader}>
+            <Text style={styles.settingHeaderTitle}>스케줄 생성</Text>
+          </View>
           <View style={styles.stepWrapper}>
             <View style={styles.stepImg}>
               <Image source={require('../resources/icons/first.png')} />
@@ -193,11 +196,23 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     padding: 20,
   },
+  settingHeader: {
+    height: 50,
+    alignItems: 'center',
+  },
+  settingHeaderTitle: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+  },
   textInput: {
     padding: 5,
     borderBottomWidth: 1,
     borderColor: '#D9D9D9',
-    fontFamily: 'Jalnan',
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    fontWeight: '700',
   },
   stepWrapper: {
     display: 'flex',

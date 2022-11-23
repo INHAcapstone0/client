@@ -39,6 +39,7 @@ interface ScheduleCardProps {
   navigation: any;
   dateStart: any;
   dateEnd: any;
+  scheduleId: any;
   setFinNum: (finNum: any) => void;
 }
 function AccountCard({
@@ -54,6 +55,7 @@ function AccountCard({
   navigation: {navigate},
   dateStart,
   dateEnd,
+  scheduleId,
 }: ScheduleCardProps) {
   const accessToken = useSelector(
     (state: RootState) => state.persist.user.accessToken,
@@ -91,7 +93,9 @@ function AccountCard({
       }),
     );
     setTimeout(() => {
-      navigate('AccountHistoryPage');
+      navigate('AccountHistoryPage', {
+        scheduleId: scheduleId,
+      });
     }, 1000);
   };
 
@@ -132,22 +136,27 @@ function AccountCard({
           <View>
             <Text style={styles.cardTitleText}>
               <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                }}
                 source={
-                  item.bank_name.includes('카카오')
-                    ? require('../resources/icons/KaKaoBank.png')
-                    : item.bank_name.includes('하나')
+                  // require('../resources/bankIcon/KakaoBank.png')
+                  item.bank_name === '카카오은행'
+                    ? require('../resources/bankIcon/KakaoBank.png')
+                    : item.bank_name === '하나은행'
                     ? require('../resources/bankIcon/Hana.png')
-                    : item.bank_name.includes('신한')
+                    : item.bank_name === '신한은행'
                     ? require('../resources/bankIcon/Shinhan.png')
-                    : item.bank_name.includes('우리')
+                    : item.bank_name === '우리은행'
                     ? require('../resources/bankIcon/Woori.png')
-                    : item.bank_name.includes('우체')
+                    : item.bank_name === '우체국'
                     ? require('../resources/bankIcon/Epost.png')
-                    : item.bank_name.includes('국민')
+                    : item.bank_name === 'KB국민은행'
                     ? require('../resources/bankIcon/KbStar.png')
-                    : item.bank_name.includes('농협')
+                    : item.bank_name === '농협은행'
                     ? require('../resources/bankIcon/NH.png')
-                    : item.bank_name.includes('기업')
+                    : item.bank_name === 'IBK기업은행'
                     ? require('../resources/bankIcon/IBK.png')
                     : require('../resources/bankIcon/IBK.png')
                 }
@@ -180,10 +189,7 @@ function AccountCard({
             }}>
             <Text style={styles.cardMenuItem}>계좌 삭제하기</Text>
           </MenuItem>
-          <MenuItem
-            onPress={() => {
-              moveToAccountHistoryPage();
-            }}>
+          <MenuItem onPress={moveToAccountHistoryPage}>
             <Text style={styles.cardMenuItem}>지출 내역보기</Text>
           </MenuItem>
         </Menu>
