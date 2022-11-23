@@ -70,12 +70,12 @@ function SignInPage({navigation}: any) {
       EncryptedStorage.setItem('accessToken', response.data.data.accessToken);
       EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
       // requestUserPermission();
-      getFCMToken();
-      notificationListner();
-
       AsyncStorage.setItem('PushNotification', 'true');
       AsyncStorage.setItem('SoundNotification', 'true');
       AsyncStorage.setItem('VibrationNotification', 'true');
+
+      getFCMToken();
+      notificationListner();
 
       dispatch(
         userActions.setUser({
