@@ -17,8 +17,8 @@ axiosInstance.interceptors.response.use(
     // console.log('error.response.status', error.response.status);
     // console.log('config', config);
     if (status === 401) {
-      const refreshToken = await EncryptedStorage.getItem('accessToken');
-      const accessToken = await EncryptedStorage.getItem('refreshToken');
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
       console.log('refreshToken', refreshToken);
       console.log('accessToken', accessToken);
 
@@ -49,6 +49,7 @@ axiosInstance.interceptors.response.use(
 
         return axios(originalRequest);
       } catch (err) {
+        console.log('interceptors');
         console.log(err);
       }
     }

@@ -20,7 +20,8 @@ import {
   Toast,
 } from 'react-native-alert-notification';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {any} from 'prop-types';
+import Modal from 'react-native-modal';
+
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
 function MyPage({navigation}: any) {
@@ -43,6 +44,8 @@ function MyPage({navigation}: any) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validPassword, myInfo]);
+
+  const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
 
   const checkPassword = async () => {
     try {
@@ -80,7 +83,7 @@ function MyPage({navigation}: any) {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axiosInstance.get(
-        `http://146.56.190.78:8002/users/${userId}`,
+        `http://146.56.190.78/users/${userId}`,
         {headers},
       );
       setMyInfo(response.data);
@@ -110,6 +113,8 @@ function MyPage({navigation}: any) {
             console.log('User cancelled image picker');
           } else if (response.errorCode) {
             console.log('ImagePicker Error: ', response.errorCode);
+          } else if (response.errorMessage) {
+            console.log('ImagePicker ErrorMessage: ', response.errorMessage);
           } else if (response.assets) {
             //정상적으로 사진을 반환 받았을 때
             console.log('ImagePicker res', response);
@@ -119,6 +124,8 @@ function MyPage({navigation}: any) {
               name: response.assets[0].fileName,
             };
             uploadImage(img);
+          } else {
+            console.log('ImagePicker Error');
           }
         },
       );
@@ -142,6 +149,7 @@ function MyPage({navigation}: any) {
       });
       getMyInfo();
     } catch (err: AxiosError | any) {
+      console.log('uploadImage');
       console.log(err.response);
     }
   };
@@ -186,6 +194,26 @@ function MyPage({navigation}: any) {
           console.log(err.response);
         }
       }
+    }
+  };
+
+  const initializeProfile = async () => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+
+      console.log('accessToken', accessToken);
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axiosInstance.patch(
+        'http://146.56.190.78/users/img/empty',
+        {headers},
+      );
+      console.log('res', response);
+      getMyInfo();
+    } catch (err: AxiosError | any) {
+      console.log('initialize profile');
+      console.log(err);
     }
   };
 
@@ -273,11 +301,60 @@ function MyPage({navigation}: any) {
                     </View>
                   </View>
                 </View>
+                <Modal
+                  isVisible={isProfileModalVisible}
+                  animationIn={'slideInUp'}
+                  animationOut={'slideOutDown'}
+                  onBackButtonPress={() => setIsProfileModalVisible(false)}>
+                  <View style={{backgroundColor: 'white', height: 150}}>
+                    <View
+                      style={{
+                        margin: 20,
+                        flex: 1,
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 'bold',
+                          color: 'black',
+                        }}>
+                        프로필 사진
+                      </Text>
+                      <Pressable
+                        onPress={() => {
+                          setIsProfileModalVisible(false);
+                          getGranted();
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 13,
+                            color: 'black',
+                          }}>
+                          앨범에서 사진 선택
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => {
+                          //getGranted();
+                          initializeProfile();
+                          setIsProfileModalVisible(false);
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 13,
+                            color: 'black',
+                          }}>
+                          기본 이미지로 변경
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </Modal>
                 <View style={styles.changeProfileImageSection}>
                   <Pressable
                     onPress={() => {
-                      getGranted();
-                      //selectImage();
+                      setIsProfileModalVisible(true);
                     }}>
                     <View style={styles.changeProfileImageButton}>
                       <Text style={styles.changeProfileImageButtonText}>
