@@ -208,6 +208,8 @@ function SelectReceiptPage({navigation, route}: any) {
   if (showSpinner) {
     return (
       <View style={styles.loading}>
+        <Text>영수증에서 정보를 가져오는 중 입니다.</Text>
+        <Text>잠시만 기다려주세요.</Text>
         <ActivityIndicator size="large" color="#21B8CD" />
       </View>
     );
@@ -300,6 +302,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     display: 'flex',
+    alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
   },
