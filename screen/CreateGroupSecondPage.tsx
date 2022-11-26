@@ -71,6 +71,12 @@ function CreateGroupSecondPage({navigation}: any) {
 
   const [selectedStartTime, setSelectedStartTime] = useState(new Date());
   const [selectedEndTime, setSelectedEndTime] = useState(new Date());
+  const [firstDay, setFirstDay] = useState('');
+  const [lastDay, setLastDay] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [startTimeStart, setStartTimeStart] = useState(false);
+  const [lastTimeStart, setLastTimeStart] = useState(false);
+  const [lastTime, setLastTime] = useState('');
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -97,10 +103,12 @@ function CreateGroupSecondPage({navigation}: any) {
   };
 
   const toggleStartTimeModal = () => {
+    setStartTimeStart(true);
     setIsStartTimeModalVisible(!isStartTimeModalVisible);
   };
 
   const toggleEndTimeModal = () => {
+    setLastTimeStart(true);
     setIsEndTimeModalVisible(!isEndTimeModalVisible);
   };
 
@@ -108,12 +116,44 @@ function CreateGroupSecondPage({navigation}: any) {
     groupNameRef.current?.focus();
   }, []);
 
+  // useEffect(() => {
+  //   setStartTime('');
+  //   setLastTime('');
+  // }, []);
+
   useEffect(() => {
-    console.log(String(selectedStartTime.getHours()).padStart(2, '0'));
-    console.log(selectedStartTime.getMinutes());
-    console.log(String(selectedEndTime.getHours()).padStart(2, '0'));
-    console.log(selectedEndTime.getMinutes());
-  }, [selectedStartTime, selectedEndTime]);
+    if (startTimeStart) {
+      const startTimes =
+        String(selectedStartTime.getHours()).padStart(2, '0') +
+        ':' +
+        String(selectedStartTime.getMinutes()).padStart(2, '0');
+      setStartTime(startTimes);
+    }
+  }, [selectedStartTime]);
+
+  useEffect(() => {
+    if (lastTimeStart) {
+      const lastTimes =
+        String(selectedEndTime.getHours()).padStart(2, '0') +
+        ':' +
+        String(selectedEndTime.getMinutes()).padStart(2, '0');
+      setLastTime(lastTimes);
+    }
+  }, [selectedEndTime]);
+
+  useEffect(() => {
+    console.log('selectedDate', selectedDate);
+    const orderedDate = Object.keys(selectedDate).sort(
+      (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
+    );
+    if (orderedDate.length === 0) {
+      setFirstDay('');
+      setLastDay('');
+    } else {
+      setFirstDay(orderedDate[0]?.replace(/\-/g, '-'));
+      setLastDay(orderedDate[orderedDate.length - 1]?.replace(/\-/g, '-'));
+    }
+  }, [selectedDate]);
 
   const addSelectedDate = (date: string) => {
     if (selectedDate[date] !== undefined) {
@@ -147,6 +187,14 @@ function CreateGroupSecondPage({navigation}: any) {
           ]);
           newDate.setDate(newDate.getDate() - 1);
         }
+        // const orderedDate = Object.keys(selectedDate).sort(
+        //   (a: string, b: string) => (new Date(a) as any) - (new Date(b) as any),
+        // );
+        // const firstDay = orderedDate[0].replace(/\-/g, '');
+        // const lastDay = orderedDate[orderedDate.length - 1].replace(/\-/g, '');
+        // console.log('firstDay', firstDay);
+        // console.log('lastDay', lastDay);
+        // console.log('selectedDayes', selectedDayes);
       } else {
         const newDate: any = {};
         newDate[date] = {selected: true};
@@ -165,7 +213,7 @@ function CreateGroupSecondPage({navigation}: any) {
   };
 
   const moveToNextStep = () => {
-    if (Object.keys(selectedDate).length < 2) {
+    if (Object.keys(selectedDate).length < 1) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
         textBody: '시작일과 종료일을 선택해주세요',
@@ -279,9 +327,15 @@ function CreateGroupSecondPage({navigation}: any) {
             </View>
             <View style={styles.elementWrapper}>
               <Text style={styles.elementLabel}>일정</Text>
-              <Text style={styles.elementSubLabel}>
-                원하는 날짜를 선택해주세요
-              </Text>
+              {firstDay === '' ? (
+                <Text style={styles.elementSubLabel}>
+                  원하는 날짜를 선택해주세요
+                </Text>
+              ) : (
+                <Text style={styles.elementSubLabel}>
+                  {firstDay} ~ {lastDay}
+                </Text>
+              )}
               <Button
                 color="#21B8CD"
                 title="일정 설정하기"
@@ -328,9 +382,13 @@ function CreateGroupSecondPage({navigation}: any) {
             </View>
             <View style={styles.elementWrapper}>
               <Text style={styles.elementLabel}>시작 시간</Text>
-              <Text style={styles.elementSubLabel}>
-                시작시간을 설정해주세요
-              </Text>
+              {startTime === '' ? (
+                <Text style={styles.elementSubLabel}>
+                  시작시간을 설정해주세요
+                </Text>
+              ) : (
+                <Text style={styles.elementSubLabel}>{startTime}</Text>
+              )}
               <Button
                 color="#21B8CD"
                 title="시작시간 설정하기"
@@ -345,6 +403,7 @@ function CreateGroupSecondPage({navigation}: any) {
                 confirmText={'선택'}
                 cancelText={'취소'}
                 onConfirm={date => {
+                  console.log(date);
                   setSelectedStartTime(date);
                 }}
                 onCancel={() => {
@@ -354,9 +413,13 @@ function CreateGroupSecondPage({navigation}: any) {
             </View>
             <View style={styles.elementWrapper}>
               <Text style={styles.elementLabel}>종료 시간</Text>
-              <Text style={styles.elementSubLabel}>
-                종료시간을 설정해주세요
-              </Text>
+              {lastTime === '' ? (
+                <Text style={styles.elementSubLabel}>
+                  종료시간을 설정해주세요
+                </Text>
+              ) : (
+                <Text style={styles.elementSubLabel}>{lastTime}</Text>
+              )}
               <Button
                 color="#21B8CD"
                 title="종료시간 설정하기"

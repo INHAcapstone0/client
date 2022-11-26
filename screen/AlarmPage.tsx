@@ -14,7 +14,9 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  PermissionsAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {useSelector} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -41,10 +43,22 @@ function AlarmPage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [scheduleId, setScheduleId] = useState('');
   const [errFlag, setErrFlag] = useState(false);
+  const [알람감지, 알람감지세팅] = useState('');
 
   useEffect(() => {
     getAllAlarms();
+  }, [알람감지]);
+
+  useEffect(() => {
+    setInterval(() => {
+      loadAlarm();
+    }, 1000);
   }, []);
+
+  const loadAlarm = async () => {
+    const alarms = await AsyncStorage.getItem('alarm');
+    알람감지세팅(alarms as string);
+  };
 
   const getAllAlarms = async () => {
     try {

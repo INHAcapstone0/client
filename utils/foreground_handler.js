@@ -11,6 +11,7 @@ export default ForegroundHandler = () => {
       console.log('foreground test');
       const sound = await AsyncStorage.getItem('SoundNotification');
       const vibration = await AsyncStorage.getItem('VibrationNotification');
+      const alarm = await AsyncStorage.getItem('alarm');
       AsyncStorage.getItem('PushNotification', (err, result) => {
         console.log('result', result);
         if (result === 'true') {
@@ -23,6 +24,8 @@ export default ForegroundHandler = () => {
             vibrate: sound === 'true' ? true : false,
             playSound: vibration === 'true' ? true : false,
           });
+          const newAlarm = Number(alarm) + 1;
+          AsyncStorage.setItem('alarm', String(newAlarm));
         }
       });
     });

@@ -5,6 +5,11 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from './interceptor';
 
 async function requestUserPermission() {
+  // await messaging().requestPermission({
+  //   sound: false,
+  //   announcement: true,
+  //   // ... other permission settings
+  // });
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -51,6 +56,7 @@ const notificationOff = async () => {
 
 const notificationListner = async () => {
   const push = await AsyncStorage.getItem('PushNotification');
+  const alarm = await AsyncStorage.getItem('alarm');
   console.log('push', push);
 
   if (push === 'true') {
@@ -60,6 +66,8 @@ const notificationListner = async () => {
         'Notification caused app to open from background state:',
         remoteMessage.notification,
       );
+      const newAlarm = Number(alarm) + 1;
+      AsyncStorage.setItem('alarm', String(newAlarm));
     });
 
     //check whether an initial notification is available
@@ -71,11 +79,15 @@ const notificationListner = async () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
+          const newAlarm = Number(alarm) + 1;
+          AsyncStorage.setItem('alarm', String(newAlarm));
         }
       });
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('notification on background state', remoteMessage);
+      const newAlarm = Number(alarm) + 1;
+      AsyncStorage.setItem('alarm', String(newAlarm));
     });
 
     // messaging().onMessage(async remoteMessage => {

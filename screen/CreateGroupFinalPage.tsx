@@ -67,6 +67,8 @@ function CreateGroupFinalPage({navigation}: any) {
   const {groupName, startAt, endAt} = useSelector(
     (state: RootState) => state.persist.schedule,
   );
+  const [userName, setUserName] = useState<Array<any>>([]);
+  const groupNameRef = useRef<TextInput | null>(null);
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -107,7 +109,7 @@ function CreateGroupFinalPage({navigation}: any) {
   };
 
   const onChangeSearchName = useCallback((text: string) => {
-    setSearchName(text.trim());
+    setSearchName(text);
   }, []);
 
   const addToGroupMember = (user: userType) => (event: any) => {
@@ -255,15 +257,15 @@ function CreateGroupFinalPage({navigation}: any) {
                   <View style={styles.memberInvitation}>
                     <TextInput
                       style={styles.serchTextInput}
-                      placeholder="그룹원 검색"
-                      placeholderTextColor="rgba(0, 0, 0, 0.25)"
+                      onChangeText={text => setSearchName(text)}
+                      placeholder="일정명을 입력해주세요"
                       importantForAutofill="yes"
-                      onChangeText={onChangeSearchName}
-                      value={searchName}
-                      autoComplete="name"
-                      textContentType="name"
-                      returnKeyType="send"
+                      textContentType="familyName"
+                      // value={searchName}
+                      returnKeyType="next"
                       clearButtonMode="while-editing"
+                      ref={groupNameRef}
+                      blurOnSubmit={false}
                     />
                     <Image
                       style={styles.magnifyingGlass}
@@ -324,6 +326,9 @@ function CreateGroupFinalPage({navigation}: any) {
   );
 }
 const styles = StyleSheet.create({
+  selectUserName: {
+    marginRight: 10,
+  },
   settingHeader: {
     height: 50,
     alignItems: 'center',
