@@ -42,7 +42,7 @@ function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const userName = useSelector((state: RootState) => state.persist.user.name);
   const [info, setInfo] = useState<schedule[]>([]);
-  const [infoNumber, setInfoNumber] = useState(0);
+
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
@@ -50,7 +50,7 @@ function HomePage({navigation}: any) {
 
   useEffect(() => {
     getAllSchedules();
-  }, [infoNumber]);
+  }, []);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -109,7 +109,7 @@ function HomePage({navigation}: any) {
         `http://146.56.190.78/schedules/${selectedScheduleId}`,
         {headers},
       );
-      setInfoNumber(infoNumber - 1);
+
       getAllSchedules();
     } catch (err) {
       console.log(err);
@@ -165,7 +165,6 @@ function HomePage({navigation}: any) {
       }
     });
     setInfo([...validSchedules, ...invalidSchedules]);
-    setInfoNumber(validSchedules.length + invalidSchedules.length);
   };
 
   if (errFlag) {
@@ -301,7 +300,7 @@ function HomePage({navigation}: any) {
 
 const styles = StyleSheet.create({
   header: {
-    height: 50,
+    height: 60,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#21B8CD',
