@@ -232,6 +232,7 @@ function HomePage({navigation}: any) {
               isVisible={isModalVisibleForHost}
               animationIn={'slideInUp'}
               animationOut={'slideOutDown'}
+              onBackButtonPress={() => setModalVisibleForHost(false)}
               style={styles.modalContainer}>
               <View style={styles.modalContainerForHost}>
                 <View style={styles.modalInnerContainer}>
@@ -266,6 +267,7 @@ function HomePage({navigation}: any) {
               isVisible={isModalVisibleForMember}
               animationIn={'slideInUp'}
               animationOut={'slideOutDown'}
+              onBackButtonPress={() => setModalVisibleForMember(false)}
               style={styles.modalContainer}>
               <View style={styles.modalContainerForMember}>
                 <View style={styles.modalInnerContainer}>

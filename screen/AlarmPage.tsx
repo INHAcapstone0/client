@@ -284,6 +284,7 @@ function AlarmPage({navigation}: any) {
         isVisible={isInvitaionModalVisible}
         animationIn={'slideInUp'}
         animationOut={'slideOutDown'}
+        onBackButtonPress={() => setInvitationModalVisible(false)}
         style={{
           alignItems: 'center',
         }}>
@@ -324,6 +325,7 @@ function AlarmPage({navigation}: any) {
         isVisible={isModalVisible}
         animationIn={'slideInUp'}
         animationOut={'slideOutDown'}
+        onBackButtonPress={() => setModalVisible(false)}
         style={{
           alignItems: 'center',
         }}>
