@@ -16,129 +16,21 @@ import {
   Image,
   Dimensions,
   Button,
+  Modal,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import axiosInstance from '../utils/interceptor';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {
+  ALERT_TYPE,
+  Dialog,
+  AlertNotificationRoot,
+  Toast,
+  IConfigDialog,
+  IConfigToast,
+} from 'react-native-alert-notification';
 
-const dummyData1 = [
-  {
-    name: '독서 정모',
-    date: '2022.12.21 ~ 2022.12.30',
-    calculate: [
-      {
-        giver: '김연주',
-        money: '15.400',
-        send: false,
-        src: require('../resources/icons/1.png'),
-        giver_id: 1,
-      },
-      {
-        giver: '이창현',
-        money: '421.200',
-        send: true,
-        src: require('../resources/icons/2.png'),
-        giver_id: 2,
-      },
-      {
-        giver: '이지은',
-        money: '400',
-        send: false,
-        src: require('../resources/icons/3.png'),
-        giver_id: 3,
-      },
-    ],
-    id: 1,
-  },
-  {
-    name: '제주도 여행',
-    date: '2022.02.13 ~ 2022.02.15',
-    calculate: [
-      {
-        giver: '이지은',
-        money: '123.400',
-        send: false,
-        src: require('../resources/icons/3.png'),
-        giver_id: 4,
-      },
-      {
-        giver: '김연주',
-        money: '131.400',
-        send: true,
-        src: require('../resources/icons/1.png'),
-        giver_id: 5,
-      },
-      {
-        giver: '이창현',
-        money: '2.200',
-        send: true,
-        src: require('../resources/icons/2.png'),
-        giver_id: 6,
-      },
-    ],
-    id: 2,
-  },
-];
-
-const dummyData2 = [
-  {
-    name: '등산 모임',
-    date: '2023.01.21 ~ 2022.02.30',
-    calculate: [
-      {
-        giver: '이창현',
-        money: '421.200',
-        send: false,
-        src: require('../resources/icons/2.png'),
-        giver_id: 7,
-      },
-      {
-        giver: '김연주',
-        money: '15.400',
-        send: false,
-        src: require('../resources/icons/1.png'),
-        giver_id: 8,
-      },
-      {
-        giver: '이지은',
-        money: '400',
-        send: false,
-        src: require('../resources/icons/3.png'),
-        giver_id: 9,
-      },
-    ],
-    id: 3,
-  },
-  {
-    name: '자전거 동호회',
-    date: '2022.12.13 ~ 2022.12.15',
-    calculate: [
-      {
-        giver: '이지은',
-        money: '999.123.400',
-        send: true,
-        src: require('../resources/icons/3.png'),
-        giver_id: 11,
-      },
-      {
-        giver: '이창현',
-        money: '423.200',
-        send: false,
-        src: require('../resources/icons/2.png'),
-        giver_id: 12,
-      },
-      {
-        giver: '김연주',
-        money: '312.131.400',
-        send: false,
-        src: require('../resources/icons/1.png'),
-        giver_id: 13,
-      },
-    ],
-    id: 4,
-  },
-];
 interface alarmType {
   alarm_type: string;
   checked: false;
@@ -154,6 +46,7 @@ function CalculatePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [allSettlements, setAllSettlements] = useState<Array<any>>([]);
   const [currentTab, setCurrentTab] = useState(0);
+  const [errFlag, setErrFlag] = useState(false);
 
   useEffect(() => {
     getSettlements();
@@ -170,21 +63,20 @@ function CalculatePage({navigation}: any) {
           },
         },
       );
-      setAllSettlements(response.data);
-      console.log('response', response);
       console.log('response.data', response.data);
-      console.log('response.data.Settlements', response.data.Settlements);
+      console.log('response.data.Settlements', response.data[0].Settlements);
+      setAllSettlements(response.data);
     } catch (err: AxiosError | any) {
-      // console.log(err.response);
+      setErrFlag(true);
     }
   };
 
-  const updateSettlement = (calculate: any) => async (event: any) => {
+  const updateSettlement = (calculateId: string) => async (event: any) => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
-        `http://146.56.190.78:8002/settlements/${calculate.giver_id}`,
-        {is_paid: true},
+        `http://146.56.190.78:8002/settlements/${calculateId}`,
+        {is_paid: '확인중'},
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -192,9 +84,45 @@ function CalculatePage({navigation}: any) {
         },
       );
       getSettlements();
-      console.log(response);
+      setCurrentTab(1);
+      console.log('update response', response);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        textBody: '입금확인 요청을 보넀습니다.',
+      });
+    } catch (err: AxiosError | any) {
+      console.log('err.response', err.response);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '입금확인 요청이 실패했습니다',
+      });
+    }
+  };
+
+  const updateSettlement2 = (calculateId: string) => async (event: any) => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const response = await axiosInstance.patch(
+        `http://146.56.190.78:8002/settlements/${calculateId}`,
+        {is_paid: '정산 완료'},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      getSettlements();
+      console.log('update response2', response);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        textBody: '정산이 완료되었습니다.',
+      });
     } catch (err: AxiosError | any) {
       console.log(err.response);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '정산완료 처리가 실패했습니다',
+      });
     }
   };
 
@@ -205,153 +133,208 @@ function CalculatePage({navigation}: any) {
       setCurrentTab(0);
     }
   };
+
+  if (errFlag) {
+    return (
+      <View style={styles.emptyImg}>
+        <Image source={require('../resources/icons/calculateSend.png')} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.calculatePage}>
-      <View style={styles.settingHeader}>
-        <Text style={styles.settingHeaderTitle}>정산관리</Text>
-      </View>
-      <View style={styles.calculateTab}>
-        <Pressable
-          style={
-            currentTab === 0
-              ? styles.calculateActiveTabLabel
-              : styles.calculateTabLabel
-          }
-          onPress={changeCurrentTab}>
-          <Text
+      <AlertNotificationRoot
+        colors={[
+          {
+            label: '',
+            card: '#e5e8e8',
+            overlay: '',
+            success: '',
+            danger: '',
+            warning: '',
+          },
+          {
+            label: 'gray',
+            card: 'gray',
+            overlay: 'gray',
+            success: 'gray',
+            danger: 'gray',
+            warning: 'gray',
+          },
+        ]}>
+        <View style={styles.settingHeader}>
+          <Text style={styles.settingHeaderTitle}>정산관리</Text>
+        </View>
+        <View style={styles.calculateTab}>
+          <Pressable
             style={
               currentTab === 0
-                ? styles.calculateActiveTabText
-                : styles.calculateTabText
-            }>
-            받아야 할 내역
-          </Text>
-        </Pressable>
-        <Pressable
-          style={
-            currentTab === 1
-              ? styles.calculateActiveTabLabel
-              : styles.calculateTabLabel
-          }
-          onPress={changeCurrentTab}>
-          <Text
+                ? styles.calculateActiveTabLabel
+                : styles.calculateTabLabel
+            }
+            onPress={changeCurrentTab}>
+            <Text
+              style={
+                currentTab === 0
+                  ? styles.calculateActiveTabText
+                  : styles.calculateTabText
+              }>
+              받아야 할 내역
+            </Text>
+          </Pressable>
+          <Pressable
             style={
               currentTab === 1
-                ? styles.calculateActiveTabText
-                : styles.calculateTabText
-            }>
-            보내야 할 내역
-          </Text>
-        </Pressable>
-      </View>
-      <View style={styles.calculateHistory}>
-        {currentTab === 0 ? (
-          dummyData1.length > 0 ? (
-            dummyData1.map((data: any) => (
-              <View style={styles.calculateWrapper}>
-                <Text style={styles.calculateText} key={data.id}>
-                  {data.name}
-                </Text>
-                <View>
-                  {data.calculate.map((calculate: any) => (
-                    <View
-                      style={styles.calculateAlarm}
-                      key={calculate.giver_id}>
-                      <Image
-                        key={calculate.giver_id}
-                        style={styles.calculateImage}
-                        source={calculate.src}
-                      />
-                      <View style={styles.calculateAlarmMessage}>
-                        <Text style={styles.calculateGiver}>
-                          {calculate.giver}{' '}
-                          <Text style={styles.calculateMoneyText}>님께</Text>
-                        </Text>
-                        <Text style={styles.calculateMoney}>
-                          {calculate.money}원
-                          <Text style={styles.calculateMoneyText}>
-                            &nbsp;입금 받으세요
-                          </Text>
-                        </Text>
-                      </View>
-                      {calculate.send === true ? (
-                        <TouchableOpacity style={styles.calculateButtonActive}>
-                          <Text style={styles.calculateButtonText}>
-                            정산 완료
-                          </Text>
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          style={styles.calculateButton}
-                          onPress={updateSettlement(calculate)}>
-                          <Text style={styles.calculateButtonText}>
-                            입금 확인
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ))
-          ) : (
-            <View style={styles.emptyImg}>
-              <Image
-                source={require('../resources/icons/calculateReceive.png')}
-              />
-            </View>
-          )
-        ) : dummyData2.length > 0 ? (
-          dummyData2.map((data: any) => (
-            <View style={styles.calculateWrapper} key={data.id}>
-              <Text style={styles.calculateText} key={data.id}>
-                {data.name}
-              </Text>
-              <View>
-                {data.calculate.map((calculate: any) => (
-                  <View style={styles.calculateAlarm} key={calculate.giver_id}>
-                    <Image
-                      key={calculate.giver_id}
-                      style={styles.calculateImage}
-                      source={calculate.src}
-                    />
-                    <View style={styles.calculateAlarmMessage}>
-                      <Text style={styles.calculateGiver}>
-                        {calculate.giver}{' '}
-                        <Text style={styles.calculateMoneyText}>님께</Text>
-                      </Text>
-                      <Text style={styles.calculateSendMoney}>
-                        {calculate.money}원
-                        <Text style={styles.calculateMoneyText}>
-                          &nbsp;입금 하세요
-                        </Text>
-                      </Text>
-                    </View>
-                    {calculate.send === true ? (
-                      <TouchableOpacity style={styles.calculateButtonActive}>
-                        <Text style={styles.calculateButtonText}>
-                          정산 완료
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity style={styles.calculateButton}>
-                        <Text style={styles.calculateButtonText}>
-                          입금 완료
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                ? styles.calculateActiveTabLabel
+                : styles.calculateTabLabel
+            }
+            onPress={changeCurrentTab}>
+            <Text
+              style={
+                currentTab === 1
+                  ? styles.calculateActiveTabText
+                  : styles.calculateTabText
+              }>
+              보내야 할 내역
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.calculateHistory}>
+          {currentTab === 0
+            ? allSettlements.map((data: any) => (
+                <View style={styles.calculateWrapper} key={data.id}>
+                  <Text style={styles.calculateText}>{data.name}</Text>
+                  <View key={data.id}>
+                    {data.Settlements.map((calculate: any) => {
+                      if (calculate.sender.id !== userId) {
+                        return (
+                          <View
+                            style={styles.calculateAlarm}
+                            key={calculate.id}>
+                            <Image
+                              key={calculate.id}
+                              style={styles.calculateImage}
+                              source={{
+                                uri: calculate.sender.img_url,
+                              }}
+                            />
+                            <View style={styles.calculateAlarmMessage}>
+                              <Text style={styles.calculateGiver}>
+                                {calculate.sender.name}{' '}
+                                <Text style={styles.calculateMoneyText}>
+                                  님께
+                                </Text>
+                              </Text>
+                              <Text style={styles.calculateSendMoney}>
+                                {calculate.amount
+                                  .toString()
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                원
+                                <Text style={styles.calculateMoneyText}>
+                                  &nbsp;입금 받으세요
+                                </Text>
+                              </Text>
+                            </View>
+                            {calculate.is_paid === '정산 미완료' ? (
+                              <TouchableOpacity
+                                style={styles.calculateButton}
+                                onPress={updateSettlement2(calculate.id)}>
+                                <Text style={styles.calculateButtonText}>
+                                  입금 확인
+                                </Text>
+                              </TouchableOpacity>
+                            ) : calculate.is_paid === '정산 완료' ? (
+                              <TouchableOpacity
+                                style={styles.calculateButtonActive}>
+                                <Text style={styles.calculateButtonText}>
+                                  정산 완료
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity
+                                style={styles.calculateButtonActive}
+                                onPress={updateSettlement2(calculate.id)}>
+                                <Text style={styles.calculateButtonText}>
+                                  입금 확인
+                                </Text>
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        );
+                      }
+                    })}
                   </View>
-                ))}
-              </View>
-            </View>
-          ))
-        ) : (
-          <View style={styles.emptyImg}>
-            <Image source={require('../resources/icons/calculateSend.png')} />
-          </View>
-        )}
-      </View>
-      <View style={styles.calculateBorder} />
+                </View>
+              ))
+            : allSettlements.map((data: any) => (
+                <View style={styles.calculateWrapper} key={data.id}>
+                  <Text style={styles.calculateText} key={data.id}>
+                    {data.name}
+                  </Text>
+                  <View>
+                    {data.Settlements.map((calculate: any) => {
+                      if (calculate.receiver.id !== userId) {
+                        return (
+                          <View
+                            style={styles.calculateAlarm}
+                            key={calculate.id}>
+                            <Image
+                              key={calculate.giver_id}
+                              style={styles.calculateImage}
+                              source={{
+                                uri: calculate.receiver.img_url,
+                              }}
+                            />
+                            <View style={styles.calculateAlarmMessage}>
+                              <Text style={styles.calculateGiver}>
+                                {calculate.receiver.name}{' '}
+                                <Text style={styles.calculateMoneyText}>
+                                  님께
+                                </Text>
+                              </Text>
+                              <Text style={styles.calculateSendMoney}>
+                                {calculate.amount
+                                  .toString()
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                원
+                                <Text style={styles.calculateMoneyText}>
+                                  &nbsp;입금 하세요
+                                </Text>
+                              </Text>
+                            </View>
+                            {calculate.is_paid === '정산 미완료' ? (
+                              <TouchableOpacity
+                                style={styles.calculateButton}
+                                onPress={updateSettlement(calculate.id)}>
+                                <Text style={styles.calculateButtonText}>
+                                  입금 완료
+                                </Text>
+                              </TouchableOpacity>
+                            ) : calculate.is_paid === '정산 완료' ? (
+                              <TouchableOpacity
+                                style={styles.calculateButtonActive}>
+                                <Text style={styles.calculateButtonText}>
+                                  정산 완료
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity
+                                style={styles.calculateButtonActive}>
+                                <Text style={styles.calculateButtonText}>
+                                  정산 확인중
+                                </Text>
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        );
+                      }
+                    })}
+                  </View>
+                </View>
+              ))}
+        </View>
+      </AlertNotificationRoot>
     </ScrollView>
   );
 }
@@ -394,6 +377,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     justifyContent: 'center',
+    borderColor: '#9acdd4',
+    borderWidth: 1,
   },
   calculateActiveTabText: {
     fontSize: 14,
@@ -409,6 +394,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     justifyContent: 'center',
+    borderColor: '#9acdd4',
+    borderWidth: 1,
   },
   calculateTabText: {
     fontSize: 14,

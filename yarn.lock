@@ -2013,6 +2013,11 @@
   "resolved" "https://registry.npmjs.org/@types/react-native-dotenv/-/react-native-dotenv-0.2.0.tgz"
   "version" "0.2.0"
 
+"@types/react-native-push-notification@^8.1.1":
+  "integrity" "sha512-ZN4UbU4EM3C7XGt4zI6RqHEZS2+35EwOz9DPAD1lTTY3IpWMHAKYjryykvP35hFkSwrGMpT8nYuMFPEJRwDEJA=="
+  "resolved" "https://registry.npmjs.org/@types/react-native-push-notification/-/react-native-push-notification-8.1.1.tgz"
+  "version" "8.1.1"
+
 "@types/react-native-vector-icons@^6.4.11":
   "integrity" "sha512-jUy9CsTu1Cl3k6WRE7GnqBRHbuSv55PRVfMEel+fF73HKpF8g5JmTzTVMBDX8NfY3PlfIY5VlxiqWZxdjm38Pg=="
   "resolved" "https://registry.npmjs.org/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.11.tgz"

@@ -73,7 +73,7 @@ function SignInPage({navigation}: any) {
       AsyncStorage.setItem('PushNotification', 'true');
       AsyncStorage.setItem('SoundNotification', 'true');
       AsyncStorage.setItem('VibrationNotification', 'true');
-
+      AsyncStorage.setItem('alarm', '1');
       getFCMToken();
       notificationListner();
 

@@ -57,7 +57,8 @@ function FindPassWordPage({navigation}: any) {
       Alert.alert('알림', '이메일로 임시 비밀번호가 발송되었습니다.');
       setEmailChecked(true);
     } catch (err: any) {
-      console.log(err.response);
+      console.log(err);
+      Alert.alert('알림', err?.response?.data?.msg);
     }
   };
 
@@ -86,6 +87,7 @@ function FindPassWordPage({navigation}: any) {
       AsyncStorage.setItem('PushNotification', 'true');
       AsyncStorage.setItem('SoundNotification', 'true');
       AsyncStorage.setItem('VibrationNotification', 'true');
+      AsyncStorage.setItem('alarm', '1');
 
       dispatch(
         userActions.setUser({
@@ -98,7 +100,7 @@ function FindPassWordPage({navigation}: any) {
       navigation.navigate('ResetPasswordPage');
     } catch (error: AxiosError | any) {
       console.log('login error', error);
-      // Alert.alert(error.response);
+      Alert.alert('알림', error?.response?.data?.msg);
     } finally {
       setLoading(false);
     }

@@ -175,9 +175,10 @@ function SelectReceiptPage({navigation, route}: any) {
       } else {
         console.log(1);
         if (response !== undefined) {
-          console.log('response', response);
-          sendCameraScreenShot(response?.assets[0]);
-          // setSelectImg({uri: response?.assets[0]?.uri});
+          console.log('response', response.didCancel);
+          if (!response?.didCancel) {
+            sendCameraScreenShot(response?.assets[0]);
+          }
         }
       }
     });
@@ -199,7 +200,9 @@ function SelectReceiptPage({navigation, route}: any) {
         console.log('ImagePicker Error', response.error);
       } else {
         if (response !== undefined) {
-          sendCameraScreenShot(response?.assets[0]);
+          if (!response?.didCancel) {
+            sendCameraScreenShot(response?.assets[0]);
+          }
         }
       }
     });
