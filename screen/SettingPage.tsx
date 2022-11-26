@@ -140,9 +140,9 @@ const styles = StyleSheet.create({
   },
   settingHeaderTitle: {color: 'black', fontSize: 16, fontFamily: 'Roboto'},
   borderLine: {
-    height: 1,
-    backgroundColor: '#21B8CD',
     width: Dimensions.get('window').width * 0.9,
+    borderBottomWidth: 1,
+    borderBottomColor: '#21B8CD',
   },
   titleSection: {height: 50, justifyContent: 'center'},
   titleText: {
