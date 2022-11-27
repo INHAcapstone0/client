@@ -679,4 +679,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReceiptCard;
+export default React.memo(ReceiptCard);

@@ -282,7 +282,7 @@ function ReceiptUploadPage({route, navigation}: any) {
 
   const moveToHomePage = () => {
     setTimeout(() => {
-      navigation.navigate('InitialPage');
+      navigation.replace('InitialPage');
     }, 3000);
   };
 

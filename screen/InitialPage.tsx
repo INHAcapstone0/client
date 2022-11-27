@@ -76,6 +76,7 @@ function InitialPage({navigation}: any) {
     <SignInPage navigation={navigation} />
   ) : (
     <Tab.Navigator
+      initialRouteName="HomePage"
       screenOptions={{
         tabBarStyle: {height: 60, borderTopWidth: 1},
         tabBarInactiveTintColor: 'gray',

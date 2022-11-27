@@ -298,6 +298,7 @@ function AlarmPage({navigation}: any) {
         isVisible={isInvitaionModalVisible}
         animationIn={'slideInUp'}
         animationOut={'slideOutDown'}
+        onBackButtonPress={() => setInvitationModalVisible(false)}
         style={{
           alignItems: 'center',
         }}>
@@ -338,6 +339,7 @@ function AlarmPage({navigation}: any) {
         isVisible={isModalVisible}
         animationIn={'slideInUp'}
         animationOut={'slideOutDown'}
+        onBackButtonPress={() => setModalVisible(false)}
         style={{
           alignItems: 'center',
         }}>
@@ -387,9 +389,9 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   borderLine: {
-    height: 1,
-    backgroundColor: '#b7d3d6',
     width: Dimensions.get('window').width * 0.9,
+    borderBottomWidth: 1,
+    borderBottomColor: '#21B8CD',
   },
   alarmWrapper: {
     paddingTop: 8,
