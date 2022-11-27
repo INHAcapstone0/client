@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -15,13 +15,26 @@ interface AutoHeightImageProps {
 function AutoHeightImage({path}: AutoHeightImageProps) {
   const [height, setHeight] = useState(0);
   const {width} = Dimensions.get('window');
-  Image.getSize(path, (w, h) => {
-    setHeight(h * (width / w));
-  });
+
+  useEffect(() => {
+    Image.getSize(
+      path,
+      (w, h) => {
+        setHeight(h * (width / w));
+      },
+      error => {
+        setHeight(100);
+        console.error(`Couldn't get the image size: ${error.message}`);
+        console.error(`Couldn't get the image size: ${error}`);
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Image
-      style={{width: '100%'}}
-      source={{uri: path, height}}
+      style={{width: '100%', height: height}}
+      source={{uri: path}}
       resizeMode="cover"
     />
   );

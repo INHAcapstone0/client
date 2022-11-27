@@ -445,7 +445,7 @@ function ReceiptResultPage({route, navigation}: any) {
 
   const moveToHomePage = () => {
     setTimeout(() => {
-      navigation.navigate('InitialPage');
+      navigation.replace('InitialPage');
     }, 1000);
   };
 
