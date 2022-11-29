@@ -291,7 +291,7 @@ function BottomComponent({
             }
           })}
         </ScrollView>
-        <Pressable style={styles.button} onPress={closeBottomModal}>
+        <Pressable style={styles.button} onPress={InviteAdditionalMember}>
           <Text style={styles.textStyle}>초대 하기</Text>
         </Pressable>
       </View>

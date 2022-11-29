@@ -31,6 +31,7 @@ import {
   Dialog,
   Toast,
 } from 'react-native-alert-notification';
+import {CommonActions} from '@react-navigation/native';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};

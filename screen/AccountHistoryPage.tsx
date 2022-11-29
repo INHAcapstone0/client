@@ -74,9 +74,22 @@ function AccountHistoryPage({route, navigation}: any) {
 
   const [index, setIndex] = useState(0);
   const [transactions, setTransactions] = useState<any>([]);
+  const [currentDate, setCurrentDate] = useState('');
 
   useEffect(() => {
     getAllAccountTransfer();
+
+    let today = new Date();
+
+    let year = today.getFullYear(); // 년도
+    let month = today.getMonth() + 1; // 월
+    let date = today.getDate(); // 날짜
+    const currentDate =
+      year.toString() +
+      month.toString().padStart(2, '0') +
+      date.toString().padStart(2, '0');
+
+    setTransactions(currentDate);
   }, []);
 
   const getAllAccountTransfer = async () => {
@@ -109,7 +122,7 @@ function AccountHistoryPage({route, navigation}: any) {
       // console.log();
 
       const response = await axiosInstance.get(
-        `http://146.56.190.78/extra/account/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20211129}&to_date=${20221122}`,
+        `http://146.56.190.78/extra/account/transaction_list/fin_num?fintech_use_num=${finNum}&from_date=${20211129}&to_date=${currentDate}`,
         {
           headers: {
             'bank-authorization': `Bearer ${bankAccessTokenData}`,

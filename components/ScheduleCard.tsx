@@ -24,6 +24,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 interface ScheduleCardProps {
   item: any;
@@ -62,6 +63,7 @@ function ScheduleCard({
   const [validFlag, setValidFlag] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const isFocused = useIsFocused();
 
   const pressExpenseHistory = () => {
     navigate('ExpenseHistoryPage', {
@@ -78,6 +80,7 @@ function ScheduleCard({
   };
 
   useEffect(() => {
+    console.log('test');
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }
@@ -96,7 +99,7 @@ function ScheduleCard({
     if (endTime < currentTime) {
       setValidFlag(true);
     }
-  }, []);
+  }, [navigate, isFocused]);
 
   if (ownerFlag) {
     //내가 호스트인 스케줄 카드

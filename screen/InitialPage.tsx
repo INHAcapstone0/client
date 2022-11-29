@@ -41,7 +41,7 @@ function InitialPage({navigation}: any) {
 
   useEffect(() => {
     console.log(route.name);
-  }, [route]);
+  }, [route, navigation]);
 
   // useEffect(() => {
   //   if (isLoggedIn !== '') {
