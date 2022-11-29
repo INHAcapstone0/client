@@ -42,6 +42,7 @@ function ReceiptInfoPage(route: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const [modalVisible, setModalVisible] = useState(false);
   const [receiptId, setReceiptId] = useState(route.route.params.receiptId);
+  const [receiptImg, setReceiptImg] = useState('');
   const [receiptInfo, setReceiptInfo] = useState<{
     address: string;
     category: string;
@@ -70,7 +71,7 @@ function ReceiptInfoPage(route: any) {
     getReceiptInfo();
     getItemInfo();
     //setTimeout(() => drawMap(receiptInfo.address), 1000);
-  }, []);
+  }, [receiptImg]);
 
   const getReceiptInfo = async () => {
     try {
@@ -85,7 +86,10 @@ function ReceiptInfoPage(route: any) {
         },
       );
       console.log('receipt info ', response.data);
+      console.log('response.data.img_url ', response.data.img_url);
       setReceiptInfo(response.data);
+      setReceiptImg(response.data.img_url);
+      //setReceiptImg('https://t1.daumcdn.net/cfile/tistory/991AFB395BACD90735');
       setTotalPrice(
         response.data.total_price
           .toString()
@@ -129,7 +133,7 @@ function ReceiptInfoPage(route: any) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>지출 상세정보</Text>
       </View>
-      <ScrollView style={styles.window}>
+      <ScrollView style={styles.window} removeClippedSubviews={true}>
         <View style={styles.titleSection}>
           <View style={styles.titleTextSection}>
             <Text style={styles.itemTitle}>{receiptInfo.place}</Text>
@@ -140,14 +144,20 @@ function ReceiptInfoPage(route: any) {
           </View>
           <Pressable
             onPress={() => {
-              if (receiptInfo.img_url != null) {
+              console.log('[' + receiptImg + ']');
+              if (receiptImg !== '') {
                 setModalVisible(true);
               }
             }}>
-            <Image
-              style={styles.receiptImage}
-              source={{uri: receiptInfo.img_url}}
-            />
+            {receiptImg !== '' && (
+              <Image style={styles.receiptImage} source={{uri: receiptImg}} />
+            )}
+            {receiptImg === '' && (
+              <Image
+                style={styles.receiptImage}
+                source={require('../resources/icons/noReceiptImage.png')}
+              />
+            )}
           </Pressable>
         </View>
         <Modal isVisible={modalVisible}>
@@ -162,7 +172,7 @@ function ReceiptInfoPage(route: any) {
                   />
                 </Pressable>
               </View>
-              <AutoHeightImage path={receiptInfo.img_url} />
+              <AutoHeightImage path={receiptImg} />
             </View>
           </View>
         </Modal>
@@ -301,12 +311,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   receiptImage: {
+    backgroundColor: 'white',
     width: 95,
     height: 95,
     marginLeft: 10,
     marginRight: 30,
     marginTop: 20,
     marginBottom: 20,
+    resizeMode: 'contain',
   },
   centerSection: {
     alignItems: 'center',

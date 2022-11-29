@@ -282,10 +282,8 @@ function ReceiptUploadPage({route, navigation}: any) {
   };
 
   const moveToHomePage = () => {
-    // navigation.dispatch(CommonActions.navigate('InitialPage'));
     setTimeout(() => {
-      // navigation.dispatch(CommonActions.navigate('InitialPage'));
-      navigation.navigate('InitialPage');
+      navigation.replace('InitialPage');
     }, 3000);
   };
 

@@ -17,6 +17,7 @@ import {
   Image,
   useWindowDimensions,
   Animated,
+  FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -42,6 +43,7 @@ import axiosInstance from '../utils/interceptor';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface receipt {
+  id: string;
   payDate: string;
 }
 
@@ -76,6 +78,21 @@ function ExpenseHistoryPage({route, navigation}: any) {
   const renderScene = ({route}: any) => {
     return (
       <View style={styles.receiptSection}>
+        <FlatList
+          data={receiptsInfo}
+          renderItem={({item}) => (
+            <ReceiptCard
+              key={item.id}
+              item={item}
+              route={navigation}
+              category={route.key}
+              navigation={navigation}
+            />
+          )}
+          keyExtractor={item => item.id}
+          windowSize={2}
+        />
+        {/*
         <ScrollView>
           {receiptsInfo.map((item: any) => {
             if (item != null) {
@@ -90,7 +107,7 @@ function ExpenseHistoryPage({route, navigation}: any) {
               );
             }
           })}
-        </ScrollView>
+        </ScrollView>*/}
       </View>
     );
   };
