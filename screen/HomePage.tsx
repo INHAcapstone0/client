@@ -42,7 +42,6 @@ function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const userName = useSelector((state: RootState) => state.persist.user.name);
   const [info, setInfo] = useState<schedule[]>([]);
-
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
@@ -51,7 +50,7 @@ function HomePage({navigation}: any) {
   useEffect(() => {
     console.log(1);
     getAllSchedules();
-  }, [infoNumber, navigation, isFocused]);
+  }, [navigation, isFocused]);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
