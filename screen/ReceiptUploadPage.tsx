@@ -31,6 +31,7 @@ import {
   Dialog,
   Toast,
 } from 'react-native-alert-notification';
+import {CommonActions} from '@react-navigation/native';
 
 interface selectDateType {
   [key: string]: {[key: string]: boolean};
@@ -281,7 +282,9 @@ function ReceiptUploadPage({route, navigation}: any) {
   };
 
   const moveToHomePage = () => {
+    // navigation.dispatch(CommonActions.navigate('InitialPage'));
     setTimeout(() => {
+      // navigation.dispatch(CommonActions.navigate('InitialPage'));
       navigation.navigate('InitialPage');
     }, 3000);
   };

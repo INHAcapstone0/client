@@ -32,7 +32,7 @@ import {faPlaneDeparture, faSuitcase} from '@fortawesome/free-solid-svg-icons';
 import BottomSheetBackDrop from '../components/BottomSheetBackDrop';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axiosInstance from '../utils/interceptor';
-
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 interface schedule {
   startAt: string;
   endAt: string;
@@ -47,10 +47,11 @@ function HomePage({navigation}: any) {
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
+  const isFocused = useIsFocused();
   useEffect(() => {
+    console.log(1);
     getAllSchedules();
-  }, [infoNumber]);
+  }, [infoNumber, navigation, isFocused]);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -77,6 +78,7 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
+      console.log(2);
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
@@ -88,10 +90,12 @@ function HomePage({navigation}: any) {
         'http://146.56.190.78/schedules/status',
         {params, headers},
       );
+      console.log(3);
       //setInfo(response.data);
       sortAllSchedules(response.data);
       setErrFlag(false);
     } catch (err: AxiosError | any) {
+      console.log(4);
       console.log(err);
       if (err.response.status === 404) {
         setErrFlag(true);

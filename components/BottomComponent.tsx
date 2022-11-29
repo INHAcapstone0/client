@@ -96,7 +96,7 @@ function BottomComponent({
       const accessToken = await EncryptedStorage.getItem('accessToken');
 
       await axiosInstance.post(
-        'http://146.56.190.78:8002/participants',
+        'http://146.56.190.78/participants',
         {
           participant_ids: selectedUsersId,
           schedule_id: selectedScheduleId,
@@ -130,7 +130,7 @@ function BottomComponent({
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axiosInstance.get(
-        'http://146.56.190.78:8002/receipts',
+        'http://146.56.190.78/receipts',
         {
           params,
           headers,
@@ -155,7 +155,7 @@ function BottomComponent({
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axiosInstance.get(
-        'http://146.56.190.78:8002/participants',
+        'http://146.56.190.78/participants',
         {
           params,
           headers,
@@ -174,7 +174,7 @@ function BottomComponent({
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.get(
-        `http://146.56.190.78:8002/users/rest?exceptScheduleId=${selectedScheduleId}`,
+        `http://146.56.190.78/users/rest?exceptScheduleId=${selectedScheduleId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -291,7 +291,7 @@ function BottomComponent({
             }
           })}
         </ScrollView>
-        <Pressable style={styles.button} onPress={closeBottomModal}>
+        <Pressable style={styles.button} onPress={InviteAdditionalMember}>
           <Text style={styles.textStyle}>초대 하기</Text>
         </Pressable>
       </View>
