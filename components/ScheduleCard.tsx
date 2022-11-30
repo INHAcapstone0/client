@@ -179,21 +179,21 @@ function ScheduleCard({
           </View>
           <View style={styles.borderLine} />
           <View style={styles.buttonArea}>
-            <Pressable
+            <TouchableOpacity
               style={!validFlag ? styles.button : styles.disabledButton}
               onPress={() => {
                 pressReceiptUpload();
               }}
               disabled={validFlag}>
               <Text style={styles.buttonText}>지출 등록</Text>
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               style={styles.button}
               onPress={() => {
                 pressExpenseHistory();
               }}>
               <Text style={styles.buttonText}>지출 내역</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

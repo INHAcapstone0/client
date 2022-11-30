@@ -11,6 +11,7 @@ import {
   Alert,
   AppState,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {userActions} from '../slices/User';
@@ -199,14 +200,14 @@ function RegisterAccountPage({navigation}: any) {
             alignItems: 'center',
             margin: 20,
           }}>
-          <Pressable
+          <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
               //리다이렉션 시키기
               redirectToOpenbanking();
             }}>
             <Text style={styles.addButtonText}>새 계좌 등록하기</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         {bankInfo.map((item: any) => {
           return (
