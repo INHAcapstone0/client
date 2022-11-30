@@ -80,7 +80,6 @@ function ScheduleCard({
   };
 
   useEffect(() => {
-    console.log('test');
     if (userId === item.owner_id) {
       setOwnerFlag(true);
     }

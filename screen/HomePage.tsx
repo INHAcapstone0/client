@@ -42,16 +42,14 @@ function HomePage({navigation}: any) {
   const userId = useSelector((state: RootState) => state.persist.user.id);
   const userName = useSelector((state: RootState) => state.persist.user.name);
   const [info, setInfo] = useState<schedule[]>([]);
-
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [bottomModalType, setBottomModalType] = useState('');
   const [errFlag, setErrFlag] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const isFocused = useIsFocused();
   useEffect(() => {
-    console.log(1);
     getAllSchedules();
-  }, [infoNumber, navigation, isFocused]);
+  }, [navigation, isFocused]);
 
   const openBottomModal = () => {
     bottomSheetModalRef.current?.present();
@@ -78,7 +76,6 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
-      console.log(2);
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
@@ -90,7 +87,6 @@ function HomePage({navigation}: any) {
         'http://146.56.190.78/schedules/status',
         {params, headers},
       );
-      console.log(3);
       //setInfo(response.data);
       sortAllSchedules(response.data);
       setErrFlag(false);
