@@ -116,11 +116,6 @@ function CreateGroupSecondPage({navigation}: any) {
     groupNameRef.current?.focus();
   }, []);
 
-  // useEffect(() => {
-  //   setStartTime('');
-  //   setLastTime('');
-  // }, []);
-
   useEffect(() => {
     if (startTimeStart) {
       const startTimes =
@@ -441,9 +436,9 @@ function CreateGroupSecondPage({navigation}: any) {
                 }}
               />
             </View>
-            <TouchableOpacity style={styles.nextButton}>
+            <View style={styles.nextButton}>
               <Button color="#21B8CD" title="다음" onPress={moveToNextStep} />
-            </TouchableOpacity>
+            </View>
           </AlertNotificationRoot>
         </ScrollView>
       </BottomSheetModalProvider>

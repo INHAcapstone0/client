@@ -48,7 +48,6 @@ function HomePage({navigation}: any) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const isFocused = useIsFocused();
   useEffect(() => {
-    console.log(1);
     getAllSchedules();
   }, [navigation, isFocused]);
 
@@ -77,7 +76,6 @@ function HomePage({navigation}: any) {
   };
   const getAllSchedules = async () => {
     try {
-      console.log(2);
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const params = {
         status: '승인',
@@ -89,7 +87,6 @@ function HomePage({navigation}: any) {
         'http://146.56.190.78/schedules/status',
         {params, headers},
       );
-      console.log(3);
       //setInfo(response.data);
       sortAllSchedules(response.data);
       setErrFlag(false);

@@ -16,7 +16,6 @@ import {
   Image,
   Dimensions,
   Button,
-  Modal,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -30,6 +29,7 @@ import {
   IConfigDialog,
   IConfigToast,
 } from 'react-native-alert-notification';
+import Modal from 'react-native-modal';
 
 interface alarmType {
   alarm_type: string;
@@ -47,6 +47,11 @@ function CalculatePage({navigation}: any) {
   const [allSettlements, setAllSettlements] = useState<Array<any>>([]);
   const [currentTab, setCurrentTab] = useState(0);
   const [errFlag, setErrFlag] = useState(false);
+  const [isInvitaionModalVisible1, setInvitationModalVisible1] =
+    useState(false);
+  const [isInvitaionModalVisible2, setInvitationModalVisible2] =
+    useState(false);
+  const [calculateIds, setCalculateIds] = useState('');
 
   useEffect(() => {
     getSettlements();
@@ -71,11 +76,11 @@ function CalculatePage({navigation}: any) {
     }
   };
 
-  const updateSettlement = (calculateId: string) => async (event: any) => {
+  const updateSettlement = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
-        `http://146.56.190.78:8002/settlements/${calculateId}`,
+        `http://146.56.190.78:8002/settlements/${calculateIds}`,
         {is_paid: '확인중'},
         {
           headers: {
@@ -99,11 +104,11 @@ function CalculatePage({navigation}: any) {
     }
   };
 
-  const updateSettlement2 = (calculateId: string) => async (event: any) => {
+  const updateSettlement2 = async () => {
     try {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       const response = await axiosInstance.patch(
-        `http://146.56.190.78:8002/settlements/${calculateId}`,
+        `http://146.56.190.78:8002/settlements/${calculateIds}`,
         {is_paid: '정산 완료'},
         {
           headers: {
@@ -126,12 +131,49 @@ function CalculatePage({navigation}: any) {
     }
   };
 
+  const updateSettlement3 = async () => {
+    try {
+      const accessToken = await EncryptedStorage.getItem('accessToken');
+      const response = await axiosInstance.patch(
+        `http://146.56.190.78:8002/settlements/${calculateIds}`,
+        {is_paid: '정산 미완료'},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      getSettlements();
+      console.log('update response3', response);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '입금 미완료 알람을 보냈습니다',
+      });
+    } catch (err: AxiosError | any) {
+      console.log(err.response);
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        textBody: '정산미완료 처리가 실패했습니다',
+      });
+    }
+  };
+
   const changeCurrentTab = () => {
     if (currentTab === 0) {
       setCurrentTab(1);
     } else {
       setCurrentTab(0);
     }
+  };
+
+  const 입금확인 = (calculateId: string) => (event: any) => {
+    setCalculateIds(calculateId);
+    setInvitationModalVisible1(true);
+  };
+
+  const 입금완료 = (calculateId: string) => (event: any) => {
+    setCalculateIds(calculateId);
+    setInvitationModalVisible2(true);
   };
 
   if (errFlag) {
@@ -237,24 +279,21 @@ function CalculatePage({navigation}: any) {
                               </Text>
                             </View>
                             {calculate.is_paid === '정산 미완료' ? (
-                              <TouchableOpacity
-                                style={styles.calculateButton}
-                                onPress={updateSettlement2(calculate.id)}>
+                              <View style={styles.calculateButtonActive}>
                                 <Text style={styles.calculateButtonText}>
-                                  입금 확인
+                                  입금 대기중
                                 </Text>
-                              </TouchableOpacity>
+                              </View>
                             ) : calculate.is_paid === '정산 완료' ? (
-                              <TouchableOpacity
-                                style={styles.calculateButtonActive}>
+                              <View style={styles.calculateButtonActive}>
                                 <Text style={styles.calculateButtonText}>
                                   정산 완료
                                 </Text>
-                              </TouchableOpacity>
+                              </View>
                             ) : (
                               <TouchableOpacity
-                                style={styles.calculateButtonActive}
-                                onPress={updateSettlement2(calculate.id)}>
+                                style={styles.calculateButton}
+                                onPress={입금확인(calculate.id)}>
                                 <Text style={styles.calculateButtonText}>
                                   입금 확인
                                 </Text>
@@ -306,25 +345,23 @@ function CalculatePage({navigation}: any) {
                             {calculate.is_paid === '정산 미완료' ? (
                               <TouchableOpacity
                                 style={styles.calculateButton}
-                                onPress={updateSettlement(calculate.id)}>
+                                onPress={입금완료(calculate.id)}>
                                 <Text style={styles.calculateButtonText}>
                                   입금 완료
                                 </Text>
                               </TouchableOpacity>
                             ) : calculate.is_paid === '정산 완료' ? (
-                              <TouchableOpacity
-                                style={styles.calculateButtonActive}>
+                              <View style={styles.calculateButtonActive}>
                                 <Text style={styles.calculateButtonText}>
                                   정산 완료
                                 </Text>
-                              </TouchableOpacity>
+                              </View>
                             ) : (
-                              <TouchableOpacity
-                                style={styles.calculateButtonActive}>
+                              <View style={styles.calculateButtonActive}>
                                 <Text style={styles.calculateButtonText}>
                                   정산 확인중
                                 </Text>
-                              </TouchableOpacity>
+                              </View>
                             )}
                           </View>
                         );
@@ -334,11 +371,117 @@ function CalculatePage({navigation}: any) {
                 </View>
               ))}
         </View>
+        <Modal
+          isVisible={isInvitaionModalVisible1}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          onBackButtonPress={() => setInvitationModalVisible1(false)}
+          style={{
+            alignItems: 'center',
+          }}>
+          <View style={styles.modalContainerForMember}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+              }}>
+              <Text style={styles.modalComment}>
+                입금 된것을 확인 하셨습니까?
+              </Text>
+              <View style={styles.modalButtonArea}>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    updateSettlement2();
+                    setInvitationModalVisible1(false);
+                  }}>
+                  <Text style={styles.modalButtonText}>예</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    updateSettlement3();
+                    setInvitationModalVisible1(false);
+                  }}>
+                  <Text style={styles.modalButtonText}>아니오</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          isVisible={isInvitaionModalVisible2}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          onBackButtonPress={() => setInvitationModalVisible2(false)}
+          style={{
+            alignItems: 'center',
+          }}>
+          <View style={styles.modalContainerForMember}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+              }}>
+              <Text style={styles.modalComment}>입금을 완료 하셨습니까?</Text>
+              <View style={styles.modalButtonArea}>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    updateSettlement();
+                    setInvitationModalVisible2(false);
+                  }}>
+                  <Text style={styles.modalButtonText}>예</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    setInvitationModalVisible2(false);
+                  }}>
+                  <Text style={styles.modalButtonText}>아니오</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </AlertNotificationRoot>
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
+  modalContainerForMember: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    width: 325,
+    height: 195,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  modalButton: {
+    width: 80,
+    height: 40,
+    backgroundColor: '#21B8CD',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  modalButtonArea: {
+    marginTop: 20,
+    flexDirection: 'row',
+  },
+  modalComment: {
+    fontFamily: 'Roboto',
+    fontSize: 20,
+    color: 'black',
+  },
   settingHeader: {
     paddingTop: 20,
     height: 50,
