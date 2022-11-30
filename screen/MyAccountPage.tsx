@@ -15,6 +15,7 @@ import {
   Dimensions,
   Image,
   InteractionManager,
+  TouchableOpacity,
 } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import BottomSheet, {
@@ -196,14 +197,14 @@ function MyAccountPage({navigation, route}: any) {
               {'\n'}등록된 계좌정보가 없으시네요
             </Text>
             <Text style={styles.errMsg}>계좌정보를 등록해 보세요!{'\n'}</Text>
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 navigation.navigate('RegisterAccountPage');
               }}>
               <View style={styles.errButton}>
                 <Text style={styles.errButtonText}>계좌정보 등록하기</Text>
               </View>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>

@@ -11,6 +11,7 @@ import {
   ScrollView,
   Dimensions,
   Button,
+  TouchableOpacity,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/Store';
@@ -985,13 +986,13 @@ function ReceiptUploadPage({route, navigation}: any) {
             </View>
           </View>
           <View style={styles.itemSection}>
-            <Pressable
+            <TouchableOpacity
               style={styles.uploadButton}
               onPress={() => {
                 checkValidation();
               }}>
               <Text style={styles.uploadButtonText}>등록하기</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </AlertNotificationRoot>

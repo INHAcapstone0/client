@@ -14,6 +14,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
@@ -177,14 +178,14 @@ function HomePage({navigation}: any) {
         />
         <Text style={styles.errMsg}>{'\n'}보유하고 계신 일정이 없으시네요</Text>
         <Text style={styles.errMsg}>여행 일정을 등록해 보세요!{'\n'}</Text>
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             navigation.navigate('CreateGroupPage');
           }}>
           <View style={styles.errButton}>
             <Text style={styles.errButtonText}>여행 일정 등록하기</Text>
           </View>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     );
   } else {
